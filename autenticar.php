@@ -36,7 +36,7 @@ if ($result->num_rows === 1) {
         $_SESSION['usuario_tipo'] = $user['tipo_permissao'];
 
         session_write_close();
-        header("Location: painel.php");
+        header("Location: ./reservas/index.php");
         exit;
     } else {
         $_SESSION['erro_login'] = "Senha incorreta!";

@@ -1,0 +1,113 @@
+@charset "UTF-8";
+/* 🎨 Estilo geral para tabelas CRUD */
+.tabela-crud {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+.tabela-crud thead {
+  background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+.tabela-crud th,
+.tabela-crud td {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 15px;
+}
+.tabela-crud th {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tabela-crud tbody tr:nth-child(even) {
+  background: #f8f8f8;
+}
+.tabela-crud tbody tr:hover {
+  background: #e6e0f7;
+  transition: background 0.2s ease;
+}
+.tabela-crud td {
+  vertical-align: middle;
+}
+.tabela-crud td:nth-child(5) {
+  text-align: center;
+  font-size: 18px;
+}
+
+/* 🎯 Botões de ação */
+.btn-editar,
+.btn-excluir,
+.btn-novo {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-editar {
+  background: #ffd966;
+  color: #333;
+}
+.btn-editar:hover {
+  background: #ffe599;
+}
+
+.btn-excluir {
+  background: #d53625;
+  color: white;
+}
+.btn-excluir:hover {
+  background: #ff8a80;
+}
+
+.btn-novo {
+  background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin-bottom: 10px;
+  float: right;
+}
+.btn-novo:hover {
+  background: #5b6ed1;
+}
+
+/* 🧱 Cabeçalho do CRUD (título e botão "novo") */
+.crud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.crud-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 🔍 Campo de busca (opcional) */
+.crud-search {
+  margin: 10px 0;
+}
+.crud-search input {
+  width: 100%;
+  max-width: 280px;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.crud-search input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
+}/*# sourceMappingURL=crud.css.map */
