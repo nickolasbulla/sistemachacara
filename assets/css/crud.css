@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/* 🎨 Estilo geral para tabelas CRUD */
+/* estilo geral para tabelas CRUD */
 .tabela-crud {
   width: 100%;
   border-collapse: collapse;
@@ -34,12 +34,17 @@
 .tabela-crud td {
   vertical-align: middle;
 }
+.tabela-crud td:nth-child(2), .tabela-crud td:nth-child(3) {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .tabela-crud td:nth-child(5) {
   text-align: center;
   font-size: 18px;
 }
 
-/* 🎯 Botões de ação */
+/* botões de ação */
 .btn-editar,
 .btn-excluir,
 .btn-novo {
@@ -66,7 +71,7 @@
   color: white;
 }
 .btn-excluir:hover {
-  background: #ff8a80;
+  background: #ff5b4c;
 }
 
 .btn-novo {
@@ -76,10 +81,11 @@
   float: right;
 }
 .btn-novo:hover {
-  background: #5b6ed1;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-/* 🧱 Cabeçalho do CRUD (título e botão "novo") */
+/* cabeçalho do crud (título e botão novo) */
 .crud-header {
   display: flex;
   align-items: center;
@@ -93,21 +99,234 @@
   color: #333;
 }
 
-/* 🔍 Campo de busca (opcional) */
+/* campo de busca (ainda nao aplicado) 
 .crud-search {
-  margin: 10px 0;
+    margin: 10px 0;
+
+    input {
+        width: 100%;
+        max-width: 280px;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+
+        &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
+        }
+    }
+} */
+.cadastro-area {
+  background: white;
+  padding: 40px 50px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  max-width: 700px;
+  margin: 40px auto;
 }
-.crud-search input {
-  width: 100%;
-  max-width: 280px;
+@media (max-width: 480px) {
+  .cadastro-area {
+    padding: 25px;
+  }
+}
+
+/* header do formulário */
+.cadastro-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.cadastro-header h1 {
+  color: #333;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.cadastro-header p {
+  color: #555;
+  font-size: 15px;
+  margin: 0;
+}
+
+.alerta {
   padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.alerta.erro {
+  background: #f9d6d5;
+  color: #d53625;
+  border: 1px solid #d53625;
+}
+.alerta.sucesso {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* forms */
+.form-cadastro {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.form-cadastro .form-grupo {
+  display: flex;
+  flex-direction: column;
+}
+.form-cadastro .form-grupo label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+.form-cadastro .form-grupo input,
+.form-cadastro .form-grupo select,
+.form-cadastro .form-grupo textarea {
+  padding: 12px 14px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 15px;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
-.crud-search input:focus {
+.form-cadastro .form-grupo input:focus,
+.form-cadastro .form-grupo select:focus,
+.form-cadastro .form-grupo textarea:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
+}
+.form-cadastro .form-grupo textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+.form-cadastro .form-grupo.checkbox label {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #333;
+}
+.form-cadastro .form-grupo.checkbox input[type=checkbox] {
+  margin-right: 8px;
+  transform: scale(1.1);
+}
+
+/* botoes */
+.form-botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 15px;
+}
+.form-botoes .btn {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+.form-botoes .btn.btn-salvar {
+  background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+.form-botoes .btn.btn-salvar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+.form-botoes .btn.btn-cancelar {
+  background: #e0e0e0;
+  color: #333;
+}
+.form-botoes .btn.btn-cancelar:hover {
+  background: #d0d0d0;
+}
+
+.btn-voltar {
+  display: inline-block;
+  margin-bottom: 20px;
+  background: #ddd;
+  color: #333;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-voltar:hover {
+  background: #ccc;
+}
+
+/* responsividade */
+@media (max-width: 900px) {
+  .tabela-wrapper {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .tabela-crud {
+    border: none;
+    display: block;
+    padding: 8px;
+    background-color: #f4f6fa;
+  }
+  .tabela-crud thead {
+    display: none;
+  }
+  .tabela-crud tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .tabela-crud tr {
+    display: flex;
+    flex-direction: column;
+    background: none;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  }
+  .tabela-crud td {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+    font-size: 15px;
+    text-align: left;
+    word-break: break-word;
+  }
+  .tabela-crud td:nth-child(2), .tabela-crud td:nth-child(3) {
+    max-width: none;
+  }
+  .tabela-crud td:nth-child(5) {
+    font-size: 15px;
+  }
+  .tabela-crud td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #666;
+    flex: 1;
+    min-width: 70px;
+    text-align: left;
+  }
+  .tabela-crud td[data-label=Ações] {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    border: none;
+    padding-top: 10px;
+  }
+  .tabela-crud td[data-label=Ações]::before {
+    display: none;
+  }
+  .tabela-crud td[data-label=Ações] .btn-editar,
+  .tabela-crud td[data-label=Ações] .btn-excluir {
+    padding: 6px 10px;
+    font-size: 13px;
+    flex: none;
+  }
 }/*# sourceMappingURL=crud.css.map */

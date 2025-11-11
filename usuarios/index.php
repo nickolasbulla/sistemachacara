@@ -1,62 +1,69 @@
 <?php
 session_start();
 include '../includes/login_verify.php';
-include '../includes/conexao.php';
-
+include '../includes/db.php';
 $titulo_pagina = "Usuários - Chácara Portal";
-$css_pagina = [
-"../assets/css/painel.css", "../assets/css/crud.css"
-];
+$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
 include '../includes/header.php';
+
 ?>
 
 <div class="painel-container">
 
-<?php include '../includes/sidebar.php'; ?>
+    <?php include '../includes/sidebar.php'; ?>
+    <div class="sidebar-overlay"></div>
 
-<main class="conteudo">
-    <header class="painel-header">
-    <h1>Usuários</h1>
-    <p>Gerencie os usuários do sistema.</p>
-    </header>
+    <main class="conteudo">
+        <header class="painel-header">
+            <button class="menu-toggle">☰</button>
+            <h1>Usuários</h1>
+            <p>Gerencie os usuários do sistema.</p>
+        </header>
 
-    <div class="area-crud">
-    <a href="usuarios_create.php" class="btn btn-novo">+ Novo Usuário</a>
+        <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
+            <div class="alerta sucesso">Usuário cadastrado com sucesso!</div>
+        <?php endif; ?>
 
-    <?php
-    $query = "SELECT * FROM usuarios ORDER BY id_usuario DESC";
-    $result = $conn->query($query);
-    ?>
+        <div class="area-crud">
+            <a href="./create.php" class="btn btn-novo">+ Novo Usuário</a>
 
-    <table class="tabela-crud">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome Completo</th>
-            <th>Login</th>
-            <th>Permissão</th>
-            <th>Ativo</th>
-            <th>Ações</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <tr>
-            <td><?= $row['id_usuario'] ?></td>
-            <td><?= htmlspecialchars($row['nome_completo']) ?></td>
-            <td><?= htmlspecialchars($row['login']) ?></td>
-            <td><?= ($row['tipo_permissao']) ?></td>
-            <td><?= $row['ativo'] ? '✅' : '❌' ?></td>
-            <td>
-                <a href="edit.php?id=<?= $row['id_usuario'] ?>" class="btn-editar">✏️ Editar</a>
-                <a href="delete.php?id=<?= $row['id_usuario'] ?>" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">🗑️ Excluir</a>
-            </td>
-            </tr>
-        <?php endwhile; ?>
-        </tbody>
-    </table>
-    </div>
-</main>
+            <?php
+                $query = "SELECT * FROM usuarios ORDER BY id_usuario DESC";
+                $result = $conn->query($query);
+            ?>
+            <div class="tabela-wrapper">
+                <table class="tabela-crud">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome Completo</th>
+                            <th>Login</th>
+                            <th>Permissão</th>
+                            <th>Ativo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <tr>
+                                <td data-label="ID"><?= $row['id_usuario'] ?></td>
+                                <td data-label="Nome"><?= htmlspecialchars($row['nome_completo']) ?></td>
+                                <td data-label="Login"><?= htmlspecialchars($row['login']) ?></td>
+                                <td data-label="Permissão"><?= ($row['tipo_permissao']) ?></td>
+                                <td data-label="Ativo"><?= $row['ativo'] ? '✅' : '❌' ?></td>
+                                <td data-label="Ações">
+                                    <a href="./edit.php?id=<?= $row['id_usuario'] ?>" class="btn-editar">✏️Selecionar</a>
+                                    <a href="#" data-id="<?= $row['id_usuario'] ?>" class="btn-excluir">🗑️ Excluir</a>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 </div>
+
+<?php include './delete.php'; ?>
 
 <?php include '../includes/footer.php'; ?>

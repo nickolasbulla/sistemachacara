@@ -1,7 +1,7 @@
 <?php
 session_start();
 include '../includes/login_verify.php';
-
+include '../includes/db.php';
 $titulo_pagina = "Reservas - Chácara Portal";
 $css_pagina = "../assets/css/painel.css";
 include '../includes/header.php';

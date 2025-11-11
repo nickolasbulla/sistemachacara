@@ -12,11 +12,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // pop up do logout
 document.addEventListener("DOMContentLoaded", () => {
-    const btnLogout = document.getElementById("btnLogout");
-    const modal = document.getElementById("logoutModal");
-    const cancel = document.getElementById("cancelLogout");
+    const btnPopup = document.getElementById("btnPopup");
+    const modal = document.getElementById("popupModal");
+    const cancel = document.getElementById("cancelPopup");
 
-    btnLogout.addEventListener("click", (e) => {
+    btnPopup.addEventListener("click", (e) => {
         e.preventDefault();
         modal.classList.add("active");
     });
@@ -24,4 +24,23 @@ document.addEventListener("DOMContentLoaded", () => {
     cancel.addEventListener("click", () => {
         modal.classList.remove("active");
     });
+});
+
+// Botão de abrir/fechar menu
+document.addEventListener("DOMContentLoaded", () => {
+  const menuToggle = document.querySelector(".menu-toggle");
+  const sidebar = document.querySelector(".sidebar");
+  const overlay = document.querySelector(".sidebar-overlay");
+
+  if (!menuToggle || !sidebar || !overlay) return; // segurança
+
+  menuToggle.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+    overlay.classList.toggle("active");
+  });
+
+  overlay.addEventListener("click", () => {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+  });
 });
