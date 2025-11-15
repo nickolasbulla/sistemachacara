@@ -158,16 +158,16 @@ body {
     margin-top: 30px;
 }
 
-/* POPUP para logout e delete */
+/* popup para logout e delete */
 .popup-modal {
     display: none;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(5px);
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 1200;
 
     &.active {
         display: flex;
@@ -177,10 +177,19 @@ body {
         background: #fff;
         padding: 30px 40px;
         border-radius: 12px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
         text-align: center;
         width: 90%;
-        max-width: 400px;
+        max-width: 420px;
+
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
 
         .popup-buttons {
             margin-top: 20px;
@@ -188,32 +197,37 @@ body {
             justify-content: center;
             gap: 15px;
 
-            .btn-cancelar,
-            .btn-confirmar {
-                border: none;
-                padding: 10px 20px;
-                border-radius: 6px;
-                cursor: pointer;
-                transition: background 0.2s ease;
+            /* BOTÕES DO POPUP */
+            .btn-confirmar,
+            .btn-cancelar {
+                padding: 10px 18px;
+                border-radius: 8px;
                 font-size: 15px;
                 font-weight: 600;
+                cursor: pointer;
+                border: none;
+                text-decoration: none;
+                transition: 0.2s ease;
+                display: inline-block;
             }
 
             .btn-cancelar {
-                background: #ddd;
+                background: #e0e0e0;
+                color: #333;
 
                 &:hover {
-                    background: #ccc;
+                    background: #d0d0d0;
                 }
             }
 
             .btn-confirmar {
-                background: #c62828;
-                color: #fff;
-                text-decoration: none;
+                background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                box-shadow: 0 6px 18px rgba(102, 126, 234, 0.2);
 
                 &:hover {
-                    background: #a91f1f;
+                    filter: brightness(0.95);
+                    box-shadow: 0 8px 22px rgba(102, 126, 234, 0.28);
                 }
             }
         }

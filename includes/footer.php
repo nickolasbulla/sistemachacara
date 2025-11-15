@@ -1,4 +1,5 @@
 <script src="../assets/js/painel.js"></script>
-<!-- puxando js aqui pois toda pagina vai ter submenu e logout -->
+<script src="../assets/js/popup.js"></script>
+<!-- puxando js aqui pois toda pagina vai usaar -->
 </body>
 </html>

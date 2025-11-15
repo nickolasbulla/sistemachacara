@@ -6,11 +6,19 @@ $titulo_pagina = "Usuários - Chácara Portal";
 $css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
 include '../includes/header.php';
 
+//  lógica do delete aqui
+if (isset($_GET['delete_id'])) {
+    $id = intval($_GET['delete_id']);
+    $conn->query("DELETE FROM usuarios WHERE id_usuario = $id");
+    header("Location: index.php?deletado=1");
+    exit;
+}
 ?>
 
 <div class="painel-container">
 
     <?php include '../includes/sidebar.php'; ?>
+
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
@@ -53,7 +61,7 @@ include '../includes/header.php';
                                 <td data-label="Ativo"><?= $row['ativo'] ? '✅' : '❌' ?></td>
                                 <td data-label="Ações">
                                     <a href="./edit.php?id=<?= $row['id_usuario'] ?>" class="btn-editar">✏️Selecionar</a>
-                                    <a href="#" data-id="<?= $row['id_usuario'] ?>" class="btn-excluir">🗑️ Excluir</a>
+                                    <a href="#" class="btn-excluir btnPopup" data-id="<?= $row['id_usuario'] ?>">🗑️ Excluir</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -64,6 +72,18 @@ include '../includes/header.php';
     </main>
 </div>
 
-<?php include './delete.php'; ?>
+<!-- pop up de excluir -->
+<div id="deleteModal" class="popup-modal">
+    <div class="popup-box">
+        <h2>Deseja realmente excluir?</h2>
+        <p>Essa ação não poderá ser desfeita.</p>
+        <div class="popup-buttons">
+            <button id="cancelDelete" class="btn btn-cancelar">Cancelar</button>
+            <a href="#" id="confirmDelete" class="btn btn-confirmar">Sim, excluir</a>
+        </div>
+    </div>
+</div>
 
-<?php include '../includes/footer.php'; ?>
+<?php 
+include '../includes/footer.php'; 
+?>
