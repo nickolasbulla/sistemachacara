@@ -2,7 +2,7 @@
 session_start();
 include '../includes/login_verify.php';
 include '../includes/db.php';
-$titulo_pagina = "Funcionários - Chácara Portal";
+$titulo_pagina = "Ambientes - Chácara Portal";
 $css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
 include "../includes/header.php";
 
@@ -16,38 +16,44 @@ if (!$id) {
 }
 
 // Busca os dados do usuário
-$stmt = $conn->prepare("SELECT * FROM funcionarios WHERE id_funcionario = ?");
+$stmt = $conn->prepare("SELECT * FROM ambientes WHERE id_ambiente = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
-$funcionario = $result->fetch_assoc();
+$ambiente = $result->fetch_assoc();
 
-if (!$funcionario) {
-    $erro = "Funcionário não encontrado.";
+if (!$ambiente) {
+    $erro = "Ambiente não encontrado.";
 }
 
 // atualiza os dados ao enviar o formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome_completo = $_POST['nome_completo'];
-    $data_nascimento = $_POST['data_nascimento'];
-    $telefone = $_POST['telefone'];
+    $nome_ambiente = $_POST['nome_ambiente'];
+    $capacidade = $_POST['capacidade'];
+    $descricao = $_POST['descricao'];
     $observacoes = $_POST['observacoes'];
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-    // verifica se já existe outro funcionario com o mesmo nome (AND para nao aparecer ele mesmo)
-    $check = $conn->prepare("SELECT id_funcionario FROM funcionarios WHERE nome_completo = ? AND id_funcionario != ?");
-    $check->bind_param("si", $nome_completo, $id);
+    // verifica se já existe outro ambiente com o mesmo nome (AND para nao aparecer ele mesmo)
+    $check = $conn->prepare("SELECT id_ambiente FROM ambientes WHERE nome_ambiente = ? AND id_ambiente != ?");
+    $check->bind_param("si", $nome_ambiente, $id);
     $check->execute();
     $check_result = $check->get_result();
 
     if ($check_result->num_rows > 0) {
-        $erro = "Já existe outro funcionário com este nome.";
+        $erro = "Já existe outro ambiente com este nome.";
     } else {
+        $stmt = $conn->prepare("UPDATE ambientes 
+            SET nome_ambiente=?, capacidade=?, descricao=?, observacoes=?, ativo=? 
+            WHERE id_ambiente=?");
+
+        $stmt->bind_param("sissii", $nome_ambiente, $capacidade, $descricao, $observacoes, $ativo, $id);
+
         if ($stmt->execute()) {
             header("Location: index.php?sucesso=1");
             exit;
         } else {
-            $erro = "Erro ao atualizar o funcionário.";
+            $erro = "Erro ao atualizar o ambiente.";
         }
     }
 }
@@ -61,41 +67,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main class="conteudo">
         <header class="painel-header">
             <button class="menu-toggle">☰</button>
-            <h1>Editar Funcionário</h1>
-            <p>Atualize as informações deste funcionário.</p>
+            <h1>Novo Ambiente</h1>
+            <p>Cadastre um novo ambiente do sistema.</p>
         </header>
 
         <div class="cadastro-area">
             <a href="./index.php" class="btn-voltar">← Voltar</a>
 
-            <?php if (!empty($erro)) : ?>
+            <?php if (!empty($erro)): ?>
                 <div class="alerta erro"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
                 <div class="form-grupo">
-                    <label>Nome completo:</label>
-                    <input type="text" name="nome_completo" value="<?= htmlspecialchars($funcionario['nome_completo']) ?>" required>
+                    <label>Nome:</label>
+                    <input type="text" name="nome_ambiente" value="<?= htmlspecialchars($ambiente['nome_ambiente']) ?>"
+                        required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Data de nascimento:</label>
-                    <input type="date" name="data_nascimento" value="<?= htmlspecialchars($funcionario['data_nascimento']) ?>">
+                    <label>Capacidade:</label>
+                    <input type="number" name="capacidade" value="<?= htmlspecialchars($ambiente['capacidade']) ?>">
                 </div>
 
                 <div class="form-grupo">
-                    <label>Telefone:</label>
-                    <input type="text" name="telefone" value="<?= htmlspecialchars($funcionario['telefone']) ?>">
+                    <label>Descrição:</label>
+                    <input type="text" name="descricao" value="<?= htmlspecialchars($ambiente['descricao']) ?>">
                 </div>
 
                 <div class="form-grupo">
                     <label>Observações:</label>
-                    <textarea name="observacoes" rows="3"><?= htmlspecialchars($funcionario['observacoes']) ?></textarea>
+                    <textarea name="observacoes" rows="3"><?= htmlspecialchars($ambiente['observacoes']) ?></textarea>
                 </div>
 
                 <div class="form-grupo checkbox">
                     <label>
-                        <input type="checkbox" name="ativo" <?= $funcionario['ativo'] ? 'checked' : '' ?>> Funcionário ativo
+                        <input type="checkbox" name="ativo" <?= $ambiente['ativo'] ? 'checked' : '' ?>> Ambiente ativo
                     </label>
                 </div>
 

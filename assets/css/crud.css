@@ -38,9 +38,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.tabela-crud td:nth-child(4) {
+  max-width: 350px;
+}
 .tabela-crud td:nth-child(5) {
   text-align: center;
   font-size: 18px;
+}
+.tabela-crud td:nth-child(6) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 /* botões de ação */
@@ -105,9 +113,9 @@
   text-align: center;
 }
 .alerta.erro {
-  background: #d4edda;
+  background: #ffafa7;
   color: #d53625;
-  border: 1px solid #c3e6cb;
+  border: 1px solid #e27777;
 }
 .alerta.sucesso {
   background: #d4edda;
@@ -160,6 +168,7 @@
 /* botoes */
 .form-botoes {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 12px;
   margin-top: 15px;
@@ -245,7 +254,7 @@
     font-size: 15px;
     word-break: break-word;
   }
-  .tabela-crud td:nth-child(2), .tabela-crud td:nth-child(3) {
+  .tabela-crud td:nth-child(2), .tabela-crud td:nth-child(3), .tabela-crud td:nth-child(4) {
     max-width: none;
   }
   .tabela-crud td:nth-child(5) {
@@ -273,7 +282,7 @@
     font-size: 13px;
   }
 }
-@media (max-width: 900px) and (max-width: 280px) {
+@media (max-width: 900px) and (max-width: 320px) {
   .tabela-crud td[data-label=Ações] {
     display: flex;
     flex-direction: column;

@@ -41,16 +41,23 @@
     td {
         vertical-align: middle;
 
-        &:nth-child(2), // Nome Completo
-        &:nth-child(3) { // Login
+        &:nth-child(2),
+        &:nth-child(3) {
             max-width: 200px;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        &:nth-child(5) { // botoes selecionar e excluir
+        &:nth-child(4) {
+            max-width: 350px;
+        }
+        &:nth-child(5) { // ativo inativo
             text-align: center;
             font-size: 18px;
+        }
+        &:nth-child(6) { // botoes selecionar e excluir
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
     }
 }
@@ -119,9 +126,9 @@
     text-align: center;
 
     &.erro {
-        background: #d4edda;
+        background: #ffafa7;
         color: #d53625;
-        border: 1px solid #c3e6cb;
+        border: 1px solid #e27777;
     }
 
     &.sucesso {
@@ -182,6 +189,7 @@
 /* botoes */
 .form-botoes {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
     gap: 12px;
     margin-top: 15px;
@@ -280,16 +288,16 @@
             font-size: 15px;
             word-break: break-word;
 
-            &:nth-child(2), // Nome
-            &:nth-child(3) { // Login
+            &:nth-child(2),
+            &:nth-child(3),
+            &:nth-child(4) {
                 max-width: none;
             }
+            
             &:nth-child(5) { // Ativo
                 font-size: 15px;
             }
-
-            // Rótulo 
-            &::before {
+            &::before { // Rótulo 
                 content: attr(data-label);
                 font-weight: 600;
                 color: #666;
@@ -314,7 +322,7 @@
                 font-size: 13px;
             }
 
-            @media (max-width: 280px) {
+            @media (max-width: 320px) {
                 display:flex;
                 flex-direction: column;
                 align-items: center;

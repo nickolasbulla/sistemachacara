@@ -60,7 +60,7 @@ if (isset($_GET['delete_id'])) {
                                 <td data-label="Permissão"><?= ($row['tipo_permissao']) ?></td>
                                 <td data-label="Ativo"><?= $row['ativo'] ? '✅' : '❌' ?></td>
                                 <td data-label="Ações">
-                                    <a href="./edit.php?id=<?= $row['id_usuario'] ?>" class="btn-editar">✏️Selecionar</a>
+                                    <a href="./edit.php?id=<?= $row['id_usuario'] ?>" class="btn-editar">Selecionar</a>
                                     <a href="#" class="btn-excluir btnPopup" data-id="<?= $row['id_usuario'] ?>">🗑️ Excluir</a>
                                 </td>
                             </tr>
