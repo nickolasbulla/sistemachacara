@@ -19,6 +19,6 @@ if (empty($_SESSION['usuario_id'])) {
     /* trata o bfcache: assim o usuario não volta pro painel
     com o voltar do navegador depois de ter deslogado */
     window.addEventListener('pageshow', function (e) {
-    if (e.persisted) location.reload();
-});
+        if (e.persisted) location.reload();
+    });
 </script>

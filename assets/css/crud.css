@@ -4,7 +4,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  background: #fff;
+  background: #f4f6fa;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -22,10 +22,9 @@
 .tabela-crud th {
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 .tabela-crud tbody tr:nth-child(even) {
-  background: #f8f8f8;
+  background: #ebebeb;
 }
 .tabela-crud tbody tr:hover {
   background: #e6e0f7;
@@ -85,40 +84,6 @@
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-/* cabeçalho do crud (título e botão novo) */
-.crud-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.crud-header h2 {
-  font-size: 22px;
-  font-weight: 600;
-  color: #333;
-}
-
-/* campo de busca (ainda nao aplicado) 
-.crud-search {
-    margin: 10px 0;
-
-    input {
-        width: 100%;
-        max-width: 280px;
-        padding: 12px 16px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 15px;
-        transition: border-color 0.3s, box-shadow 0.3s;
-
-        &:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
-        }
-    }
-} */
 .cadastro-area {
   background: white;
   padding: 40px 50px;
@@ -133,23 +98,6 @@
   }
 }
 
-/* header do formulário */
-.cadastro-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-.cadastro-header h1 {
-  color: #333;
-  font-size: 26px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.cadastro-header p {
-  color: #555;
-  font-size: 15px;
-  margin: 0;
-}
-
 .alerta {
   padding: 12px 16px;
   border-radius: 8px;
@@ -157,9 +105,9 @@
   text-align: center;
 }
 .alerta.erro {
-  background: #f9d6d5;
+  background: #d4edda;
   color: #d53625;
-  border: 1px solid #d53625;
+  border: 1px solid #c3e6cb;
 }
 .alerta.sucesso {
   background: #d4edda;
@@ -198,10 +146,6 @@
   border-color: #667eea;
   box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
 }
-.form-cadastro .form-grupo textarea {
-  resize: vertical;
-  min-height: 80px;
-}
 .form-cadastro .form-grupo.checkbox label {
   display: flex;
   align-items: center;
@@ -210,7 +154,7 @@
 }
 .form-cadastro .form-grupo.checkbox input[type=checkbox] {
   margin-right: 8px;
-  transform: scale(1.1);
+  transform: scale(1.5);
 }
 
 /* botoes */
@@ -265,13 +209,14 @@
 @media (max-width: 900px) {
   .tabela-wrapper {
     width: 100%;
-    overflow-x: hidden;
+    /*overflow: hidden;*/
   }
   .tabela-crud {
     border: none;
     display: block;
-    padding: 8px;
+    padding: 12px;
     background-color: #f4f6fa;
+    box-shadow: none;
   }
   .tabela-crud thead {
     display: none;
@@ -281,10 +226,12 @@
     flex-direction: column;
     gap: 15px;
   }
+  .tabela-crud tbody tr:nth-child(even) {
+    background: none;
+  }
   .tabela-crud tr {
     display: flex;
     flex-direction: column;
-    background: none;
     border-radius: 10px;
     padding: 15px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
@@ -296,7 +243,6 @@
     padding: 8px 0;
     border-bottom: 1px solid #ccc;
     font-size: 15px;
-    text-align: left;
     word-break: break-word;
   }
   .tabela-crud td:nth-child(2), .tabela-crud td:nth-child(3) {
@@ -309,14 +255,12 @@
     content: attr(data-label);
     font-weight: 600;
     color: #666;
-    flex: 1;
     min-width: 70px;
     text-align: left;
   }
   .tabela-crud td[data-label=Ações] {
     flex-direction: row;
     justify-content: flex-end;
-    align-items: center;
     border: none;
     padding-top: 10px;
   }
@@ -327,6 +271,12 @@
   .tabela-crud td[data-label=Ações] .btn-excluir {
     padding: 6px 10px;
     font-size: 13px;
-    flex: none;
+  }
+}
+@media (max-width: 900px) and (max-width: 280px) {
+  .tabela-crud td[data-label=Ações] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }/*# sourceMappingURL=crud.css.map */
