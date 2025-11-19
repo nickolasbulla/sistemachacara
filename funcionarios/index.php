@@ -8,10 +8,21 @@ include '../includes/header.php';
 
 //  lógica do delete aqui
 if (isset($_GET['delete_id'])) {
-    $id = intval($_GET['delete_id']);
-    $conn->query("DELETE FROM funcionarios WHERE id_funcionario = $id");
-    header("Location: index.php?deletado=1");
-    exit;
+
+    $id = (int) $_GET['delete_id'];
+
+    try {
+        $stmt = $conn->prepare("DELETE FROM funcionarios WHERE id_funcionario = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        header("Location: index.php?deletado=1");
+        exit;
+
+    } catch (mysqli_sql_exception $e) {
+        header("Location: index.php?erro_relacionado=1");
+        exit;
+    }
 }
 ?>
 
@@ -30,6 +41,10 @@ if (isset($_GET['delete_id'])) {
 
         <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
             <div class="alerta sucesso">Funcionário cadastrado com sucesso!</div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['erro_relacionado'])): ?>
+            <div class="alerta erro">Não é possível excluir: este registro está vinculado a uma ou mais reservas.</div>
         <?php endif; ?>
 
         <div class="area-crud">
@@ -55,7 +70,7 @@ if (isset($_GET['delete_id'])) {
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Ações">
                                     <a href="./edit.php?id=<?= $row['id_funcionario'] ?>" class="btn-editar">Selecionar</a>
-                                    <a href="#" class="btn-excluir btnPopup" data-id="<?= $row['id_funcionario'] ?>">🗑️ Excluir</a>
+                                    <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_funcionario'] ?>">🗑️ Excluir</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>

@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* delete */
-    const btnsDelete = document.querySelectorAll(".btnPopup");
+    const btnsDelete = document.querySelectorAll(".btnpopup");
     const modalDelete = document.getElementById("deleteModal");
     const cancelDelete = document.getElementById("cancelDelete");
     const confirmDelete = document.getElementById("confirmDelete");
@@ -40,8 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         confirmDelete.addEventListener("click", (e) => {
             e.preventDefault();
+
             const id = confirmDelete.dataset.id;
-            window.location.href = `index.php?delete_id=${id}`;
+
+            // Pega o nome do arquivo atual (index.php, edit.php, etc)
+            const currentPage = window.location.pathname.split('/').pop();
+
+            window.location.href = `${currentPage}?delete_id=${id}&id=${id}`;
         });
     }
 

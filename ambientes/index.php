@@ -8,10 +8,21 @@ include '../includes/header.php';
 
 //  lógica do delete aqui
 if (isset($_GET['delete_id'])) {
-    $id = intval($_GET['delete_id']);
-    $conn->query("DELETE FROM ambientes WHERE id_ambiente = $id");
-    header("Location: index.php?deletado=1");
-    exit;
+
+    $id = (int) $_GET['delete_id'];
+
+    try {
+        $stmt = $conn->prepare("DELETE FROM ambientes WHERE id_ambiente = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        header("Location: index.php?deletado=1");
+        exit;
+
+    } catch (mysqli_sql_exception $e) {
+        header("Location: index.php?erro_relacionado=1");
+        exit;
+    }
 }
 ?>
 
@@ -30,6 +41,10 @@ if (isset($_GET['delete_id'])) {
 
         <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
             <div class="alerta sucesso">Ambiente cadastrado com sucesso!</div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['erro_relacionado'])): ?>
+            <div class="alerta erro">Não é possível excluir: este registro está vinculado a uma ou mais reservas.</div>
         <?php endif; ?>
 
         <div class="area-crud">
@@ -61,7 +76,7 @@ if (isset($_GET['delete_id'])) {
                                 <td data-label="Ativo"><?= $row['ativo'] ? '✅' : '❌' ?></td>
                                 <td data-label="Ações">
                                     <a href="./edit.php?id=<?= $row['id_ambiente'] ?>" class="btn-editar">Selecionar</a>
-                                    <a href="#" class="btn-excluir btnPopup" data-id="<?= $row['id_ambiente'] ?>">🗑️ Excluir</a>
+                                    <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_ambiente'] ?>">🗑️ Excluir</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>

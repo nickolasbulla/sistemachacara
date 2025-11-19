@@ -1,0 +1,217 @@
+/* calendario crud reservas */
+.calendar-container {
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+
+        .cal-current {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cal-nav {
+            text-decoration: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 8px;
+            color: #333;
+            transition: background 0.2s, transform 0.1s;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.05);
+                transform: translateY(-1px);
+            }
+        }
+    }
+
+    .calendar-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 10px;
+        font-size: 13px;
+
+        .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            .legenda-cor {
+                width: 14px;
+                height: 14px;
+                border-radius: 4px;
+
+                &.reservado {
+                    background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+                }
+
+                &.livre {
+                    background: #eee;
+                    border: 1px solid #ddd;
+                }
+
+                &.hoje {
+                    background: transparent;
+                    border: 2px solid #667eea;
+                }
+            }
+        }
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 8px;
+
+        .cal-weekday {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #777;
+        }
+
+        .cal-dia {
+            border: none;
+            border-radius: 10px;
+            padding: 8px;
+            min-height: 70px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+            justify-content: flex-start;
+            background: #f3f3f3;
+            transition: box-shadow 0.2s, transform 0.1s, background 0.2s;
+            position: relative;
+
+            &.livre {
+                background: #f3f3f3;
+            }
+
+            &.reservado {
+                background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+                color: #fff;
+
+                .cal-dia-info,
+                .cal-dia-periodo {
+                    color: #f9f9f9;
+                }
+            }
+
+            &.hoje {
+                box-shadow: 0 0 0 2px #667eea;
+            }
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+            }
+
+            &.vazio {
+                background: transparent;
+                box-shadow: none;
+                cursor: default;
+            }
+
+            .cal-dia-num {
+                font-weight: 700;
+                font-size: 16px;
+            }
+
+            .cal-dia-info,
+            .cal-dia-periodo {
+                font-size: 11px;
+                color: #777;
+            }
+        }
+    }
+}
+
+/* pop up mais de uma reserva */
+.cal-reserva-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    .cal-reserva-info {
+        text-align: left;
+
+        small {
+            color: #555;
+        }
+    }
+
+    .btn-editar {
+        white-space: nowrap;
+    }
+}
+
+/* responsividade*/
+@media (max-width: 768px) {
+    .calendar-container {
+        padding: 15px;
+
+        .calendar-grid {
+            gap: 6px;
+
+            .cal-dia {
+                min-height: 60px;
+                padding: 6px;
+
+                .cal-dia-num {
+                    font-size: 14px;
+                }
+
+                .cal-dia-info,
+                .cal-dia-periodo {
+                    font-size: 10px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 380px) {
+    .conteudo {
+        padding: 15px;
+    }
+    .calendar-container {
+        padding: 6px;
+        .calendar-grid {
+            gap: 3px;
+
+            .cal-dia {
+                .cal-dia-num {
+                    font-size: 10px;
+                }
+            }
+        }    
+        .calendar-header {
+            .cal-current {
+                font-size: 16px;
+            }
+        }
+        
+    }
+}
