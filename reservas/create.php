@@ -10,6 +10,8 @@ $id_usuario = $_SESSION['usuario_id'];
 $erro = '';
 $sucesso = '';
 
+$data_previa = isset($_GET['data']) ? $_GET['data'] : '';
+
 // busca ambientes
 $ambientes = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHERE ativo = 1 ORDER BY nome_ambiente");
 
@@ -116,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Data da reserva *</label>
-                    <input type="date" name="data_reserva" required>
+                    <input type="date" name="data_reserva" value="<?= $data_previa ?>" required>
                 </div>
 
                 <div class="form-grupo">
