@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 29/10/2025 às 18:46
+-- Tempo de geração: 20/11/2025 às 17:13
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -36,6 +36,14 @@ CREATE TABLE `ambientes` (
   `ativo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Despejando dados para a tabela `ambientes`
+--
+
+INSERT INTO `ambientes` (`id_ambiente`, `nome_ambiente`, `capacidade`, `descricao`, `observacoes`, `ativo`) VALUES
+(7, 'Inferior', 150, 'Ambiente amplo com capacidade para grandes eventos, equipado com mesas, cadeiras e iluminação decorativa. Ideal para aniversários, casamentos e confraternizações.', 'Não é permitido uso de fogos de artifício no local.', 1),
+(9, 'Superior', 30, 'Ambiente menor, com piscina e churrasqueira.', 'Som alto não é permitido.', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -50,6 +58,14 @@ CREATE TABLE `funcionarios` (
   `observacoes` text DEFAULT NULL,
   `ativo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `funcionarios`
+--
+
+INSERT INTO `funcionarios` (`id_funcionario`, `nome_completo`, `data_nascimento`, `telefone`, `observacoes`, `ativo`) VALUES
+(1, 'Suelen', '1993-03-12', '44998123612362117823', 'hsfpdisdchllsdccsdscsaczzc', 1),
+(2, 'Samira ', '1212-12-12', '312312123', '123123123132123', 1);
 
 -- --------------------------------------------------------
 
@@ -70,6 +86,20 @@ CREATE TABLE `reservas` (
   `pago` tinyint(1) DEFAULT 0,
   `observacoes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `reservas`
+--
+
+INSERT INTO `reservas` (`id_reserva`, `id_usuario`, `nome_reserva`, `telefone_reserva`, `data_reserva`, `hora_inicio`, `hora_fim`, `id_ambiente`, `id_funcionario`, `pago`, `observacoes`) VALUES
+(5, 21, 'dsdsdasdads', 'asdadsasdds', '2025-12-12', '12:12:00', '12:30:00', 7, 1, 0, ''),
+(6, 21, 'sasddassdaads', '', '2026-12-12', '12:12:00', '12:13:00', 7, 1, 0, ''),
+(7, 21, 'wqweqqweqwe', '', '2025-11-20', '12:12:00', '12:13:00', 7, 2, 0, ''),
+(8, 21, '1233124312 312', '123123312123', '2025-11-22', '12:12:00', '12:13:00', 7, 2, 0, ''),
+(9, 21, '12312132123', '132132123123', '2025-11-22', '13:12:00', '13:45:00', 7, 1, 1, ''),
+(11, 21, '123123312', '123123123', '2025-11-22', '14:01:00', '14:14:00', 7, 2, 0, ''),
+(12, 23, 'xixica', '', '2026-01-01', '12:30:00', '20:00:00', 9, 1, 0, ''),
+(14, 23, 'sdadasasdasd', '', '2025-11-29', '12:13:00', '14:07:00', 7, NULL, 0, '');
 
 -- --------------------------------------------------------
 
@@ -94,7 +124,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nome_completo`, `login`, `senha`, `tipo_permissao`, `data_nascimento`, `telefone`, `observacoes`, `ativo`) VALUES
-(1, 'nickolas bulla', 'nickolas', '$2y$10$FRUdMHQ4VQc6JeMlGq.iXe5ukUhnXcQk6/MlH2peaeRlDRH3cOiHa', 'admin', '2006-07-06', '44998620278', 'teste', 1);
+(21, 'Nickolas Costa Bulla', 'nickolas', '$2y$10$TGlkpABQs77FzUpd0VGy/uwy5rub9zidJ9kbKHNJnIwDNIIbh4Df.', 'admin', '2006-07-06', '44998620278', 'admin', 1),
+(23, 'Reserveiro', 'reserveiro', '$2y$10$/Ql5WhXKEI/GgwP2XqEoPuqrRsrhNsESNu1q4JIH9BdkhQf9QhvJS', 'reserveiro', '2001-12-12', '', '', 1);
 
 --
 -- Índices para tabelas despejadas
@@ -136,25 +167,25 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `ambientes`
 --
 ALTER TABLE `ambientes`
-  MODIFY `id_ambiente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_ambiente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `reservas`
 --
 ALTER TABLE `reservas`
-  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Restrições para tabelas despejadas
