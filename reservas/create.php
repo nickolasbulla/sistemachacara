@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $inicio    = $_POST['hora_inicio'];
     $fim       = $_POST['hora_fim'];
     $ambiente  = $_POST['id_ambiente'];
-    $func      = $_POST['id_funcionario'] ?? null;
+    $func      = empty($_POST['id_funcionario']) ? null : $_POST['id_funcionario']; // pois funcionario nao precisa ser definido
     $pago      = isset($_POST['pago']) ? 1 : 0;
     $obs       = trim($_POST['observacoes']);
 
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
-        $stmt->bind_param("isssssssis", 
+        $stmt->bind_param("issssssiis", 
             $id_usuario, $nome, $tel, $data, $inicio, $fim, $ambiente, $func, $pago, $obs
         );
 
