@@ -13,8 +13,29 @@ if (empty($_SESSION['usuario_id'])) {
     exit;
 }
 
-?>
+// controle de permissao
+$tipo = $_SESSION['usuario_tipo']; // admin ou reserveiro
+$url  = $_SERVER['REQUEST_URI'];   // página atual
 
+//reserveiro naopode acessar certas áreas
+if ($tipo !== 'admin') {
+
+    $bloqueados = [
+        '/usuarios',
+        '/funcionarios',
+        '/ambientes',
+        '/relatorios'
+    ];
+
+    foreach ($bloqueados as $rota) {
+        if (strpos($url, $rota) !== false) {
+            header("Location: /sistemachacara/reservas/index.php?erro=sem_permissao");
+            exit;
+        }
+    }
+}
+
+?>
 <script>
     /* trata o bfcache: assim o usuario não volta pro painel
     com o voltar do navegador depois de ter deslogado */

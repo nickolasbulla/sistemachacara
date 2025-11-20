@@ -5,16 +5,19 @@
         <h2>Painel</h2>
         <ul>
             <li><a href="../reservas/index.php">📅 Reservas</a></li>
-            <li><a href="../relatorios/index.php">📊 Relatórios</a></li>
 
-            <li class="submenu">
-                <button class="submenu-toggle">📂 Cadastros <span class="seta">▾</span></button>
-                <ul class="submenu-content">
-                    <li><a href="../usuarios/index.php">👤 Usuários</a></li>
-                    <li><a href="../funcionarios/index.php">👷 Funcionários</a></li>
-                    <li><a href="../ambientes/index.php">🏡 Ambientes</a></li>
-                </ul>
-            </li>
+            <?php if ($_SESSION['usuario_tipo'] === 'admin'): ?>
+                <li><a href="../relatorios/index.php">📊 Relatórios</a></li>
+            
+                <li class="submenu">
+                    <button class="submenu-toggle">📂 Cadastros <span class="seta">▾</span></button>
+                    <ul class="submenu-content">
+                        <li><a href="../usuarios/index.php">👤 Usuários</a></li>
+                        <li><a href="../funcionarios/index.php">👷 Funcionários</a></li>
+                        <li><a href="../ambientes/index.php">🏡 Ambientes</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
         </ul>
     </div>
 
