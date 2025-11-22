@@ -171,13 +171,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" class="form-cadastro">
 
                 <div class="form-grupo">
-                    <label>Nome de quem reservou</label>
+                    <label>Nome</label>
                     <input type="text" name="nome_reserva" value="<?= htmlspecialchars($reserva['nome_reserva']) ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone</label>
-                    <input type="text" name="telefone_reserva" value="<?= htmlspecialchars($reserva['telefone_reserva']) ?>">
+                    <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($reserva['telefone_reserva']) ?>">
                 </div>
 
                 <div class="form-grupo">

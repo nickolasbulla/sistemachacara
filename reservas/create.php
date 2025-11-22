@@ -112,8 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-grupo">
-                    <label>Telefone</label>
-                    <input type="text" name="telefone_reserva">
+                    <label>Telefone *</label>
+                    <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000' required>
                 </div>
 
                 <div class="form-grupo">
@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-grupo">
-                    <label>Funcionário *</label>
+                    <label>Funcionário</label>
                     <select name="id_funcionario">
                         <option value="">Não definido</option>
                         <?php while ($f = $funcionarios->fetch_assoc()): ?>

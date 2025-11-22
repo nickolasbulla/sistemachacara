@@ -97,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="form-grupo">
                     <label>Telefone:</label>
-                    <input type="text" name="telefone">
+                    <input type="text" name="telefone" data-mask='(00) 00000 - 0000'>
                 </div>
 
                 <div class="form-grupo">

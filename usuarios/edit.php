@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Telefone:</label>
-                    <input type="text" name="telefone" value="<?= htmlspecialchars($usuario['telefone']) ?>">
+                    <input type="text" name="telefone" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($usuario['telefone']) ?>">
                 </div>
 
                 <div class="form-grupo">
