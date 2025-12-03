@@ -15,7 +15,7 @@ if (!$id) {
     exit;
 }
 
-// Busca os dados do usuário
+// busca os dados do usuário
 $stmt = $conn->prepare("SELECT * FROM usuarios WHERE id_usuario = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -91,12 +91,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST" class="form-cadastro">
                 <div class="form-grupo">
-                    <label>Nome completo:</label>
+                    <label>Nome completo: *</label>
                     <input type="text" name="nome_completo" value="<?= htmlspecialchars($usuario['nome_completo']) ?>" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Login:</label>
+                    <label>Login: *</label>
                     <input type="text" name="login" value="<?= htmlspecialchars($usuario['login']) ?>" required>
                 </div>
 
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-grupo">
-                    <label>Tipo de permissão:</label>
+                    <label>Tipo de permissão: *</label>
                     <select name="tipo_permissao" required>
                         <option value="admin" <?= $usuario['tipo_permissao'] === 'admin' ? 'selected' : '' ?>>Administrador</option>
                         <option value="reserveiro" <?= $usuario['tipo_permissao'] === 'reserveiro' ? 'selected' : '' ?>>Reserveiro</option>
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-grupo">
-                    <label>Data de nascimento:</label>
+                    <label>Data de nascimento: *</label>
                     <input type="date" name="data_nascimento" value="<?= htmlspecialchars($usuario['data_nascimento']) ?>">
                 </div>
 

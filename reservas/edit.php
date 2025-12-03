@@ -48,7 +48,7 @@ if (!$reserva) {
 $ambientes = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHERE ativo = 1 ORDER BY nome_ambiente");
 $funcionarios = $conn->query("SELECT id_funcionario, nome_completo FROM funcionarios WHERE ativo = 1 ORDER BY nome_completo");
 
-// PROCESSAR UPDATE
+// processar o form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $nome      = trim($_POST['nome_reserva']);
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pago      = isset($_POST['pago']) ? 1 : 0;
     $obs       = trim($_POST['observacoes']);
 
-    // VALIDAÇÕES
+    // validacoes
 
     if ($fim <= $inicio) {
         $erro = "A hora de término deve ser maior que a hora de início.";
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = "Não é possível editar para uma data no passado.";
     }
 
-    // valida conflito de horário (exceto com a própria reserva)
+    // valida conflito de horário menos com a própria reserva
     if (!$erro) {
         $sql_conf = "
             SELECT id_reserva FROM reservas 
@@ -145,14 +145,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="form-botoes" style="justify-content: space-between; margin-bottom: 20px;">
 
-            <!-- BOTÃO EXCLUIR -->
             <a href="#" 
             class="btn btn-excluir btnpopup" 
             data-id="<?= $reserva['id_reserva'] ?>">
             🗑️ Excluir Reserva
             </a>
 
-            <!-- BOTÃO CRIAR OUTRA RESERVA NO MESMO DIA -->
             <a href="./create.php?data=<?= $reserva['data_reserva'] ?>" 
             class="btn btn-novo">
             ➕ Nova Reserva neste dia

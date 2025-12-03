@@ -71,12 +71,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="date" name="data_nascimento">
+                    <input type="date" name="data_nascimento" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Telefone:</label>
-                    <input type="text" name="telefone">
+                    <label>Telefone: *</label>
+                    <input type="text" name="telefone" data-mask='(00) 00000 - 0000' required>
                 </div>
 
                 <div class="form-grupo">

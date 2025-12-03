@@ -58,7 +58,6 @@ if (isset($_GET['delete_id'])) {
                 <table class="tabela-crud">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nome</th>
                             <th>Capacidade</th>
                             <th>Descrição</th>
@@ -69,7 +68,6 @@ if (isset($_GET['delete_id'])) {
                     <tbody>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
-                                <td data-label="ID"><?= $row['id_ambiente'] ?></td>
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_ambiente']) ?></td>
                                 <td data-label="Capacidade"><?= htmlspecialchars($row['capacidade']) ?></td>
                                 <td data-label="Descrição"><?= $row['descricao'] ?></td>

@@ -6,7 +6,6 @@ $titulo_pagina = "Usuários - Chácara Portal";
 $css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
 include '../includes/header.php';
 
-//  lógica do delete aqui
 if (isset($_GET['delete_id'])) {
 
     $id = (int) $_GET['delete_id'];
@@ -67,7 +66,6 @@ if (isset($_GET['delete_id'])) {
                 <table class="tabela-crud">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nome Completo</th>
                             <th>Login</th>
                             <th>Permissão</th>
@@ -78,7 +76,6 @@ if (isset($_GET['delete_id'])) {
                     <tbody>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
-                                <td data-label="ID"><?= $row['id_usuario'] ?></td>
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Login"><?= htmlspecialchars($row['login']) ?></td>
                                 <td data-label="Permissão"><?= ($row['tipo_permissao']) ?></td>

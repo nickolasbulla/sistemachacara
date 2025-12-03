@@ -28,7 +28,6 @@ $usuario = $result_user->fetch_assoc()['nome_completo'];
 // busca reservas do usuário
 $sql = "
     SELECT 
-        r.id_reserva,
         r.nome_reserva,
         r.telefone_reserva,
         r.data_reserva,
@@ -46,8 +45,12 @@ $stmt->bind_param("i", $id_usuario);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// HTML do PDF
 $html = '
+
+<div style="text-align:center; margin-bottom:10px;">
+    <img src="../assets/logo.jpg" width="120">
+</div>
+
 <h1 style="text-align:center; color:#333; font-family:Arial; margin-bottom:5px;">
     Relatório de Reservas por Usuário
 </h1>
@@ -61,7 +64,6 @@ $html = '
 <table width="100%" border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; font-family:Arial; font-size:13px;">
     <thead style="background:#764ba2; color:white;">
         <tr>
-            <th>ID</th>
             <th>Nome</th>
             <th>Telefone</th>
             <th>Data</th>
@@ -86,7 +88,6 @@ if ($result->num_rows === 0) {
 
         $html .= '
         <tr>
-            <td>' . $r['id_reserva'] . '</td>
             <td>' . htmlspecialchars($r['nome_reserva']) . '</td>
             <td>' . htmlspecialchars($r['telefone_reserva']) . '</td>
             <td>' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
@@ -101,11 +102,10 @@ $html .= '
 </table>
 ';
 
-// cria o PDF
 $mpdf = new \Mpdf\Mpdf();
 
 $mpdf->WriteHTML($html);
 
-// baixa o PDF
+// baixa o odf
 $mpdf->Output("reservas_usuario.pdf", "I");
 exit;

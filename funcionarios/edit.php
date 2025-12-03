@@ -15,7 +15,7 @@ if (!$id) {
     exit;
 }
 
-// Busca os dados do usuário
+// busca os dados do usuário
 $stmt = $conn->prepare("SELECT * FROM funcionarios WHERE id_funcionario = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -28,13 +28,14 @@ if (!$funcionario) {
 
 // atualiza os dados ao enviar o formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $nome_completo = $_POST['nome_completo'];
     $data_nascimento = $_POST['data_nascimento'];
     $telefone = $_POST['telefone'];
     $observacoes = $_POST['observacoes'];
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-    // verifica se já existe outro funcionario com o mesmo nome (AND para nao aparecer ele mesmo)
+    // verifica duplicidade
     $check = $conn->prepare("SELECT id_funcionario FROM funcionarios WHERE nome_completo = ? AND id_funcionario != ?");
     $check->bind_param("si", $nome_completo, $id);
     $check->execute();
@@ -42,8 +43,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($check_result->num_rows > 0) {
         $erro = "Já existe outro funcionário com este nome.";
-    } else {
-        if ($stmt->execute()) {
+    } 
+    else {
+        $update = $conn->prepare("
+            UPDATE funcionarios 
+            SET nome_completo=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
+            WHERE id_funcionario=?
+        ");
+
+        $update->bind_param(
+            "ssssii",
+            $nome_completo,
+            $data_nascimento,
+            $telefone,
+            $observacoes,
+            $ativo,
+            $id
+        );
+
+        if ($update->execute()) {
             header("Location: index.php?sucesso=1");
             exit;
         } else {
@@ -74,18 +92,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST" class="form-cadastro">
                 <div class="form-grupo">
-                    <label>Nome completo:</label>
+                    <label>Nome completo: *</label>
                     <input type="text" name="nome_completo" value="<?= htmlspecialchars($funcionario['nome_completo']) ?>" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Data de nascimento:</label>
-                    <input type="date" name="data_nascimento" value="<?= htmlspecialchars($funcionario['data_nascimento']) ?>">
+                    <label>Data de nascimento: *</label>
+                    <input type="date" name="data_nascimento" value="<?= htmlspecialchars($funcionario['data_nascimento']) ?>" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Telefone:</label>
-                    <input type="text" name="telefone" value="<?= htmlspecialchars($funcionario['telefone']) ?>">
+                    <label>Telefone: *</label>
+                    <input type="text" name="telefone" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($funcionario['telefone']) ?>" required>
                 </div>
 
                 <div class="form-grupo">

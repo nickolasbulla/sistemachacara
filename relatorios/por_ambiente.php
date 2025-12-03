@@ -28,7 +28,6 @@ if (!$nomeAmb) {
 
 $sql = "
     SELECT 
-        r.id_reserva,
         r.nome_reserva,
         r.telefone_reserva,
         r.data_reserva,
@@ -49,6 +48,11 @@ $result = $stmt->get_result();
 
 
 $html = '
+
+<div style="text-align:center; margin-bottom:10px;">
+    <img src="../assets/logo.jpg" width="120">
+</div>
+
 <h1 style="text-align:center; color:#333; font-family:Arial; margin-bottom:5px;">
     Reservas do Ambiente: ' . htmlspecialchars($nomeAmb['nome_ambiente']) . '
 </h1>
@@ -65,8 +69,7 @@ $html = '
        style="border-collapse: collapse; font-family:Arial; font-size:13px;">
     <thead style="background:#764ba2; color:white;">
         <tr>
-            <th>ID</th>
-            <th>Cliente</th>
+            <th>Nome</th>
             <th>Telefone</th>
             <th>Data</th>
             <th>Horário</th>
@@ -87,7 +90,6 @@ if ($result->num_rows === 0) {
     while ($r = $result->fetch_assoc()) {
         $html .= '
         <tr>
-            <td>' . $r['id_reserva'] . '</td>
             <td>' . htmlspecialchars($r['nome_reserva']) . '</td>
             <td>' . htmlspecialchars($r['telefone_reserva']) . '</td>
             <td>' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
@@ -102,7 +104,6 @@ $html .= '
 </table>
 ';
 
-// CRIA O PDF
 $mpdf = new \Mpdf\Mpdf();
 
 $mpdf->WriteHTML($html);

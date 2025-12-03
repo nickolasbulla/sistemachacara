@@ -13,10 +13,9 @@ if (!isset($_GET['inicio']) || !isset($_GET['fim'])) {
 $inicio = $_GET['inicio'];
 $fim = $_GET['fim'];
 
-// busca reservas NÃO PAGAS no período
+// busca reservas nao pagas no período
 $sql = "
     SELECT 
-        r.id_reserva,
         r.nome_reserva,
         r.telefone_reserva,
         r.data_reserva,
@@ -35,8 +34,13 @@ $stmt->bind_param("ss", $inicio, $fim);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// monta HTML do PDF
+
 $html = '
+
+<div style="text-align:center; margin-bottom:10px;">
+    <img src="../assets/logo.jpg" width="120">
+</div>
+
 <h1 style="text-align:center; color:#333; font-family:Arial; margin-bottom:5px;">
     Relatório de Reservas Não Pagas
 </h1>
@@ -52,7 +56,6 @@ $html = '
 <table width="100%" border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; font-family:Arial; font-size:13px;">
     <thead style="background:#764ba2; color:white;">
         <tr>
-            <th>ID</th>
             <th>Nome</th>
             <th>Telefone</th>
             <th>Data</th>
@@ -76,7 +79,6 @@ if ($result->num_rows === 0) {
 
         $html .= '
         <tr>
-            <td>' . $r['id_reserva'] . '</td>
             <td>' . htmlspecialchars($r['nome_reserva']) . '</td>
             <td>' . htmlspecialchars($r['telefone_reserva']) . '</td>
             <td>' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
@@ -91,11 +93,10 @@ $html .= '
 </table>
 ';
 
-// cria o PDF
 $mpdf = new \Mpdf\Mpdf();
 
 $mpdf->WriteHTML($html);
 
-// baixa o PDF
+// baixa o pdf
 $mpdf->Output("reservas_nao_pagas.pdf", "I");
 exit;

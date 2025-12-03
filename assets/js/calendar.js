@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = dia.dataset.date;
             const hasReserva = dia.dataset.hasReserva === '1';
 
-            // Dia livre vai pra create com a data
+            // dia livre vai pra create com a data
             if (!hasReserva) {
                 window.location.href = 'create.php?data=' + data;
                 return;
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const count = parseInt(dia.dataset.reservasCount || '0', 10);
 
-            // Só 1 reserva vai direto pro edit
+            // só 1 reserva vai direto pro edit
             if (count === 1) {
                 const id = dia.dataset.firstId;
                 if (id) {
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 2+ reservas abre popup com lista
             if (!modal || !modalLista || !modalDataSpan) return;
 
-            // formata data YYYY-MM-DD -> DD/MM/YYYY
+            // formata data
             if (data && data.includes('-')) {
                 const [y, m, d] = data.split('-');
                 modalDataSpan.textContent = `${d}/${m}/${y}`;

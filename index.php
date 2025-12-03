@@ -7,7 +7,7 @@
 
 <div class="login-container">
     <div class="login-header">
-        <h1>Chácara Portal</h1>
+        <img src="./assets/logo.png" alt="">
         <p>Gerenciamento de Aluguéis</p>
     </div>
 

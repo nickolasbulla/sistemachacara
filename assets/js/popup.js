@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const id = confirmDelete.dataset.id;
 
-            // Pega o nome do arquivo atual (index.php, edit.php, etc)
+            // pega o nome do arquivo atual
             const currentPage = window.location.pathname.split('/').pop();
 
             window.location.href = `${currentPage}?delete_id=${id}&id=${id}`;

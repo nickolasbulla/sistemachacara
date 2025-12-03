@@ -7,7 +7,7 @@ $titulo_pagina = "Reservas - Chácara Portal";
 $css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css", "../assets/css/calendar.css"];
 include '../includes/header.php';
 
-//  CÁLCULO DO MÊS/ANO ATUAL
+//  calculo do mes / ano atual
 $mesAtual = isset($_GET['mes']) ? (int) $_GET['mes'] : (int) date('m');
 $anoAtual = isset($_GET['ano']) ? (int) $_GET['ano'] : (int) date('Y');
 
@@ -40,7 +40,7 @@ $nomeMesAtual = $nomesMes[$mesAtual] ?? 'Mês';
 $qtdeDiasMes = (int) date('t', $primeiroDiaMes); // quantos dias tem o mês
 $diaSemanaPrimeiro = (int) date('w', $primeiroDiaMes); // 0 = domingo ... 6 = sábado
 
-// Navegação anterior / próximo
+// navegação anterior / próximo
 $mesAnterior = $mesAtual - 1;
 $anoAnterior = $anoAtual;
 if ($mesAnterior < 1) {
@@ -106,7 +106,7 @@ $hoje = date('Y-m-d');
             <div class="alerta sucesso">Reserva excluída com sucesso!</div>
         <?php endif; ?>
 
-        <!-- CALENDÁRIO DE RESERVAS -->
+        <!-- calendario -->
         <div class="calendar-container">
 
             <div class="calendar-header">
@@ -137,7 +137,7 @@ $hoje = date('Y-m-d');
                 <div class="cal-weekday">Sáb</div>
 
                 <?php
-                // espaços em branco antes do dia 1 (se o mês não começa no domingo)
+                // espaços em branco antes do dia 1 se o mês não começa no domingo
                 for ($i = 0; $i < $diaSemanaPrimeiro; $i++): ?>
                     <div class="cal-dia vazio"></div>
                 <?php endfor; ?>
@@ -186,7 +186,7 @@ $hoje = date('Y-m-d');
     </main>
 </div>
 
-<!-- POPUP do calendário para dias com mais de uma reserva -->
+<!-- popup do calendário para dias com mais de uma reserva -->
 <div id="calendarModal" class="popup-modal">
     <div class="popup-box">
         <h2>Reservas do dia <span id="calModalData"></span></h2>

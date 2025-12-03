@@ -27,10 +27,8 @@ body {
   text-align: center;
   margin-bottom: 25px;
 }
-.login-header h1 {
-  color: #333;
-  font-size: 28px;
-  margin-bottom: 8px;
+.login-header img {
+  width: 180px;
 }
 .login-header p {
   color: #666;
@@ -97,8 +95,5 @@ body {
 @media (max-width: 480px) {
   .login-container {
     padding: 30px 20px;
-  }
-  .login-header h1 {
-    font-size: 24px;
   }
 }/*# sourceMappingURL=login.css.map */

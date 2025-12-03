@@ -18,7 +18,7 @@ $ambientes = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHER
 // busca funcionários
 $funcionarios = $conn->query("SELECT id_funcionario, nome_completo FROM funcionarios WHERE ativo = 1 ORDER BY nome_completo");
 
-// PROCESSAR O FORMULÁRIO
+// processar o form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $nome      = trim($_POST['nome_reserva']);

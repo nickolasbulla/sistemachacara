@@ -55,7 +55,7 @@ include "../includes/header.php";
 
         <form id="formRelatorio" method="GET" action="">
             
-            <!-- Período -->
+            <!-- período -->
             <div id="campoPeriodo" style="display:none; margin-bottom: 15px;">
                 <label>Data inicial:</label>
                 <input type="date" name="inicio">
@@ -64,7 +64,7 @@ include "../includes/header.php";
                 <input type="date" name="fim">
             </div>
 
-            <!-- Usuário -->
+            <!-- usuário -->
             <div id="campoUsuario" style="display:none; margin-bottom: 15px;">
                 <label>Selecione o usuário:</label>
                 <select name="id_usuario">

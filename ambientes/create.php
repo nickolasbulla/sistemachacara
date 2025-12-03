@@ -75,8 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="form-grupo">
-                    <label>Descrição:</label>
-                    <textarea name="descricao" rows="3"></textarea>
+                    <label>Descrição: *</label>
+                    <textarea name="descricao" rows="3" required></textarea>
                 </div>
 
                 <div class="form-grupo">

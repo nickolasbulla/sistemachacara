@@ -80,19 +80,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST" class="form-cadastro">
                 <div class="form-grupo">
-                    <label>Nome:</label>
+                    <label>Nome: *</label>
                     <input type="text" name="nome_ambiente" value="<?= htmlspecialchars($ambiente['nome_ambiente']) ?>"
                         required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Capacidade:</label>
-                    <input type="number" name="capacidade" value="<?= htmlspecialchars($ambiente['capacidade']) ?>">
+                    <label>Capacidade: *</label>
+                    <input type="number" name="capacidade" value="<?= htmlspecialchars($ambiente['capacidade']) ?>" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Descrição:</label>
-                    <input type="text" name="descricao" value="<?= htmlspecialchars($ambiente['descricao']) ?>">
+                    <label>Descrição: *</label>
+                    <input type="text" name="descricao" value="<?= htmlspecialchars($ambiente['descricao']) ?>" required>
                 </div>
 
                 <div class="form-grupo">
