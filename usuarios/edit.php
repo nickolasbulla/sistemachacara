@@ -30,14 +30,19 @@ if (!$usuario) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome_completo = $_POST['nome_completo'];
     $login = $_POST['login'];
-    $senha = $_POST['senha'];
+
+    // campos de senah
+    $senhaAtual = $_POST['senha_atual'] ?? '';
+    $novaSenha = $_POST['nova_senha'] ?? '';
+    $confirmarSenha = $_POST['confirmar_senha'] ?? '';
+
     $tipo_permissao = $_POST['tipo_permissao'];
     $data_nascimento = $_POST['data_nascimento'];
     $telefone = $_POST['telefone'];
     $observacoes = $_POST['observacoes'];
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-    // verifica se já existe outro usuário com o mesmo login
+    // verifica se existe outro login igual
     $check = $conn->prepare("SELECT id_usuario FROM usuarios WHERE login = ? AND id_usuario != ?");
     $check->bind_param("si", $login, $id);
     $check->execute();
@@ -45,19 +50,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($check_result->num_rows > 0) {
         $erro = "Já existe outro usuário com este login.";
-    } else {
-        // se o campo senha estiver vazio, mantém a senha atual
-        if (empty($senha)) {
-            $stmt = $conn->prepare("UPDATE usuarios 
-                SET nome_completo=?, login=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
-                WHERE id_usuario=?");
-            $stmt->bind_param("ssssssii", $nome_completo, $login, $tipo_permissao, $data_nascimento, $telefone, $observacoes, $ativo, $id);
+    }
+
+    // verificar se vai alterar a senha
+    $alterarSenha = !empty($senhaAtual) || !empty($novaSenha) || !empty($confirmarSenha);
+
+    if (empty($erro) && $alterarSenha) {
+
+        if (empty($senhaAtual) || empty($novaSenha) || empty($confirmarSenha)) {
+            $erro = "Para alterar a senha, preencha todos os campos.";
+        }
+        elseif ($novaSenha !== $confirmarSenha) {
+            $erro = "A nova senha e a confirmação não coincidem.";
+        }
+        elseif (!password_verify($senhaAtual, $usuario['senha'])) {
+            $erro = "A senha atual está incorreta.";
+        }
+    }
+
+    // se não houver erros manda pra base
+    if (empty($erro)) {
+
+        if ($alterarSenha) {
+            $senha_hash = password_hash($novaSenha, PASSWORD_DEFAULT);
+
+            $stmt = $conn->prepare(
+                "UPDATE usuarios
+                 SET nome_completo=?, login=?, senha=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
+                 WHERE id_usuario=?"
+            );
+            $stmt->bind_param(
+                "sssssssii",
+                $nome_completo,
+                $login,
+                $senha_hash,
+                $tipo_permissao,
+                $data_nascimento,
+                $telefone,
+                $observacoes,
+                $ativo,
+                $id
+            );
+
         } else {
-            $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("UPDATE usuarios 
-                SET nome_completo=?, login=?, senha=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
-                WHERE id_usuario=?");
-            $stmt->bind_param("sssssssii", $nome_completo, $login, $senha_hash, $tipo_permissao, $data_nascimento, $telefone, $observacoes, $ativo, $id);
+            // sem alterar senha
+            $stmt = $conn->prepare(
+                "UPDATE usuarios
+                 SET nome_completo=?, login=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
+                 WHERE id_usuario=?"
+            );
+            $stmt->bind_param(
+                "ssssssii",
+                $nome_completo,
+                $login,
+                $tipo_permissao,
+                $data_nascimento,
+                $telefone,
+                $observacoes,
+                $ativo,
+                $id
+            );
         }
 
         if ($stmt->execute()) {
@@ -101,8 +153,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-grupo">
-                    <label>Senha (deixe em branco para manter):</label>
-                    <input type="password" name="senha" placeholder="********">
+                    <label>Senha atual (somente se for trocar):</label>
+                    <input type="password" name="senha_atual" placeholder="Digite a senha atual">
+                </div>
+
+                <div class="form-grupo">
+                    <label></label>
+                    <input type="password" name="nova_senha" placeholder="Nova senha">
+                </div>
+
+                <div class="form-grupo">
+                    <label></label>
+                    <input type="password" name="confirmar_senha" placeholder="Repita a nova senha">
                 </div>
 
                 <div class="form-grupo">

@@ -7,7 +7,7 @@
 
 <div class="login-container">
     <div class="login-header">
-        <img src="./assets/logo.png" alt="">
+        <img src="./assets/logo.jpg" alt="">
         <p>Gerenciamento de Aluguéis</p>
     </div>
 
