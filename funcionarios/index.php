@@ -59,6 +59,7 @@ if (isset($_GET['delete_id'])) {
                         <tr>
                             <th>Nome Completo</th>
                             <th>Telefone</th>
+                            <th>Observações</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -67,6 +68,7 @@ if (isset($_GET['delete_id'])) {
                             <tr>
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Telefone"><?= $row['telefone'] ?></td>
+                                <td data-label="Observacoes"><?= $row['observacoes'] ?></td>
                                 <td data-label="Ações">
                                     <a href="./edit.php?id=<?= $row['id_funcionario'] ?>" class="btn-editar">Selecionar</a>
                                     <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_funcionario'] ?>">🗑️ Excluir</a>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 20/11/2025 às 17:13
+-- Tempo de geração: 03/12/2025 às 23:09
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -64,8 +64,8 @@ CREATE TABLE `funcionarios` (
 --
 
 INSERT INTO `funcionarios` (`id_funcionario`, `nome_completo`, `data_nascimento`, `telefone`, `observacoes`, `ativo`) VALUES
-(1, 'Suelen', '1993-03-12', '44998123612362117823', 'hsfpdisdchllsdccsdscsaczzc', 1),
-(2, 'Samira ', '1212-12-12', '312312123', '123123123132123', 1);
+(1, 'Suelen Ribeiro', '1993-03-12', '(44) 99886 - 5223', 'não pode aos domingos', 1),
+(5, 'Augusto Magalhães', '2000-07-08', '(44) 98573 - 8625', '', 1);
 
 -- --------------------------------------------------------
 
@@ -92,14 +92,13 @@ CREATE TABLE `reservas` (
 --
 
 INSERT INTO `reservas` (`id_reserva`, `id_usuario`, `nome_reserva`, `telefone_reserva`, `data_reserva`, `hora_inicio`, `hora_fim`, `id_ambiente`, `id_funcionario`, `pago`, `observacoes`) VALUES
-(5, 21, 'dsdsdasdads', 'asdadsasdds', '2025-12-12', '12:12:00', '12:30:00', 7, 1, 0, ''),
-(6, 21, 'sasddassdaads', '', '2026-12-12', '12:12:00', '12:13:00', 7, 1, 0, ''),
-(7, 21, 'wqweqqweqwe', '', '2025-11-20', '12:12:00', '12:13:00', 7, 2, 0, ''),
-(8, 21, '1233124312 312', '123123312123', '2025-11-22', '12:12:00', '12:13:00', 7, 2, 0, ''),
-(9, 21, '12312132123', '132132123123', '2025-11-22', '13:12:00', '13:45:00', 7, 1, 1, ''),
-(11, 21, '123123312', '123123123', '2025-11-22', '14:01:00', '14:14:00', 7, 2, 0, ''),
-(12, 23, 'xixica', '', '2026-01-01', '12:30:00', '20:00:00', 9, 1, 0, ''),
-(14, 23, 'sdadasasdasd', '', '2025-11-29', '12:13:00', '14:07:00', 7, NULL, 0, '');
+(15, 21, 'Manuel Ribeiro', '(44) 98127 - 3722', '2025-12-13', '08:00:00', '23:00:00', 7, NULL, 0, ''),
+(16, 21, 'Isabela Pereira', '(11) 92927 - 6364', '2025-12-13', '06:00:00', '18:00:00', 9, 1, 0, ''),
+(17, 21, 'Saul', '(41) 92731 - 6236', '2025-12-20', '08:30:00', '16:00:00', 7, 1, 1, ''),
+(18, 21, 'Pedro Floresta', '(44) 99377 - 6723', '2025-12-25', '06:00:00', '23:59:00', 7, 5, 0, ''),
+(19, 24, 'Renan Lodi', '(11) 93838 - 7626', '2025-12-26', '09:30:00', '20:00:00', 9, 5, 0, ''),
+(20, 21, 'Marcos Silva', '(44) 99932 - 2265', '2025-12-31', '16:00:00', '23:59:00', 7, 1, 0, ''),
+(21, 21, 'Marcos Silva', '(44) 99932 - 2265', '2026-01-01', '00:00:00', '16:00:00', 7, NULL, 0, '');
 
 -- --------------------------------------------------------
 
@@ -124,8 +123,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nome_completo`, `login`, `senha`, `tipo_permissao`, `data_nascimento`, `telefone`, `observacoes`, `ativo`) VALUES
-(21, 'Nickolas Costa Bulla', 'nickolas', '$2y$10$TGlkpABQs77FzUpd0VGy/uwy5rub9zidJ9kbKHNJnIwDNIIbh4Df.', 'admin', '2006-07-06', '44998620278', 'admin', 1),
-(23, 'Reserveiro', 'reserveiro', '$2y$10$/Ql5WhXKEI/GgwP2XqEoPuqrRsrhNsESNu1q4JIH9BdkhQf9QhvJS', 'reserveiro', '2001-12-12', '', '', 1);
+(21, 'nickolas', 'nickolas', '$2y$10$TGlkpABQs77FzUpd0VGy/uwy5rub9zidJ9kbKHNJnIwDNIIbh4Df.', 'admin', '2006-07-06', '(44) 99862 - 0278', 'admin', 1),
+(24, 'Jorge Guzman', 'jorge', '$2y$10$C/elsamb2.uVOZBsX3sDr.Rg8yP2GRymGI7TgRLGzPv5m0bexOmr6', 'reserveiro', '2001-12-12', '', '', 1);
 
 --
 -- Índices para tabelas despejadas
@@ -173,19 +172,19 @@ ALTER TABLE `ambientes`
 -- AUTO_INCREMENT de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_funcionario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `reservas`
 --
 ALTER TABLE `reservas`
-  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- Restrições para tabelas despejadas
