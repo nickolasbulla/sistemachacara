@@ -169,32 +169,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" class="form-cadastro">
 
                 <div class="form-grupo">
-                    <label>Nome</label>
+                    <label>Nome *</label>
                     <input type="text" name="nome_reserva" value="<?= htmlspecialchars($reserva['nome_reserva']) ?>" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Telefone</label>
+                    <label>Telefone *</label>
                     <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($reserva['telefone_reserva']) ?>">
                 </div>
 
                 <div class="form-grupo">
-                    <label>Data da reserva</label>
+                    <label>Data da reserva *</label>
                     <input type="date" name="data_reserva" value="<?= $reserva['data_reserva'] ?>" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Hora de início</label>
+                    <label>Hora de início *</label>
                     <input type="time" name="hora_inicio" value="<?= $reserva['hora_inicio'] ?>" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Hora de término</label>
+                    <label>Hora de término *</label>
                     <input type="time" name="hora_fim" value="<?= $reserva['hora_fim'] ?>" required>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Ambiente</label>
+                    <label>Ambiente *</label>
                     <select name="id_ambiente" required>
                         <option value="">Selecione</option>
                         <?php while ($a = $ambientes->fetch_assoc()): ?>

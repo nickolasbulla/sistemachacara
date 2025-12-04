@@ -171,13 +171,6 @@ $hoje = date('Y-m-d');
                             <span class="cal-dia-info">
                                 <?= $qtdReservas === 1 ? '1 reserva' : $qtdReservas . ' reservas' ?>
                             </span>
-                            <?php
-                            // mostra um resuminho do primeiro período
-                            $primeira = $reservasDoDia[0];
-                            echo '<span class="cal-dia-periodo">'
-                                . $primeira['hora_inicio'] . ' - ' . $primeira['hora_fim']
-                                . '</span>';
-                            ?>
                         <?php endif; ?>
                     </button>
                 <?php endfor; ?>

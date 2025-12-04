@@ -85,7 +85,7 @@
         .cal-dia {
             border: none;
             border-radius: 10px;
-            padding: 8px;
+            
             min-height: 70px;
             text-align: left;
             cursor: pointer;
@@ -100,6 +100,8 @@
 
             &.livre {
                 background: #f3f3f3;
+                border: 1px solid #969696;
+                height: 70px;
             }
 
             &.reservado {
@@ -122,9 +124,11 @@
             }
 
             &.vazio {
-                background: transparent;
-                box-shadow: none;
-                cursor: default;
+                visibility: hidden;
+                pointer-events: none;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
             }
 
             .cal-dia-num {
@@ -163,12 +167,26 @@
     }
 
     .btn-editar {
-        white-space: nowrap;
+        background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: 0.2s;
+
+        &:hover {
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+        }
     }
 }
 
 /* responsividade*/
 @media (max-width: 768px) {
+    .conteudo {
+        padding: 35px 15px;
+    }
     .calendar-container {
         padding: 15px;
 
@@ -194,7 +212,7 @@
 
 @media (max-width: 380px) {
     .conteudo {
-        padding: 15px;
+        padding: 35px 10px;
     }
     .calendar-container {
         padding: 6px;
