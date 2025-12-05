@@ -88,7 +88,7 @@
 }
 .calendar-container .calendar-grid .cal-dia.livre {
   background: #f3f3f3;
-  border: 1px solid #969696;
+  border: 2px solid #969696;
   height: 70px;
 }
 .calendar-container .calendar-grid .cal-dia.reservado {

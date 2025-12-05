@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('America/Sao_Paulo');
 require_once __DIR__ . "/../vendor/autoload.php"; // mpdf
 
 include '../includes/login_verify.php';
@@ -13,27 +14,25 @@ if (!isset($_GET['inicio']) || !isset($_GET['fim'])) {
 $inicio = $_GET['inicio'];
 $fim = $_GET['fim'];
 
-// busca reservas nao pagas no período
+// busca reservas não pagas no período
 $sql = "
     SELECT 
         r.nome_reserva,
-        r.telefone_reserva,
         r.data_reserva,
-        r.hora_inicio,
-        r.hora_fim,
+        r.valor_cobrado,
+        r.valor_pago,
         a.nome_ambiente
     FROM reservas r
     JOIN ambientes a ON a.id_ambiente = r.id_ambiente
-    WHERE r.pago = 0
+    WHERE r.valor_pago < r.valor_cobrado
     AND r.data_reserva BETWEEN ? AND ?
-    ORDER BY r.data_reserva, r.hora_inicio
+    ORDER BY r.data_reserva
 ";
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ss", $inicio, $fim);
 $stmt->execute();
 $result = $stmt->get_result();
-
 
 $html = '
 
@@ -51,16 +50,16 @@ $html = '
     <strong>' . date("d/m/Y", strtotime($fim)) . '</strong>
 </p>
 
-<hr>
-
-<table width="100%" border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; font-family:Arial; font-size:13px;">
+<table width="100%" border="1" cellspacing="0" cellpadding="8"
+style="border-collapse: collapse; font-family:Arial; font-size:13px;">
     <thead style="background:#764ba2; color:white;">
         <tr>
             <th>Nome</th>
-            <th>Telefone</th>
             <th>Data</th>
-            <th>Horário</th>
             <th>Ambiente</th>
+            <th>Valor Cobrado</th>
+            <th>Valor Pago</th>
+            <th>Falta</th>
         </tr>
     </thead>
     <tbody>
@@ -77,13 +76,16 @@ if ($result->num_rows === 0) {
 } else {
     while ($r = $result->fetch_assoc()) {
 
+        $falta = $r['valor_cobrado'] - $r['valor_pago'];
+
         $html .= '
         <tr>
             <td>' . htmlspecialchars($r['nome_reserva']) . '</td>
-            <td>' . htmlspecialchars($r['telefone_reserva']) . '</td>
-            <td>' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
-            <td>' . substr($r['hora_inicio'], 0, 5) . ' - ' . substr($r['hora_fim'], 0, 5) . '</td>
+            <td style="text-align:center">' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
             <td>' . htmlspecialchars($r['nome_ambiente']) . '</td>
+            <td style="text-align:right">R$ ' . number_format($r['valor_cobrado'], 2, ',', '.') . '</td>
+            <td style="text-align:right">R$ ' . number_format($r['valor_pago'], 2, ',', '.') . '</td>
+            <td style="text-align:right"><strong>R$ ' . number_format($falta, 2, ',', '.') . '</strong></td>
         </tr>';
     }
 }
@@ -93,7 +95,25 @@ $html .= '
 </table>
 ';
 
-$mpdf = new \Mpdf\Mpdf();
+// instancia mpdf com fallback de pasta temporária
+$mpdf = new \Mpdf\Mpdf([
+    'tempDir' => __DIR__ . '/../tmp'
+]);
+
+$data_emissao = date("d/m/Y H:i:s");
+
+$mpdf->SetFooter('
+    <table width="100%" style="border-top: 0.5px solid #ccc; font-size: 14px;">
+        <tr>
+            <td style="text-align: left;">
+                Relatório Gerado em: <strong>' . $data_emissao . '</strong>
+            </td>
+            <td style="text-align: right;">
+                Página {PAGENO} de {nb}
+            </td>
+        </tr>
+    </table>
+');
 
 $mpdf->WriteHTML($html);
 

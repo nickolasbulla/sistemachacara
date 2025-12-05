@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('America/Sao_Paulo');
 require_once __DIR__ . "/../vendor/autoload.php"; // mpdf
 
 include '../includes/login_verify.php';
@@ -10,6 +11,8 @@ if (!isset($_GET['id_usuario']) || empty($_GET['id_usuario'])) {
     die("Usuário inválido.");
 }
 
+$inicio = $_GET['inicio'];
+$fim = $_GET['fim'];
 $id_usuario = intval($_GET['id_usuario']);
 
 // busca nome do usuário
@@ -45,6 +48,8 @@ $stmt->bind_param("i", $id_usuario);
 $stmt->execute();
 $result = $stmt->get_result();
 
+$data_emissao = date("d/m/Y H:i:s");
+
 $html = '
 
 <div style="text-align:center; margin-bottom:10px;">
@@ -57,6 +62,16 @@ $html = '
 
 <p style="text-align:center; font-size:14px; margin-top:0;">
     Usuário: <strong>' . htmlspecialchars($usuario) . '</strong>
+</p>
+
+<p style="text-align:center; font-size:14px; margin-top:0;">
+    Período: <strong>' . date("d/m/Y", strtotime($inicio)) . '</strong> 
+    até 
+    <strong>' . date("d/m/Y", strtotime($fim)) . '</strong>
+</p>
+
+<p style="text-align:center; font-size:14px; margin-top:5px; margin-bottom:5px;">
+    Gerado em: <strong>' . $data_emissao . '</strong>
 </p>
 
 <hr>
@@ -90,7 +105,7 @@ if ($result->num_rows === 0) {
         <tr>
             <td>' . htmlspecialchars($r['nome_reserva']) . '</td>
             <td>' . htmlspecialchars($r['telefone_reserva']) . '</td>
-            <td>' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
+            <td style="text-align:center">' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
             <td>' . substr($r['hora_inicio'], 0, 5) . ' - ' . substr($r['hora_fim'], 0, 5) . '</td>
             <td>' . htmlspecialchars($r['nome_ambiente']) . '</td>
         </tr>';

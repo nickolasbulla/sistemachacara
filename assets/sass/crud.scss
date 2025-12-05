@@ -28,7 +28,7 @@
     tbody {
         tr {
             &:nth-child(even) {
-                background: #ebebeb; // lista zebrada
+                background: #d2d2d2; // lista zebrada
             }
 
             &:hover {
@@ -101,12 +101,27 @@
 .btn-novo {
     background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
     color: white;
-    margin-bottom: 10px;
-    float: right;
 
     &:hover {
         transform: translateY(-1px);
         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+}
+
+.btn-voltar {
+    border: 2px solid #969696;
+    display: inline-block;
+    margin-bottom: 20px;
+    background: #ddd;
+    color: #333;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #ccc;
     }
 }
 
@@ -163,7 +178,7 @@
         select,
         textarea {
             padding: 12px 14px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #969696 !important;
             border-radius: 8px;
             font-size: 15px;
             transition: border-color 0.3s, box-shadow 0.3s;
@@ -220,6 +235,7 @@
         }
 
         &.btn-cancelar {
+            border: 2px solid #969696;
             background: #e0e0e0;
             color: #333;
 
@@ -227,22 +243,6 @@
                 background: #d0d0d0;
             }
         }
-    }
-}
-
-.btn-voltar {
-    display: inline-block;
-    margin-bottom: 20px;
-    background: #ddd;
-    color: #333;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.2s;
-
-    &:hover {
-        background: #ccc;
     }
 }
 

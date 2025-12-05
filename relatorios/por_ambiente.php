@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('America/Sao_Paulo');
 require_once __DIR__ . "/../vendor/autoload.php"; // mpdf
 
 include '../includes/login_verify.php';
@@ -46,6 +47,7 @@ $stmt->bind_param("iss", $id_ambiente, $inicio, $fim);
 $stmt->execute();
 $result = $stmt->get_result();
 
+$data_emissao = date("d/m/Y H:i:s");
 
 $html = '
 
@@ -61,6 +63,10 @@ $html = '
     Período: <strong>' . date("d/m/Y", strtotime($inicio)) . '</strong> 
     até 
     <strong>' . date("d/m/Y", strtotime($fim)) . '</strong>
+</p>
+
+<p style="text-align:center; font-size:14px; margin-top:5px; margin-bottom:5px;">
+    Gerado em: <strong>' . $data_emissao . '</strong>
 </p>
 
 <hr>
@@ -92,7 +98,7 @@ if ($result->num_rows === 0) {
         <tr>
             <td>' . htmlspecialchars($r['nome_reserva']) . '</td>
             <td>' . htmlspecialchars($r['telefone_reserva']) . '</td>
-            <td>' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
+            <td style="text-align:center">' . date("d/m/Y", strtotime($r['data_reserva'])) . '</td>
             <td>' . substr($r['hora_inicio'], 0, 5) . ' - ' . substr($r['hora_fim'], 0, 5) . '</td>
             <td>' . htmlspecialchars($r['usuario']) . '</td>
         </tr>';

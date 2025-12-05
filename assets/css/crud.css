@@ -24,7 +24,7 @@
   text-transform: uppercase;
 }
 .tabela-crud tbody tr:nth-child(even) {
-  background: #ebebeb;
+  background: #d2d2d2;
 }
 .tabela-crud tbody tr:hover {
   background: #e6e0f7;
@@ -83,12 +83,26 @@
 .btn-novo {
   background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
   color: white;
-  margin-bottom: 10px;
-  float: right;
 }
 .btn-novo:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-voltar {
+  border: 2px solid #969696;
+  display: inline-block;
+  margin-bottom: 20px;
+  background: #ddd;
+  color: #333;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-voltar:hover {
+  background: #ccc;
 }
 
 .cadastro-area {
@@ -141,7 +155,7 @@
 .form-cadastro .form-grupo select,
 .form-cadastro .form-grupo textarea {
   padding: 12px 14px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #969696 !important;
   border-radius: 8px;
   font-size: 15px;
   transition: border-color 0.3s, box-shadow 0.3s;
@@ -191,26 +205,12 @@
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 .form-botoes .btn.btn-cancelar {
+  border: 2px solid #969696;
   background: #e0e0e0;
   color: #333;
 }
 .form-botoes .btn.btn-cancelar:hover {
   background: #d0d0d0;
-}
-
-.btn-voltar {
-  display: inline-block;
-  margin-bottom: 20px;
-  background: #ddd;
-  color: #333;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-.btn-voltar:hover {
-  background: #ccc;
 }
 
 /* responsividade */

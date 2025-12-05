@@ -60,7 +60,7 @@ if ($mesProximo > 12) {
 $inicioMes = date('Y-m-01', $primeiroDiaMes);
 $fimMes = date('Y-m-t', $primeiroDiaMes);
 
-$sql = "SELECT id_reserva, nome_reserva, data_reserva, hora_inicio, hora_fim, pago 
+$sql = "SELECT id_reserva, nome_reserva, data_reserva, hora_inicio, hora_fim, valor_cobrado, valor_pago
         FROM reservas
         WHERE data_reserva BETWEEN ? AND ?
         ORDER BY data_reserva, hora_inicio";
@@ -82,7 +82,9 @@ while ($row = $result->fetch_assoc()) {
         'nome_reserva' => $row['nome_reserva'],
         'hora_inicio' => substr($row['hora_inicio'], 0, 5),
         'hora_fim' => substr($row['hora_fim'], 0, 5),
-        'pago' => (int) $row['pago'],
+        'valor_cobrado' => (float) $row['valor_cobrado'],
+        'valor_pago' => (float) $row['valor_pago'],
+        'falta' => (float) $row['valor_cobrado'] - (float) $row['valor_pago'],
     ];
 }
 

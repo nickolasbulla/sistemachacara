@@ -24,7 +24,7 @@ if ($result->num_rows === 1) {
     $user = $result->fetch_assoc();
 
     if ($user['ativo'] == 0) {
-        $_SESSION['erro_login'] = "Usuário inativo!";
+        $_SESSION['erro_login'] = "Usuário ou senha incorretos!";
         header("Location: index.php");
         exit;
     }
@@ -39,12 +39,12 @@ if ($result->num_rows === 1) {
         header("Location: ./reservas/index.php");
         exit;
     } else {
-        $_SESSION['erro_login'] = "Senha incorreta!";
+        $_SESSION['erro_login'] = "Usuário ou senha incorretos!";
         header("Location: index.php");
         exit;
     }
 } else {
-    $_SESSION['erro_login'] = "Usuário não encontrado!";
+    $_SESSION['erro_login'] = "Usuário ou senha incorretos!";
     header("Location: index.php");
     exit;
 }

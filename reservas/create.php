@@ -28,7 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fim       = $_POST['hora_fim'];
     $ambiente  = $_POST['id_ambiente'];
     $func      = empty($_POST['id_funcionario']) ? null : $_POST['id_funcionario']; // pois funcionario nao precisa ser definido
-    $pago      = isset($_POST['pago']) ? 1 : 0;
+    $valor_cobrado = floatval($_POST['valor_cobrado']);
+    $valor_pago    = floatval($_POST['valor_pago']);
     $obs       = trim($_POST['observacoes']);
 
     // impede hora inválida
@@ -39,6 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // impede criar no passado
     if (!$erro && $data < date('Y-m-d')) {
         $erro = "Não é possível criar reservas no passado.";
+    }
+
+    if (!$erro && $valor_pago > $valor_cobrado) {
+        $erro = "O valor pago não pode ser maior que o valor cobrado.";
     }
 
     // verifica conflito de horários
@@ -68,12 +73,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$erro) {
         $stmt = $conn->prepare("
             INSERT INTO reservas 
-            (id_usuario, nome_reserva, telefone_reserva, data_reserva, hora_inicio, hora_fim, id_ambiente, id_funcionario, pago, observacoes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (id_usuario, nome_reserva, telefone_reserva, data_reserva, hora_inicio, hora_fim, id_ambiente, id_funcionario, valor_cobrado, valor_pago, observacoes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
-        $stmt->bind_param("issssssiis", 
-            $id_usuario, $nome, $tel, $data, $inicio, $fim, $ambiente, $func, $pago, $obs
+        $stmt->bind_param("isssssiiids", 
+        $id_usuario,$nome, $tel, $data, $inicio, $fim, $ambiente, $func, $valor_cobrado, $valor_pago, $obs
         );
 
         $stmt->execute();
@@ -151,10 +156,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
 
-                <div class="form-grupo checkbox">
-                    <label>
-                        <input type="checkbox" name="pago"> Pago
-                    </label>
+                <div class="form-grupo">
+                    <label>Valor cobrado (R$) *</label>
+                    <input type="number" step="0.01" name="valor_cobrado" min="0" id="valor_cobrado" required oninput="calcularFalta()">
+                </div>
+
+                <div class="form-grupo">
+                    <label>Valor pago (R$)</label>
+                    <input type="number" step="0.01" name="valor_pago" min="0" id="valor_pago" oninput="calcularFalta()">
+                </div>
+
+                <div class="form-grupo">
+                    <label>Falta pagar (R$)</label>
+                    <input type="text" id="valor_falta" readonly>
                 </div>
 
                 <div class="form-grupo">

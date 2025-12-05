@@ -7,6 +7,11 @@ $css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
 include "../includes/header.php";
 
 $id = $_GET['id'] ?? null;
+
+$id_usuario_logado = $_SESSION['usuario_id'] ?? 0;
+$permissao_logado = $_SESSION['usuario_tipo'] ?? '';
+$is_self_edit = ($id == $id_usuario_logado);
+
 $erro = '';
 $sucesso = '';
 
@@ -14,6 +19,9 @@ if (!$id) {
     header('Location: index.php');
     exit;
 }
+
+$is_admin = ($permissao_logado === 'admin');
+$is_admin_editing_other = ($is_admin && !$is_self_edit);
 
 // busca os dados do usuário
 $stmt = $conn->prepare("SELECT * FROM usuarios WHERE id_usuario = ?");
@@ -56,15 +64,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $alterarSenha = !empty($senhaAtual) || !empty($novaSenha) || !empty($confirmarSenha);
 
     if (empty($erro) && $alterarSenha) {
-
-        if (empty($senhaAtual) || empty($novaSenha) || empty($confirmarSenha)) {
-            $erro = "Para alterar a senha, preencha todos os campos.";
-        }
+        if (empty($novaSenha) || empty($confirmarSenha)) {
+            $erro = "Para alterar a senha, preencha a Nova Senha e a Confirmação.";
+        } 
         elseif ($novaSenha !== $confirmarSenha) {
             $erro = "A nova senha e a confirmação não coincidem.";
-        }
-        elseif (!password_verify($senhaAtual, $usuario['senha'])) {
-            $erro = "A senha atual está incorreta.";
+        } 
+        elseif ($is_self_edit) {
+            if (empty($senhaAtual)) {
+                $erro = "Para alterar sua própria senha, você deve informar a Senha Atual.";
+            } 
+            elseif (!password_verify($senhaAtual, $usuario['senha'])) {
+                $erro = "A Senha Atual está incorreta.";
+            }
         }
     }
 
@@ -152,10 +164,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" name="login" value="<?= htmlspecialchars($usuario['login']) ?>" required>
                 </div>
 
-                <div class="form-grupo">
-                    <label>Senha atual (somente se for trocar):</label>
-                    <input type="password" name="senha_atual" placeholder="Digite a senha atual">
-                </div>
+                <?php if ($is_self_edit) : ?>
+                    <div class="form-grupo">
+                        <label>Senha atual:</label>
+                        <input type="password" name="senha_atual" placeholder="Digite sua senha atual">
+                    </div>
+                <?php endif; ?>
 
                 <div class="form-grupo">
                     <label></label>

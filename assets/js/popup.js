@@ -96,14 +96,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 titulo.textContent = "Reservas por Usuário";
                 form.action = "por_usuario.php";
                 campoUsuario.style.display = "block";
+                campoPeriodo.style.display = "block";
+                
                 campoUsuario.querySelector("select").required = true;
+                campoPeriodo.querySelectorAll("input").forEach(i => i.required = true);
             }
 
             if (tipoAtual === "por_ambiente") {
                 titulo.textContent = "Reservas por Ambiente";
                 form.action = "por_ambiente.php";
                 campoPeriodo.style.display = "block";
-                campoAmbiente.style.display = "block"; // novo campo
+                campoAmbiente.style.display = "block";
 
                 campoPeriodo.querySelectorAll("input").forEach(i => i.required = true);
                 campoAmbiente.querySelector("select").required = true;
@@ -118,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* validacao antes de enviar */
     form.addEventListener("submit", (e) => {
 
-        if (tipoAtual === "nao_pagas" || tipoAtual === "por_ambiente") {
+        if (tipoAtual === "nao_pagas" || tipoAtual === "por_ambiente" || tipoAtual === "por_usuario") {
             const inicio = form.querySelector("input[name='inicio']").value;
             const fim = form.querySelector("input[name='fim']").value;
 

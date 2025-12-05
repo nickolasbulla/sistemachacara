@@ -1,4 +1,4 @@
-Como abrir o projeto:
+Como abrir o projeto: (caso baixou do github)
 
 1. Instale o XAMPP
 

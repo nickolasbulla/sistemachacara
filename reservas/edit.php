@@ -58,17 +58,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fim       = $_POST['hora_fim'];
     $ambiente  = $_POST['id_ambiente'];
     $func      = $_POST['id_funcionario'] ?: null;
-    $pago      = isset($_POST['pago']) ? 1 : 0;
+    $valor_cobrado = floatval($_POST['valor_cobrado']);
+    $valor_pago    = floatval($_POST['valor_pago']);
     $obs       = trim($_POST['observacoes']);
 
     // validacoes
-
     if ($fim <= $inicio) {
         $erro = "A hora de término deve ser maior que a hora de início.";
     }
 
     if (!$erro && $data < date('Y-m-d')) {
         $erro = "Não é possível editar para uma data no passado.";
+    }
+
+    if ($valor_cobrado < 0 || $valor_pago < 0) {
+        $erro = "Valores não podem ser negativos.";
+    }
+
+    if (!$erro && $valor_pago > $valor_cobrado) {
+        $erro = "O valor pago não pode ser maior que o valor cobrado.";
     }
 
     // valida conflito de horário menos com a própria reserva
@@ -111,15 +119,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 hora_fim = ?,
                 id_ambiente = ?,
                 id_funcionario = ?,
-                pago = ?,
+                valor_cobrado = ?,
+                valor_pago = ?,
                 observacoes = ?
             WHERE id_reserva = ?
         ";
 
         $stmt_up = $conn->prepare($sql_up);
-        $stmt_up->bind_param("sssssiissi",
-            $nome, $tel, $data, $inicio, $fim,
-            $ambiente, $func, $pago, $obs, $id
+        $stmt_up->bind_param("sssssiiddsi",
+            $nome, $tel, $data, $inicio, $fim, $ambiente, $func, $valor_cobrado, $valor_pago, $obs, $id
         );
 
         $stmt_up->execute();
@@ -219,10 +227,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
 
-                <div class="form-grupo checkbox">
-                    <label>
-                        <input type="checkbox" name="pago" <?= $reserva['pago'] ? 'checked' : '' ?>> Pago
-                    </label>
+                <div class="form-grupo">
+                    <label>Valor cobrado (R$) *</label>
+                    <input type="number" min="0" step="0.01" name="valor_cobrado" id="valor_cobrado"
+                        value="<?= number_format($reserva['valor_cobrado'], 2, '.', '') ?>"
+                        oninput="calcularFalta()" required>
+                </div>
+
+                <div class="form-grupo">
+                    <label>Valor pago (R$)</label>
+                    <input type="number" min="0" step="0.01" name="valor_pago" id="valor_pago"
+                        value="<?= number_format($reserva['valor_pago'], 2, '.', '') ?>"
+                        oninput="calcularFalta()">
+                </div>
+
+                <div class="form-grupo">
+                    <label>Falta pagar (R$)</label>
+                    <input type="text" id="valor_falta" readonly>
                 </div>
 
                 <div class="form-grupo">
