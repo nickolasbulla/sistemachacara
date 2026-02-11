@@ -1,19 +1,29 @@
+/* Calcula a diferença entre o valor cobrado e o valor pago. */
 function calcularFalta() {
+
     let cobrado = parseFloat(document.getElementById('valor_cobrado')?.value) || 0;
     let pago = parseFloat(document.getElementById('valor_pago')?.value) || 0;
 
+    // Garante que valores negativos não sejam processados
     if (cobrado < 0) cobrado = 0;
     if (pago < 0) pago = 0;
 
     let falta = cobrado - pago;
 
-    if (document.getElementById('valor_falta')) {
-        document.getElementById('valor_falta').value = falta.toFixed(2);
+    const inputFalta = document.getElementById('valor_falta');
+    if (inputFalta) {
+        inputFalta.value = falta.toFixed(2);
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById('valor_cobrado') && document.getElementById('valor_pago')) {
+    const inputCobrado = document.getElementById('valor_cobrado');
+    const inputPago = document.getElementById('valor_pago');
+
+    if (inputCobrado && inputPago) {
         calcularFalta();
+
+        inputCobrado.addEventListener('input', calcularFalta);
+        inputPago.addEventListener('input', calcularFalta);
     }
 });
