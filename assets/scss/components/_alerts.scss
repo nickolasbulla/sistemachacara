@@ -1,0 +1,20 @@
+@use "../abstracts/variables" as *;
+
+.alerta {
+    padding: 12px 16px;
+    border-radius: $radius-md;
+    margin-bottom: 20px;
+    text-align: center;
+
+    &.erro {
+        background: $danger-bg;
+        color: $danger;
+        border: 1px solid #e27777;
+    }
+
+    &.sucesso {
+        background: $success-bg;
+        color: $success;
+        border: 1px solid #c3e6cb;
+    }
+}

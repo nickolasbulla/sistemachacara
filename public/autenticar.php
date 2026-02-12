@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'includes/db.php';
+include '../config/db.php';
 
 if (empty($_POST['usuario']) || empty($_POST['senha'])) {
     $_SESSION['erro_login'] = "Preencha todos os campos!";
@@ -35,7 +35,7 @@ if ($result->num_rows === 1) {
         $_SESSION['usuario_tipo'] = $user['tipo_permissao'];
 
         session_write_close();
-        header("Location: ./reservas/index.php");
+        header("Location: ../app/reservas/index.php");
         exit;
     } else {
         $_SESSION['erro_login'] = "Usuário ou senha incorretos!";

@@ -1,10 +1,10 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
 $titulo_pagina = "Reservas - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
-include "../includes/header.php";
+
+include "../../includes/layout/header.php";
 
 $id_usuario = $_SESSION['usuario_id'];
 $erro = '';
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
@@ -180,4 +180,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
 </div>
 
-<?php include "../includes/footer.php"; ?>
+<?php include "../../includes/layout/footer.php"; ?>

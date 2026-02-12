@@ -1,0 +1,43 @@
+/* Gradientes */
+$gradient-100: linear-gradient(
+  150deg,
+  #667eea 0%,
+  #764ba2 100%
+);
+$gradient-75: linear-gradient(
+  150deg,
+  #667eea 0%,
+  #764ba2 75%
+);
+
+/* Cores */
+$text-dark: #333;
+$text-gray: #666;
+
+$bg-light: #f4f6fa;
+$border-neutral: #969696;
+
+$edit: #ffd966;
+$edit-hover: #ffe599;
+
+/* Borders radius */
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+
+/* Sombras */
+$shadow-02: 0 5px 20px rgba(0, 0, 0, 0.2);
+$shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.1);
+$shadow-card: 0 8px 25px rgba(0, 0, 0, 0.12);
+
+/* Feedback*/
+$danger: #d53625;
+$danger-hover: #ff5b4c;
+$danger-bg: #f9d6d5;
+
+$success: #155724;
+$success-bg: #d4edda;
+
+/* Tabela zebrada */
+$table-zebra: #d2d2d2;
+$table-hover: #e6e0f7;

@@ -1,0 +1,38 @@
+@use "../abstracts/variables" as *;
+
+.popup-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1200;
+
+    &.active {
+        display: flex;
+    }
+
+    .popup-box {
+        background: white !important;
+        padding: 30px 40px;
+        border-radius: $radius-lg;
+        box-shadow: $shadow-02;
+        text-align: center;
+        width: 90%;
+        max-width: 420px;
+
+        .popup-buttons {
+            margin-top: 15px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: $text-dark;
+        }
+
+        p {
+            color: $text-gray;
+        }
+    }
+}

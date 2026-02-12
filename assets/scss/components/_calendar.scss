@@ -1,11 +1,14 @@
-/* calendario crud reservas */
+@use "../abstracts/variables" as *;
+
+/* CALENDÁRIO CRUD RESERVAS */
 .calendar-container {
     margin-top: 20px;
     background: #fff;
-    border-radius: 12px;
+    border-radius: $radius-lg;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 20px;
 
+    /* HEADER */
     .calendar-header {
         display: flex;
         align-items: center;
@@ -15,7 +18,7 @@
         .cal-current {
             font-size: 18px;
             font-weight: 600;
-            color: #333;
+            color: $text-dark;
         }
 
         .cal-nav {
@@ -24,8 +27,8 @@
             font-size: 20px;
             cursor: pointer;
             padding: 4px 10px;
-            border-radius: 8px;
-            color: #333;
+            border-radius: $radius-md;
+            color: $text-dark;
             transition: background 0.2s, transform 0.1s;
 
             &:hover {
@@ -35,40 +38,7 @@
         }
     }
 
-    .calendar-legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-bottom: 10px;
-        font-size: 13px;
-
-        .legenda-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-
-            .legenda-cor {
-                width: 14px;
-                height: 14px;
-                border-radius: 4px;
-
-                &.reservado {
-                    background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
-                }
-
-                &.livre {
-                    background: #eee;
-                    border: 1px solid #ddd;
-                }
-
-                &.hoje {
-                    background: transparent;
-                    border: 2px solid #667eea;
-                }
-            }
-        }
-    }
-
+    /* GRID */
     .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -85,13 +55,13 @@
         .cal-dia {
             border: none;
             border-radius: 10px;
-            
             min-height: 70px;
             text-align: left;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             gap: 4px;
+            padding: 5px 0 0 10px;
             align-items: flex-start;
             justify-content: flex-start;
             background: #f3f3f3;
@@ -100,12 +70,12 @@
 
             &.livre {
                 background: #f3f3f3;
-                border: 2px solid #969696;
+                border: 1px solid #ababab;
                 height: 70px;
             }
 
             &.reservado {
-                background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+                background: $gradient-100;
                 color: #fff;
 
                 .cal-dia-info,
@@ -145,7 +115,7 @@
     }
 }
 
-/* pop up mais de uma reserva */
+/* POPUP — múltiplas reservas */
 .cal-reserva-item {
     display: flex;
     align-items: center;
@@ -167,10 +137,10 @@
     }
 
     .btn-editar {
-        background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+        background: $gradient-100;
         color: #fff;
         padding: 6px 14px;
-        border-radius: 8px;
+        border-radius: $radius-md;
         font-weight: 600;
         font-size: 14px;
         transition: 0.2s;
@@ -182,11 +152,13 @@
     }
 }
 
-/* responsividade*/
+/* RESPONSIVIDADE */
 @media (max-width: 768px) {
+
     .conteudo {
         padding: 35px 15px;
     }
+
     .calendar-container {
         padding: 15px;
 
@@ -211,11 +183,14 @@
 }
 
 @media (max-width: 380px) {
+
     .conteudo {
         padding: 35px 10px;
     }
+
     .calendar-container {
         padding: 6px;
+
         .calendar-grid {
             gap: 3px;
 
@@ -224,12 +199,12 @@
                     font-size: 10px;
                 }
             }
-        }    
+        }
+
         .calendar-header {
             .cal-current {
                 font-size: 16px;
             }
         }
-        
     }
 }

@@ -1,0 +1,144 @@
+@use "../abstracts/variables" as *;
+
+/* TABELA CRUD */
+.tabela-crud {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: $bg-light;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    box-shadow: $shadow-soft;
+
+    thead {
+        background: $gradient-100;
+        color: white;
+    }
+
+    th,
+    td {
+        text-align: left;
+        padding: 12px 16px;
+        font-size: 15px;
+    }
+
+    th {
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    tbody tr {
+
+        &:nth-child(even) {
+            background: $table-zebra;
+        }
+
+        &:hover {
+            background: $table-hover;
+            transition: background 0.2s ease;
+        }
+    }
+
+    td {
+        vertical-align: middle;
+
+        &:nth-child(2),
+        &:nth-child(3) {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &:nth-child(4) {
+            max-width: 350px;
+        }
+
+        &:nth-child(5) {
+            font-size: 18px;
+        }
+
+        &:nth-child(6) {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    }
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+
+    .tabela-wrapper {
+        width: 100%;
+    }
+
+    .tabela-crud {
+        border: none;
+        display: block;
+        padding: 12px;
+        background-color: $bg-light;
+        box-shadow: none;
+
+        thead {
+            display: none;
+        }
+
+        tbody {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+            tr:nth-child(even) {
+                background: none;
+            }
+        }
+
+        tr {
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        td {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #ccc;
+            font-size: 15px;
+            word-break: break-word;
+
+            &:nth-child(2),
+            &:nth-child(3),
+            &:nth-child(4) {
+                max-width: none;
+            }
+
+            &::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: $text-gray;
+                min-width: 70px;
+            }
+        }
+
+        td[data-label="Ações"] {
+            flex-direction: row;
+            justify-content: flex-end;
+            border: none;
+            padding-top: 10px;
+
+            &::before {
+                display: none;
+            }
+
+            .btn-editar,
+            .btn-excluir {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+        }
+    }
+}

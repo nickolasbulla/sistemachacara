@@ -1,11 +1,12 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
+
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
 
 $titulo_pagina = "Reservas - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css", "../assets/css/calendar.css"];
-include '../includes/header.php';
+$body_class = "painel-page";
+include "../../includes/layout/header.php";
 
 //  calculo do mes / ano atual
 $mesAtual = isset($_GET['mes']) ? (int) $_GET['mes'] : (int) date('m');
@@ -95,7 +96,7 @@ $hoje = date('Y-m-d');
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
@@ -115,18 +116,6 @@ $hoje = date('Y-m-d');
                 <a href="?mes=<?= $mesAnterior ?>&ano=<?= $anoAnterior ?>" class="cal-nav">&laquo;</a>
                 <div class="cal-current"><?= $nomeMesAtual . ' ' . $anoAtual ?></div>
                 <a href="?mes=<?= $mesProximo ?>&ano=<?= $anoProximo ?>" class="cal-nav">&raquo;</a>
-            </div>
-
-            <div class="calendar-legend">
-                <span class="legenda-item">
-                    <span class="legenda-cor reservado"></span> Reservado
-                </span>
-                <span class="legenda-item">
-                    <span class="legenda-cor livre"></span> Livre
-                </span>
-                <span class="legenda-item">
-                    <span class="legenda-cor hoje"></span> Hoje
-                </span>
             </div>
 
             <div class="calendar-grid">
@@ -192,4 +181,4 @@ $hoje = date('Y-m-d');
     </div>
 </div>
 
-<?php include '../includes/footer.php'; ?>
+<?php include '../../includes/layout/footer.php'; ?>

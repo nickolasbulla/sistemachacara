@@ -1,0 +1,6 @@
+Mudanças E1 -> E2
+
+1. Refatoração completa do sistema
+- Nova estrutura de pastas, mais organizada
+- Redução de gambiarras
+- Renovação do CSS (Sass melhor aplicado, repetição reduzida)

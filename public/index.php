@@ -1,13 +1,14 @@
 <?php
     session_start();
+    
     $titulo_pagina = "Login - Chácara Portal";
-    $css_pagina = "assets/css/login.css";
-    include 'includes/header.php';
+    $body_class = "login-page";
+    include '../includes/layout/header.php';
 ?>
 
 <div class="login-container">
     <div class="login-header">
-        <img src="./assets/logo.jpg" alt="">
+        <img src="../assets/logo.jpg" alt="">
         <p>Gerenciamento de Aluguéis</p>
     </div>
 
@@ -51,5 +52,5 @@
 </div>
 
 <?php
-    include 'includes/footer.php';
+    include '../includes/layout/footer.php';
 ?>  
