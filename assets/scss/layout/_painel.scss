@@ -58,6 +58,7 @@ body.painel-page {
             background: rgba(255, 255, 255, 0.2);
         }
     }
+
     i {
         margin-right: 5px;
     }
@@ -68,6 +69,8 @@ body.painel-page {
     margin-bottom: 15px;
 
     .submenu-toggle {
+        position: relative;
+
         background: none;
         border: none;
         color: white;
@@ -76,7 +79,7 @@ body.painel-page {
         text-align: left;
         cursor: pointer;
         width: 100%;
-        padding: 8px 12px;
+        padding: 8px 36px 8px 12px;
         border-radius: $radius-sm;
         transition: background 0.2s;
 
@@ -84,9 +87,20 @@ body.painel-page {
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .seta {
-            float: right;
+        /* SETA */
+        &::after {
+            content: "\f078";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+
             transition: transform 0.3s ease;
+            pointer-events: none;
         }
     }
 
@@ -107,13 +121,14 @@ body.painel-page {
         }
     }
 
+    /* ABERTO */
     &.open {
         .submenu-content {
             max-height: 200px;
         }
 
-        .submenu-toggle .seta {
-            transform: rotate(180deg);
+        .submenu-toggle::after {
+            transform: translateY(-50%) rotate(180deg);
         }
     }
 }
@@ -123,8 +138,8 @@ body.painel-page {
     flex: 1;
     overflow-y: auto;
     height: 100vh;
-    padding: 30px;
     box-sizing: border-box;
+    padding: 10px 30px;
 }
 
 /* HEADER */
@@ -183,9 +198,4 @@ body.painel-page {
     .painel-header .menu-toggle {
         display: block;
     }
-}
-
-/* BUG FONT */
-a, button {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

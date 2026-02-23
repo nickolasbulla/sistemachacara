@@ -10,7 +10,7 @@
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.1s, box-shadow 0.1s;
 
     &:hover {
         transform: translateY(-1px);
@@ -31,7 +31,7 @@
     cursor: pointer;
     border: none;
     text-decoration: none;
-    transition: 0.2s ease;
+    transition: 0.1s ease;
     display: inline-block;
 }
 
@@ -64,7 +64,7 @@
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.1s ease;
     cursor: pointer;
 }
 
@@ -100,17 +100,66 @@
 }
 
 /* VOLTAR */
-.btn-voltar {
-    border: 2px solid $border-neutral;
-    margin-bottom: 20px;
-    background: #ddd;
-    color: $text-dark;
-    padding: 10px 16px;
-    border-radius: $radius-sm;
-    font-weight: 600;
-    text-decoration: none;
+.header-acoes {
+    margin: 20px 0 0 0;
 
-    &:hover {
-        background: #ccc;
+    .btn-voltar {
+        border: 1px solid $border-neutral;
+        background: #ddd;
+        color: $text-dark;
+        padding: 10px 16px;
+        border-radius: $radius-sm;
+        font-weight: 600;
+        text-decoration: none;
+
+        i {
+            margin-right: 4px;
+        }
+
+        &:hover {
+            background: #ccc;
+        }
+    }
+}
+
+/* FORM */
+.form-botoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 15px;
+
+    .btn {
+        padding: 12px 20px;
+        border-radius: $radius-md;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+
+        &.btn-salvar {
+            background: $gradient-100;
+            color: white;
+
+            i {
+                margin-right: 4px;
+            }
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: $shadow-card;
+            }
+        }
+
+        &.btn-cancelar {
+            border: 1px solid $border-neutral;
+            background: #e0e0e0;
+            color: $text-dark;
+
+            &:hover {
+                background: #d0d0d0;
+            }
+        }
     }
 }

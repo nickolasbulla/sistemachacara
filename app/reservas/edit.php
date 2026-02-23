@@ -1,10 +1,10 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
 $titulo_pagina = "Reservas - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
-include "../includes/header.php";
+
+include "../../includes/layout/header.php";
 
 if (!isset($_GET['id'])) {
     header("Location: index.php");
@@ -38,7 +38,7 @@ $reserva = $stmt->get_result()->fetch_assoc();
 
 if (!$reserva) {
     echo "<div class='alerta erro'>Reserva não encontrada!</div>";
-    include '../includes/footer.php';
+    include '../../includes/layout/footer.php';
     exit;
 }
 
@@ -50,16 +50,16 @@ $funcionarios = $conn->query("SELECT id_funcionario, nome_completo FROM funciona
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $nome      = trim($_POST['nome_reserva']);
-    $tel       = trim($_POST['telefone_reserva']);
-    $data      = $_POST['data_reserva'];
-    $inicio    = $_POST['hora_inicio'];
-    $fim       = $_POST['hora_fim'];
-    $ambiente  = $_POST['id_ambiente'];
-    $func      = $_POST['id_funcionario'] ?: null;
+    $nome = trim($_POST['nome_reserva']);
+    $tel = trim($_POST['telefone_reserva']);
+    $data = $_POST['data_reserva'];
+    $inicio = $_POST['hora_inicio'];
+    $fim = $_POST['hora_fim'];
+    $ambiente = $_POST['id_ambiente'];
+    $func = $_POST['id_funcionario'] ?: null;
     $valor_cobrado = floatval($_POST['valor_cobrado']);
-    $valor_pago    = floatval($_POST['valor_pago']);
-    $obs       = trim($_POST['observacoes']);
+    $valor_pago = floatval($_POST['valor_pago']);
+    $obs = trim($_POST['observacoes']);
 
     if ($fim <= $inicio) {
         $erro = "A hora de término deve ser maior que a hora de início.";
@@ -92,9 +92,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ";
 
         $stmt_conf = $conn->prepare($sql_conf);
-        $stmt_conf->bind_param("isisiss", 
-            $ambiente, $data, $id, 
-            $inicio, $fim, $inicio, $fim
+        $stmt_conf->bind_param(
+            "isisiss",
+            $ambiente,
+            $data,
+            $id,
+            $inicio,
+            $fim,
+            $inicio,
+            $fim
         );
 
         $stmt_conf->execute();
@@ -123,8 +129,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ";
 
         $stmt_up = $conn->prepare($sql_up);
-        $stmt_up->bind_param("sssssiiddsi",
-            $nome, $tel, $data, $inicio, $fim, $ambiente, $func, $valor_cobrado, $valor_pago, $obs, $id
+        $stmt_up->bind_param(
+            "sssssiiddsi",
+            $nome,
+            $tel,
+            $data,
+            $inicio,
+            $fim,
+            $ambiente,
+            $func,
+            $valor_cobrado,
+            $valor_pago,
+            $obs,
+            $id
         );
 
         $stmt_up->execute();
@@ -137,37 +154,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
 
-        <div class="painel-header">
-            <button class="menu-toggle">☰</button>
-            <h1>Editar Reserva</h1>
-            <p>Atualize as informações abaixo.</p>
-        </div>
-
         <div class="form-botoes" style="justify-content: space-between; margin-bottom: 20px;">
 
-            <a href="#" 
-            class="btn btn-excluir btnpopup" 
-            data-id="<?= $reserva['id_reserva'] ?>">
-            🗑️ Excluir Reserva
+            <a href="./index.php" class="btn-voltar">← Voltar</a>
+
+            <a href="#" class="btn btn-excluir btnpopup" data-id="<?= $reserva['id_reserva'] ?>">
+                🗑️ Excluir Reserva
             </a>
 
-            <a href="./create.php?data=<?= $reserva['data_reserva'] ?>" 
-            class="btn btn-novo">
-            ➕ Nova Reserva neste dia
+            <a href="./create.php?data=<?= $reserva['data_reserva'] ?>" class="btn btn-novo">
+                ➕ Nova Reserva neste dia
             </a>
 
         </div>
 
         <div class="cadastro-area">
 
-            <a href="./index.php" class="btn-voltar">← Voltar</a>
-
-            <?php if (!empty($erro)) : ?>
+            <?php if (!empty($erro)): ?>
                 <div class="alerta erro"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
@@ -175,12 +183,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Nome *</label>
-                    <input type="text" name="nome_reserva" value="<?= htmlspecialchars($reserva['nome_reserva']) ?>" required>
+                    <input type="text" name="nome_reserva" value="<?= htmlspecialchars($reserva['nome_reserva']) ?>"
+                        required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone *</label>
-                    <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($reserva['telefone_reserva']) ?>">
+                    <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000'
+                        value="<?= htmlspecialchars($reserva['telefone_reserva']) ?>">
                 </div>
 
                 <div class="form-grupo">
@@ -203,8 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <select name="id_ambiente" required>
                         <option value="">Selecione</option>
                         <?php while ($a = $ambientes->fetch_assoc()): ?>
-                            <option value="<?= $a['id_ambiente'] ?>"
-                                <?= $a['id_ambiente'] == $reserva['id_ambiente'] ? 'selected' : '' ?>>
+                            <option value="<?= $a['id_ambiente'] ?>" <?= $a['id_ambiente'] == $reserva['id_ambiente'] ? 'selected' : '' ?>>
                                 <?= $a['nome_ambiente'] ?>
                             </option>
                         <?php endwhile; ?>
@@ -216,8 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <select name="id_funcionario">
                         <option value="">Não definido</option>
                         <?php while ($f = $funcionarios->fetch_assoc()): ?>
-                            <option value="<?= $f['id_funcionario'] ?>"
-                                <?= $f['id_funcionario'] == $reserva['id_funcionario'] ? 'selected' : '' ?>>
+                            <option value="<?= $f['id_funcionario'] ?>" <?= $f['id_funcionario'] == $reserva['id_funcionario'] ? 'selected' : '' ?>>
                                 <?= $f['nome_completo'] ?>
                             </option>
                         <?php endwhile; ?>
@@ -227,15 +235,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-grupo">
                     <label>Valor cobrado (R$) *</label>
                     <input type="number" min="0" step="0.01" name="valor_cobrado" id="valor_cobrado"
-                        value="<?= number_format($reserva['valor_cobrado'], 2, '.', '') ?>"
-                        oninput="calcularFalta()" required>
+                        value="<?= number_format($reserva['valor_cobrado'], 2, '.', '') ?>" oninput="calcularFalta()"
+                        required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Valor pago (R$)</label>
                     <input type="number" min="0" step="0.01" name="valor_pago" id="valor_pago"
-                        value="<?= number_format($reserva['valor_pago'], 2, '.', '') ?>"
-                        oninput="calcularFalta()">
+                        value="<?= number_format($reserva['valor_pago'], 2, '.', '') ?>" oninput="calcularFalta()">
                 </div>
 
                 <div class="form-grupo">
@@ -271,4 +278,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<?php include "../includes/footer.php"; ?>
+<?php include "../../includes/layout/footer.php"; ?>

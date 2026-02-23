@@ -14,10 +14,10 @@
     input {
         width: 100%;
         padding: 12px 16px;
-        border: 2px solid red;
-        border-radius: $radius-sm;
+        border: 2px solid #e0e0e0;
+        border-radius: $radius-md;
         font-size: 15px;
-        transition: border-color 0.3s;
+        transition: border-color .3s;
 
         &:focus {
             outline: none;
@@ -33,6 +33,7 @@
     box-shadow: $shadow-card;
     max-width: 700px;
     margin: 40px auto;
+    margin-top: 25px;
 
     @media (max-width: 480px) {
         padding: 25px;
@@ -58,7 +59,7 @@
         select,
         textarea {
             padding: 12px 14px;
-            border: 2px solid $border-neutral !important;
+            border: 1px solid $border-neutral !important;
             border-radius: $radius-md;
             font-size: 15px;
             transition: border-color 0.3s, box-shadow 0.3s;
@@ -68,6 +69,11 @@
                 border-color: #667eea;
                 box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
             }
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
         }
 
         &.checkbox {
@@ -87,43 +93,6 @@
     }
 }
 
-.form-botoes {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 15px;
-
-    .btn {
-        padding: 12px 20px;
-        border-radius: $radius-md;
-        font-size: 15px;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-
-        &.btn-salvar {
-            background: $gradient-100;
-            color: white;
-
-            &:hover {
-                transform: translateY(-1px);
-                box-shadow: $shadow-02;
-            }
-        }
-
-        &.btn-cancelar {
-            border: 2px solid $border-neutral;
-            background: #e0e0e0;
-            color: $text-dark;
-
-            &:hover {
-                background: #d0d0d0;
-            }
-        }
-    }
-}
-
 .error-message {
     color: $danger;
     background-color: $danger-bg;
@@ -137,4 +106,44 @@
     &.show {
         display: block;
     }
+}
+
+/* Setinha dos inputs select */
+.select-wrapper {
+    position: relative;
+
+    select {
+        width: 100%;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    &::after {
+        content: "\f078"; // ícone fa-chevron-down
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+
+        position: absolute;
+        right: 15px; // controla distância da direita
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 13px;
+
+        pointer-events: none;
+    }
+}
+
+/* Input time sem relógio */
+input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+/* Input number sem setinhas */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

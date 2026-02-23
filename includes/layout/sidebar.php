@@ -22,7 +22,6 @@
                     <button class="submenu-toggle">
                         <i class="fa-solid fa-folder-open"></i>
                         Cadastros
-                        <span class="seta">▾</span>
                     </button>
 
                     <ul class="submenu-content">

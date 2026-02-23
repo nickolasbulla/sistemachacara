@@ -32,6 +32,32 @@ body.login-page {
     }
 }
 
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    input {
+        width: 100%;
+        padding-right: 40px;
+    }
+
+    .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    font-size: 23px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #adadad;
+}
+}
+
 @media (max-width: 480px) {
     .login-container {
         padding: 30px 20px;

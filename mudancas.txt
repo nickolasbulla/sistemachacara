@@ -2,5 +2,10 @@ Mudanças E1 -> E2
 
 1. Refatoração completa do sistema
 - Nova estrutura de pastas, mais organizada
-- Redução de gambiarras
-- Renovação do CSS (Sass melhor aplicado, repetição reduzida)
+- Redução de gambiarras em geral
+- Renovação do CSS (Sass(scss) melhor aplicado, repetição reduzida)
+- Emojis substituídos por símbolos
+
+2. Praticidade do usuário
+- Novo seletor de mês e ano, pra não depender somente do nav
+- Olho no campo de senha

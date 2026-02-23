@@ -101,8 +101,9 @@ $hoje = date('Y-m-d');
 
     <main class="conteudo">
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
-            <h1>Reservas</h1>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </header>
 
         <?php if (isset($_GET['deletado']) && $_GET['deletado'] == 1): ?>
@@ -113,9 +114,46 @@ $hoje = date('Y-m-d');
         <div class="calendar-container">
 
             <div class="calendar-header">
-                <a href="?mes=<?= $mesAnterior ?>&ano=<?= $anoAnterior ?>" class="cal-nav">&laquo;</a>
-                <div class="cal-current"><?= $nomeMesAtual . ' ' . $anoAtual ?></div>
-                <a href="?mes=<?= $mesProximo ?>&ano=<?= $anoProximo ?>" class="cal-nav">&raquo;</a>
+
+                <!-- botão anterior -->
+                <a href="?mes=<?= $mesAnterior ?>&ano=<?= $anoAnterior ?>" class="cal-nav">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+
+                <!-- seletor mês + ano -->
+                <form method="GET" class="cal-selector">
+
+                    <div class="select-wrapper">
+                        <select name="mes" onchange="this.form.submit()">
+                            <?php foreach ($nomesMes as $num => $nome): ?>
+                                <option value="<?= $num ?>" <?= $num == $mesAtual ? 'selected' : '' ?>>
+                                    <?= trim($nome) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="select-wrapper">
+                        <select name="ano" onchange="this.form.submit()">
+                            <?php
+                            $anoInicio = $anoAtual - 5;
+                            $anoFim = $anoAtual + 5;
+
+                            for ($ano = $anoInicio; $ano <= $anoFim; $ano++): ?>
+                                <option value="<?= $ano ?>" <?= $ano == $anoAtual ? 'selected' : '' ?>>
+                                    <?= $ano ?>
+                                </option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+
+                </form>
+
+                <!-- botão próximo -->
+                <a href="?mes=<?= $mesProximo ?>&ano=<?= $anoProximo ?>" class="cal-nav">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
             </div>
 
             <div class="calendar-grid">
@@ -158,9 +196,9 @@ $hoje = date('Y-m-d');
                         data-date="<?= $dataDia ?>" <?= $dataAttrs ?>>
                         <span class="cal-dia-num"><?= $dia ?></span>
 
-                        <?php if ($temReservas): ?>
+                        <?php if ($qtdReservas >= 2): ?>
                             <span class="cal-dia-info">
-                                <?= $qtdReservas === 1 ? '1 reserva' : $qtdReservas . ' reservas' ?>
+                                <?= $qtdReservas ?>
                             </span>
                         <?php endif; ?>
                     </button>

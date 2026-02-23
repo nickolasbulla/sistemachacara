@@ -18,16 +18,16 @@ $funcionarios = $conn->query("SELECT id_funcionario, nome_completo FROM funciona
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $nome      = trim($_POST['nome_reserva']);
-    $tel       = trim($_POST['telefone_reserva']);
-    $data      = $_POST['data_reserva'];
-    $inicio    = $_POST['hora_inicio'];
-    $fim       = $_POST['hora_fim'];
-    $ambiente  = $_POST['id_ambiente'];
-    $func      = empty($_POST['id_funcionario']) ? null : $_POST['id_funcionario']; // pois funcionario nao precisa ser definido
+    $nome = trim($_POST['nome_reserva']);
+    $tel = trim($_POST['telefone_reserva']);
+    $data = $_POST['data_reserva'];
+    $inicio = $_POST['hora_inicio'];
+    $fim = $_POST['hora_fim'];
+    $ambiente = $_POST['id_ambiente'];
+    $func = empty($_POST['id_funcionario']) ? null : $_POST['id_funcionario']; // pois funcionario nao precisa ser definido
     $valor_cobrado = floatval($_POST['valor_cobrado']);
-    $valor_pago    = floatval($_POST['valor_pago']);
-    $obs       = trim($_POST['observacoes']);
+    $valor_pago = floatval($_POST['valor_pago']);
+    $obs = trim($_POST['observacoes']);
 
     if ($fim <= $inicio) {
         $erro = "A hora de término deve ser maior que a hora de início.";
@@ -71,8 +71,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
-        $stmt->bind_param("isssssiiids", 
-        $id_usuario,$nome, $tel, $data, $inicio, $fim, $ambiente, $func, $valor_cobrado, $valor_pago, $obs
+        $stmt->bind_param(
+            "isssssiiids",
+            $id_usuario,
+            $nome,
+            $tel,
+            $data,
+            $inicio,
+            $fim,
+            $ambiente,
+            $func,
+            $valor_cobrado,
+            $valor_pago,
+            $obs
         );
 
         $stmt->execute();
@@ -90,17 +101,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main class="conteudo">
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <h1>Nova Reserva</h1>
             <p>Preenche os dados abaixo para registrar uma nova reserva.</p>
         </header>
 
-        <a href="./index.php" class="btn-voltar">← Voltar</a>
+        <div class="header-acoes">
+            <a href="index.php" class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+        </div>
 
         <div class="cadastro-area">
 
-            <?php if (!empty($erro)) : ?>
-                <div class="alerta erro"><?=$erro ?></div>
+            <?php if (!empty($erro)): ?>
+                <div class="alerta erro"><?= $erro ?></div>
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
@@ -117,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Data da reserva *</label>
-                    <input type="date" name="data_reserva" value="<?= $data_previa ?>" required>
+                    <input type="date" name="data_reserva" value="<?= $data_previa ?>" tabindex="-1" readonly required>
                 </div>
 
                 <div class="form-grupo">
@@ -132,32 +149,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Ambiente *</label>
-                    <select name="id_ambiente" required>
-                        <option value="">Selecione</option>
-                        <?php while ($a = $ambientes->fetch_assoc()): ?>
-                            <option value="<?= $a['id_ambiente'] ?>"><?= $a['nome_ambiente'] ?></option>
-                        <?php endwhile; ?>
-                    </select>
+                    <div class="select-wrapper">
+                        <select name="id_ambiente" required>
+                            <option value="">Selecione</option>
+                            <?php while ($a = $ambientes->fetch_assoc()): ?>
+                                <option value="<?= $a['id_ambiente'] ?>">
+                                    <?= $a['nome_ambiente'] ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-grupo">
                     <label>Funcionário</label>
-                    <select name="id_funcionario">
-                        <option value="">Não definido</option>
-                        <?php while ($f = $funcionarios->fetch_assoc()): ?>
-                            <option value="<?= $f['id_funcionario'] ?>"><?= $f['nome_completo'] ?></option>
-                        <?php endwhile; ?>
-                    </select>
+                    <div class="select-wrapper">
+                        <select name="id_funcionario">
+                            <option value="">Não definido</option>
+                            <?php while ($f = $funcionarios->fetch_assoc()): ?>
+                                <option value="<?= $f['id_funcionario'] ?>">
+                                    <?= $f['nome_completo'] ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-grupo">
                     <label>Valor cobrado (R$) *</label>
-                    <input type="number" step="0.01" name="valor_cobrado" min="0" id="valor_cobrado" required oninput="calcularFalta()">
+                    <input type="number" step="0.01" name="valor_cobrado" min="0" id="valor_cobrado" required
+                        oninput="calcularFalta()">
                 </div>
 
                 <div class="form-grupo">
                     <label>Valor pago (R$)</label>
-                    <input type="number" step="0.01" name="valor_pago" min="0" id="valor_pago" oninput="calcularFalta()">
+                    <input type="number" step="0.01" name="valor_pago" min="0" id="valor_pago"
+                        oninput="calcularFalta()">
                 </div>
 
                 <div class="form-grupo">
@@ -171,7 +198,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-botoes">
-                    <button type="submit" class="btn btn-salvar">💾 Salvar</button>
+                    <button class="btn btn-salvar">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Salvar
+                    </button>
                     <a href="./index.php" class="btn btn-cancelar">Cancelar</a>
                 </div>
 

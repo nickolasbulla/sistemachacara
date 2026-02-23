@@ -1,30 +1,33 @@
-// sub-menu do painel lateral
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
+
+    // SUBMENU SIDEBAR
     const toggles = document.querySelectorAll(".submenu-toggle");
 
     toggles.forEach(toggle => {
-        toggle.addEventListener("click", function () {
-            const submenu = this.parentElement;
+        toggle.addEventListener("click", () => {
+            const submenu = toggle.parentElement;
             submenu.classList.toggle("open");
         });
     });
-});
 
-// botão de abrir/fechar menu
-document.addEventListener("DOMContentLoaded", () => {
+    // ABRIR / FECHAR SIDEBAR
     const menuToggle = document.querySelector(".menu-toggle");
     const sidebar = document.querySelector(".sidebar");
     const overlay = document.querySelector(".sidebar-overlay");
 
-    if (!menuToggle || !sidebar || !overlay) return; // segurança
+    if (!menuToggle || !sidebar || !overlay) return;
 
-    menuToggle.addEventListener("click", () => {
+    const toggleSidebar = () => {
         sidebar.classList.toggle("active");
         overlay.classList.toggle("active");
-    });
+    };
 
-    overlay.addEventListener("click", () => {
+    const closeSidebar = () => {
         sidebar.classList.remove("active");
         overlay.classList.remove("active");
-    });
+    };
+
+    menuToggle.addEventListener("click", toggleSidebar);
+    overlay.addEventListener("click", closeSidebar);
+
 });
