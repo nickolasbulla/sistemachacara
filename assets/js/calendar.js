@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnFechar = document.getElementById('fecharCalModal');
 
     dias.forEach(dia => {
-        // se for vazio (espacinho antes do dia 1), ignora
+
         if (dia.classList.contains('vazio')) return;
 
         dia.addEventListener('click', () => {
@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // 2+ reservas abre popup com lista
             if (!modal || !modalLista || !modalDataSpan) return;
 
-            // formata data
             if (data && data.includes('-')) {
                 const [y, m, d] = data.split('-');
                 modalDataSpan.textContent = `${d}/${m}/${y}`;

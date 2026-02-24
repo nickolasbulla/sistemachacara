@@ -97,7 +97,7 @@
 
 .btn-excluir i,
 .btn-novo i {
-  transform: translateY(1px);
+  transform: translateY(1.5px);
 }
 
 /* EDITAR */
@@ -171,7 +171,7 @@
 .form-botoes .btn.btn-salvar i {
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 17px;
 }
 .form-botoes .btn.btn-salvar:hover {
   transform: translateY(-1px);
@@ -495,7 +495,8 @@ body.page-calendario .calendar-container {
   box-shadow: 0 0 6px rgba(102, 126, 234, 0.4);
 }
 .form-cadastro .form-grupo textarea {
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
   min-height: 80px;
 }
 .form-cadastro .form-grupo.checkbox label {

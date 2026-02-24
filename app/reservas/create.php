@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Falta pagar (R$)</label>
-                    <input type="text" id="valor_falta" readonly>
+                    <input type="text" id="valor_falta" tabindex="-1" readonly>
                 </div>
 
                 <div class="form-grupo">

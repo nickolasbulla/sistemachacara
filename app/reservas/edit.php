@@ -206,8 +206,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-grupo">
-                    <label>Data da reserva *</label>
-                    <input type="date" name="data_reserva" value="<?= $reserva['data_reserva'] ?>" required>
+                    <label>Data da reserva</label>
+                    <input type="date" name="data_reserva" value="<?= $reserva['data_reserva'] ?>" tabindex="-1"
+                        readonly required>
                 </div>
 
                 <div class="form-grupo">
@@ -222,26 +223,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Ambiente *</label>
-                    <select name="id_ambiente" required>
-                        <option value="">Selecione</option>
-                        <?php while ($a = $ambientes->fetch_assoc()): ?>
-                            <option value="<?= $a['id_ambiente'] ?>" <?= $a['id_ambiente'] == $reserva['id_ambiente'] ? 'selected' : '' ?>>
-                                <?= $a['nome_ambiente'] ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
+                    <div class="select-wrapper">
+                        <select name="id_ambiente" required>
+                            <option value="">Selecione</option>
+                            <?php while ($a = $ambientes->fetch_assoc()): ?>
+                                <option value="<?= $a['id_ambiente'] ?>" <?= $a['id_ambiente'] == $reserva['id_ambiente'] ? 'selected' : '' ?>>
+                                    <?= $a['nome_ambiente'] ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-grupo">
-                    <label>Funcionário de limpeza</label>
-                    <select name="id_funcionario">
-                        <option value="">Não definido</option>
-                        <?php while ($f = $funcionarios->fetch_assoc()): ?>
-                            <option value="<?= $f['id_funcionario'] ?>" <?= $f['id_funcionario'] == $reserva['id_funcionario'] ? 'selected' : '' ?>>
-                                <?= $f['nome_completo'] ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
+                    <label>Funcionário</label>
+                    <div class="select-wrapper">
+                        <select name="id_funcionario">
+                            <option value="">Não definido</option>
+                            <?php while ($f = $funcionarios->fetch_assoc()): ?>
+                                <option value="<?= $f['id_funcionario'] ?>"
+                                    <?= $f['id_funcionario'] == $reserva['id_funcionario'] ? 'selected' : '' ?>>
+                                    <?= $f['nome_completo'] ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-grupo">
@@ -259,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Falta pagar (R$)</label>
-                    <input type="text" id="valor_falta" readonly>
+                    <input type="text" id="valor_falta" tabindex="-1" readonly>
                 </div>
 
                 <div class="form-grupo">

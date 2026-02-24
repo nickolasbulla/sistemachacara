@@ -4,7 +4,6 @@ function calcularFalta() {
     let cobrado = parseFloat(document.getElementById('valor_cobrado')?.value) || 0;
     let pago = parseFloat(document.getElementById('valor_pago')?.value) || 0;
 
-    // Garante que valores negativos não sejam processados
     if (cobrado < 0) cobrado = 0;
     if (pago < 0) pago = 0;
 

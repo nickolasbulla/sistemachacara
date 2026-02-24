@@ -72,7 +72,7 @@
 }
 .btn-excluir i,
 .btn-novo i {
-    transform: translateY(1px);
+    transform: translateY(1.5px);
 }
 
 /* EDITAR */
@@ -153,7 +153,7 @@
             i {
                 display: flex;
                 align-items: center;
-                font-size: 14px;
+                font-size: 17px;
             }
 
             &:hover {
