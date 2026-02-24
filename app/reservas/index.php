@@ -5,7 +5,7 @@ include '../../includes/auth/login_verify.php';
 include '../../config/db.php';
 
 $titulo_pagina = "Reservas - Chácara Portal";
-$body_class = "painel-page";
+$body_class = "painel-page page-calendario";
 include "../../includes/layout/header.php";
 
 //  calculo do mes / ano atual

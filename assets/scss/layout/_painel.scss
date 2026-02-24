@@ -144,10 +144,11 @@ body.painel-page {
 
 /* HEADER */
 .painel-header {
-    display: block;
+    position: relative;
+    display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: center; // centraliza o h1
+    padding: 20px;
 
     h1 {
         margin: 0;
@@ -161,6 +162,9 @@ body.painel-page {
         font-size: 26px;
         cursor: pointer;
         color: $text-dark;
+
+        position: absolute;
+        left: 20px;
 
         &:hover {
             color: #764ba2;
@@ -179,6 +183,14 @@ body.painel-page {
 
 /* RESPONSIVIDADE */
 @media (max-width: 1140px) {
+
+    .calendar-container {
+        margin-top: 10px;
+    }
+
+    .conteudo {
+        padding: 10px;
+    }
 
     .sidebar {
         position: fixed;

@@ -58,7 +58,10 @@
 .btn-editar,
 .btn-excluir,
 .btn-novo {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
     padding: 8px 16px;
     border-radius: $radius-md;
     font-size: 14px;
@@ -66,6 +69,10 @@
     text-decoration: none;
     transition: all 0.1s ease;
     cursor: pointer;
+}
+.btn-excluir i,
+.btn-novo i {
+    transform: translateY(1px);
 }
 
 /* EDITAR */
@@ -100,33 +107,30 @@
 }
 
 /* VOLTAR */
-.header-acoes {
-    margin: 20px 0 0 0;
+.btn-voltar {
+    border: 1px solid $border-neutral;
+    background: #ddd;
+    color: $text-dark;
+    padding: 10px 16px;
+    border-radius: $radius-sm;
+    font-weight: 600;
+    text-decoration: none;
 
-    .btn-voltar {
-        border: 1px solid $border-neutral;
-        background: #ddd;
-        color: $text-dark;
-        padding: 10px 16px;
-        border-radius: $radius-sm;
-        font-weight: 600;
-        text-decoration: none;
+    i {
+        margin-right: 4px;
+    }
 
-        i {
-            margin-right: 4px;
-        }
-
-        &:hover {
-            background: #ccc;
-        }
+    &:hover {
+        background: #ccc;
     }
 }
+
 
 /* FORM */
 .form-botoes {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 12px;
     margin-top: 15px;
 
@@ -138,12 +142,18 @@
         border: none;
         cursor: pointer;
 
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
         &.btn-salvar {
             background: $gradient-100;
             color: white;
 
             i {
-                margin-right: 4px;
+                display: flex;
+                align-items: center;
+                font-size: 14px;
             }
 
             &:hover {

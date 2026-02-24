@@ -54,16 +54,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 modalLista.innerHTML = '<p>Não foi possível carregar as reservas.</p>';
             } else {
                 reservas.forEach(r => {
-                    const pagoTxt = r.pago == 1 ? 'Pago' : 'Pendente';
+
+                    const valorPago = parseFloat(r.valor_pago || 0);
+                    const valorCobrado = parseFloat(r.valor_cobrado || 0);
+
+                    const pagoTxt = valorPago >= valorCobrado ? 'Pago' : 'Pendente';
+
                     const item = document.createElement('div');
                     item.className = 'cal-reserva-item';
+
                     item.innerHTML = `
                         <div class="cal-reserva-info">
                             <strong>${r.nome_reserva}</strong><br>
-                            <small>${r.hora_inicio} até ${r.hora_fim} — ${pagoTxt}</small>
+                            <small>
+                                ${r.hora_inicio} até ${r.hora_fim} — ${pagoTxt}
+                            </small>
                         </div>
-                        <a href="edit.php?id=${r.id_reserva}" class="btn btn-editar">Abrir</a>
+
+                        <a href="edit.php?id=${r.id_reserva}" 
+                        class="btn btn-editar">
+                        Abrir
+                        </a>
                     `;
+
                     modalLista.appendChild(item);
                 });
             }

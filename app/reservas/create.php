@@ -105,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fa-solid fa-bars"></i>
             </button>
             <h1>Nova Reserva</h1>
-            <p>Preenche os dados abaixo para registrar uma nova reserva.</p>
         </header>
 
         <div class="header-acoes">
@@ -133,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-grupo">
-                    <label>Data da reserva *</label>
+                    <label>Data da reserva</label>
                     <input type="date" name="data_reserva" value="<?= $data_previa ?>" tabindex="-1" readonly required>
                 </div>
 

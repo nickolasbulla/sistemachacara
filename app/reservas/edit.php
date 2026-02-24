@@ -159,16 +159,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main class="conteudo">
 
-        <div class="form-botoes" style="justify-content: space-between; margin-bottom: 20px;">
+        <header class="painel-header">
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </header>
 
-            <a href="./index.php" class="btn-voltar">← Voltar</a>
+        <div class="form-botoes">
+
+            <a href="index.php" class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
 
             <a href="#" class="btn btn-excluir btnpopup" data-id="<?= $reserva['id_reserva'] ?>">
-                🗑️ Excluir Reserva
+
+                <i class="fa-solid fa-trash"></i>
+                Excluir Reserva
             </a>
 
             <a href="./create.php?data=<?= $reserva['data_reserva'] ?>" class="btn btn-novo">
-                ➕ Nova Reserva neste dia
+
+                <i class="fa-solid fa-plus"></i>
+                Nova Reserva neste dia
             </a>
 
         </div>
@@ -256,7 +268,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-botoes">
-                    <button type="submit" class="btn btn-salvar">💾 Salvar</button>
+                    <button class="btn btn-salvar">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Salvar
+                    </button>
                     <a href="./index.php" class="btn btn-cancelar">Cancelar</a>
                 </div>
 
