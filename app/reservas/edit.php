@@ -42,10 +42,8 @@ if (!$reserva) {
     exit;
 }
 
-// busca ambientes
 $ambientes = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHERE ativo = 1 ORDER BY nome_ambiente");
 
-// busca funcionários
 $funcionarios = $conn->query("SELECT id_funcionario, nome_completo FROM funcionarios WHERE ativo = 1 ORDER BY nome_completo");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -168,19 +166,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="form-botoes">
 
             <a href="index.php" class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i> Voltar
+                <i class="fa-solid fa-arrow-left"></i>
+                Voltar
             </a>
 
             <a href="#" class="btn btn-excluir btnpopup" data-id="<?= $reserva['id_reserva'] ?>">
 
                 <i class="fa-solid fa-trash"></i>
                 Excluir Reserva
-            </a>
-
-            <a href="./create.php?data=<?= $reserva['data_reserva'] ?>" class="btn btn-novo">
-
-                <i class="fa-solid fa-plus"></i>
-                Nova Reserva neste dia
             </a>
 
         </div>

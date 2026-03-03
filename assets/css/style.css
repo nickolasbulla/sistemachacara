@@ -1,6 +1,10 @@
 @charset "UTF-8";
 /* Gradientes */
 /* Cores */
+/*
+$edit: #ffd966;
+$edit-hover: #ffe599;
+*/
 /* Borders radius */
 /* Sombras */
 /* Feedback*/
@@ -50,7 +54,8 @@
 }
 
 .btn-confirmar,
-.btn-cancelar {
+.btn-cancelar,
+.btn-fechar {
   padding: 10px 18px;
   border-radius: 8px;
   font-size: 15px;
@@ -64,10 +69,11 @@
 
 .btn-cancelar {
   background: #e0e0e0;
-  color: #333;
+  color: black;
 }
 .btn-cancelar:hover {
-  background: #d0d0d0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .btn-confirmar {
@@ -102,11 +108,15 @@
 
 /* EDITAR */
 .btn-editar {
-  background: #ffd966;
-  color: #333;
+  background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 .btn-editar:hover {
-  background: #ffe599;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+.btn-editar i {
+  transform: translateY(1px);
 }
 
 /* EXCLUIR */
@@ -115,24 +125,41 @@
   color: white;
 }
 .btn-excluir:hover {
-  background: #ff5b4c;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* NOVO */
 .btn-novo {
   background: linear-gradient(150deg, #667eea 0%, #764ba2 100%);
   color: white;
+  height: 43px;
+  border: none;
+  border-radius: 8px;
+}
+.btn-novo:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 .btn-novo:hover {
   transform: translateY(-1px);
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
+.btn-fechar {
+  background: #e0e0e0;
+  color: black;
+  height: 43px;
+}
+.btn-fechar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
 /* VOLTAR */
 .btn-voltar {
-  border: 1px solid #969696;
   background: #ddd;
-  color: #333;
+  color: black;
   padding: 10px 16px;
   border-radius: 6px;
   font-weight: 600;
@@ -142,7 +169,8 @@
   margin-right: 4px;
 }
 .btn-voltar:hover {
-  background: #ccc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* FORM */
@@ -151,7 +179,6 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   gap: 12px;
-  margin-top: 15px;
 }
 .form-botoes .btn {
   padding: 12px 20px;
@@ -178,12 +205,41 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 .form-botoes .btn.btn-cancelar {
-  border: 1px solid #969696;
   background: #e0e0e0;
-  color: #333;
+  color: black;
 }
 .form-botoes .btn.btn-cancelar:hover {
-  background: #d0d0d0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.popup-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn-relatorio {
+  align-self: flex-start;
+  background: linear-gradient(150deg, #667eea 0%, #764ba2 75%);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-relatorio:hover {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+.btn-relatorio:active {
+  transform: scale(0.92);
 }
 
 /* CALENDÁRIO CRUD RESERVAS */
@@ -274,7 +330,7 @@
   height: 100%;
   gap: 6px;
   overflow: hidden;
-  padding-bottom: 2px;
+  padding: 0px 3px 3px 3px;
 }
 .calendar-container .calendar-grid .cal-weekday {
   text-align: center;
@@ -310,7 +366,8 @@
   color: #fff;
 }
 .calendar-container .calendar-grid .cal-dia.hoje {
-  box-shadow: 0 0 0 2px #667eea;
+  border: none !important;
+  box-shadow: 0 0 0 3px #667eea;
 }
 .calendar-container .calendar-grid .cal-dia:hover {
   transform: translateY(-1px);
@@ -502,12 +559,19 @@ body.page-calendario .calendar-container {
 .form-cadastro .form-grupo.checkbox label {
   display: flex;
   align-items: center;
+  gap: 4px;
   font-weight: 500;
-  color: #333;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.form-cadastro .form-grupo.checkbox label:hover {
+  opacity: 0.8;
 }
 .form-cadastro .form-grupo.checkbox input[type=checkbox] {
-  margin-right: 8px;
-  transform: scale(1.5);
+  margin: 0 5px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 
 .error-message {
@@ -558,6 +622,12 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Input date sem calendário */
+input[type=date]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
 }
 
 .popup-modal {
@@ -643,6 +713,20 @@ input[type=number]::-webkit-outer-spin-button {
   gap: 10px;
 }
 
+/* Ícones ativo / inativo */
+td i.fa-check {
+  color: #22c55e;
+  font-size: 22px;
+  padding: 6px;
+  border-radius: 6px;
+}
+td i.fa-xmark {
+  color: #ef4444;
+  font-size: 22px;
+  padding: 6px;
+  border-radius: 6px;
+}
+
 /* Responsividade */
 @media (max-width: 900px) {
   .tabela-wrapper {
@@ -673,6 +757,9 @@ input[type=number]::-webkit-outer-spin-button {
     padding: 15px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
   }
+  .tabela-crud tr:hover {
+    background: none !important;
+  }
   .tabela-crud td {
     display: flex;
     justify-content: space-between;
@@ -690,6 +777,10 @@ input[type=number]::-webkit-outer-spin-button {
     font-weight: 600;
     color: #666;
     min-width: 70px;
+  }
+  .tabela-crud td i.fa-check,
+  .tabela-crud td i.fa-xmark {
+    padding: 0;
   }
   .tabela-crud td[data-label=Ações] {
     flex-direction: row;
@@ -949,4 +1040,36 @@ body.login-page {
   .login-container {
     padding: 30px 20px;
   }
+}
+.relatorios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.relatorios-grid .relatorio-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  transition: 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.relatorios-grid .relatorio-card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 10px;
+}
+.relatorios-grid .relatorio-card p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+.relatorios-grid .relatorio-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
 }/*# sourceMappingURL=style.css.map */

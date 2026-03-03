@@ -23,7 +23,8 @@
 }
 
 .btn-confirmar,
-.btn-cancelar {
+.btn-cancelar,
+.btn-fechar {
     padding: 10px 18px;
     border-radius: $radius-md;
     font-size: 15px;
@@ -37,10 +38,11 @@
 
 .btn-cancelar {
     background: #e0e0e0;
-    color: $text-dark;
+    color: black;
 
     &:hover {
-        background: #d0d0d0;
+        transform: translateY(-1px);
+        box-shadow: $shadow-soft;
     }
 }
 
@@ -70,6 +72,7 @@
     transition: all 0.1s ease;
     cursor: pointer;
 }
+
 .btn-excluir i,
 .btn-novo i {
     transform: translateY(1.5px);
@@ -77,11 +80,16 @@
 
 /* EDITAR */
 .btn-editar {
-    background: $edit;
-    color: $text-dark;
+    background: $gradient-100;
+    color: white;
 
     &:hover {
-        background: $edit-hover;
+        transform: translateY(-1px);
+        box-shadow: $shadow-02;
+    }
+
+    i {
+        transform: translateY(1px);
     }
 }
 
@@ -91,7 +99,8 @@
     color: white;
 
     &:hover {
-        background: $danger-hover;
+        transform: translateY(-1px);
+        box-shadow: $shadow-02;
     }
 }
 
@@ -99,6 +108,14 @@
 .btn-novo {
     background: $gradient-100;
     color: white;
+    height: 43px;
+    border: none;
+    border-radius: $radius-md;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: $shadow-02;
+    }
 
     &:hover {
         transform: translateY(-1px);
@@ -106,11 +123,21 @@
     }
 }
 
+.btn-fechar {
+    background: #e0e0e0;
+    color: black;
+    height: 43px;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: $shadow-soft;
+    }
+}
+
 /* VOLTAR */
 .btn-voltar {
-    border: 1px solid $border-neutral;
     background: #ddd;
-    color: $text-dark;
+    color: black;
     padding: 10px 16px;
     border-radius: $radius-sm;
     font-weight: 600;
@@ -121,10 +148,10 @@
     }
 
     &:hover {
-        background: #ccc;
+        transform: translateY(-1px);
+        box-shadow: $shadow-soft;
     }
 }
-
 
 /* FORM */
 .form-botoes {
@@ -132,7 +159,6 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 12px;
-    margin-top: 15px;
 
     .btn {
         padding: 12px 20px;
@@ -163,13 +189,45 @@
         }
 
         &.btn-cancelar {
-            border: 1px solid $border-neutral;
             background: #e0e0e0;
-            color: $text-dark;
+            color: black;
 
             &:hover {
-                background: #d0d0d0;
+                transform: translateY(-1px);
+                box-shadow: $shadow-soft;
             }
         }
+    }
+}
+
+.popup-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+//* RELATÓRIO */
+.btn-relatorio {
+    align-self: flex-start;
+    background: $gradient-75;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    &:hover {
+        box-shadow: $shadow-02;
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: scale(0.92);
     }
 }

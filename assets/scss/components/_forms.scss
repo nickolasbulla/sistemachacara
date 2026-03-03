@@ -82,13 +82,21 @@
             label {
                 display: flex;
                 align-items: center;
+                gap: 4px;
                 font-weight: 500;
-                color: $text-dark;
+                cursor: pointer;
+                transition: .2s ease;
+
+                &:hover {
+                    opacity: .8;
+                }
             }
 
             input[type="checkbox"] {
-                margin-right: 8px;
-                transform: scale(1.5);
+                margin: 0 5px;
+                width: 20px;
+                height: 20px;
+                cursor: pointer;
             }
         }
     }
@@ -127,7 +135,7 @@
         font-weight: 900;
 
         position: absolute;
-        right: 15px; // controla distância da direita
+        right: 15px;
         top: 50%;
         transform: translateY(-50%);
         font-size: 13px;
@@ -147,4 +155,10 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+/* Input date sem calendário */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
 }

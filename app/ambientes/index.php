@@ -1,10 +1,12 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
+
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
+
 $titulo_pagina = "Ambientes - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
-include '../includes/header.php';
+$body_class = "painel-page";
+include "../../includes/layout/header.php";
 
 if (isset($_GET['delete_id'])) {
 
@@ -27,15 +29,16 @@ if (isset($_GET['delete_id'])) {
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
 
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <h1>Ambientes</h1>
-            <p>Gerencie os ambientes do sistema.</p>
         </header>
 
         <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
@@ -47,11 +50,14 @@ if (isset($_GET['delete_id'])) {
         <?php endif; ?>
 
         <div class="area-crud">
-            <a href="./create.php" class="btn btn-novo">+ Novo Ambiente</a>
+            <a href="./create.php" class="btn btn-novo">
+                <i class="fa-solid fa-plus"></i>
+                Novo Ambiente
+            </a>
 
             <?php
-                $query = "SELECT * FROM ambientes ORDER BY id_ambiente DESC";
-                $result = $conn->query($query);
+            $query = "SELECT * FROM ambientes ORDER BY id_ambiente DESC";
+            $result = $conn->query($query);
             ?>
             <div class="tabela-wrapper">
                 <table class="tabela-crud">
@@ -70,10 +76,18 @@ if (isset($_GET['delete_id'])) {
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_ambiente']) ?></td>
                                 <td data-label="Capacidade"><?= htmlspecialchars($row['capacidade']) ?></td>
                                 <td data-label="Descrição"><?= $row['descricao'] ?></td>
-                                <td data-label="Ativo"><?= $row['ativo'] ? '✅' : '❌' ?></td>
+                                <td data-label="Ativo">
+                                    <?= $row['ativo'] ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>' ?>
+                                </td>
                                 <td data-label="Ações">
-                                    <a href="./edit.php?id=<?= $row['id_ambiente'] ?>" class="btn-editar">Selecionar</a>
-                                    <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_ambiente'] ?>">🗑️ Excluir</a>
+                                    <a href="./edit.php?id=<?= $row['id_ambiente'] ?>" class="btn-editar">
+                                        <i class="fa-solid fa-hand-pointer"></i>
+                                        Selecionar
+                                    </a>
+                                    <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_ambiente'] ?>">
+                                        <i class="fa-solid fa-trash"></i>
+                                        Excluir
+                                    </a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -95,6 +109,4 @@ if (isset($_GET['delete_id'])) {
     </div>
 </div>
 
-<?php 
-include '../includes/footer.php'; 
-?>
+<?php include '../../includes/layout/footer.php'; ?>

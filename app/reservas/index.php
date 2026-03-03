@@ -8,11 +8,11 @@ $titulo_pagina = "Reservas - Chácara Portal";
 $body_class = "painel-page page-calendario";
 include "../../includes/layout/header.php";
 
-//  calculo do mes / ano atual
+// calendario
 $mesAtual = isset($_GET['mes']) ? (int) $_GET['mes'] : (int) date('m');
 $anoAtual = isset($_GET['ano']) ? (int) $_GET['ano'] : (int) date('Y');
 
-// ajusta mês fora do range 1-12
+// ajusta para range 1-12
 if ($mesAtual < 1) {
     $mesAtual = 12;
     $anoAtual--;
@@ -57,7 +57,6 @@ if ($mesProximo > 12) {
 }
 
 //  busca das reservas do mes
-
 $inicioMes = date('Y-m-01', $primeiroDiaMes);
 $fimMes = date('Y-m-t', $primeiroDiaMes);
 
@@ -208,13 +207,26 @@ $hoje = date('Y-m-d');
     </main>
 </div>
 
-<!-- popup do calendário para dias com mais de uma reserva -->
+<!-- Modal de reservas do dia -->
 <div id="calendarModal" class="popup-modal">
     <div class="popup-box">
-        <h2>Reservas do dia <span id="calModalData"></span></h2>
+        <h2>
+            Reservas do dia <span id="calModalData"></span>
+        </h2>
+
         <div id="calModalLista"></div>
+
         <div class="popup-buttons">
-            <button id="fecharCalModal" class="btn btn-cancelar">Fechar</button>
+
+            <button id="fecharCalModal" class="btn btn-fechar">
+                Fechar
+            </button>
+
+            <a href="#" id="btnNovaReservaDia" class="btn btn-novo">
+                <i class="fa-solid fa-plus"></i>
+                Nova reserva
+            </a>
+            
         </div>
     </div>
 </div>

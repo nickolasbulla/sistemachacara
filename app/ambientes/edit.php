@@ -1,10 +1,12 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
+
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
+
 $titulo_pagina = "Ambientes - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
-include "../includes/header.php";
+$body_class = "painel-page";
+include "../../includes/layout/header.php";
 
 $id = $_GET['id'] ?? null;
 $erro = '';
@@ -58,18 +60,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
-            <h1>Novo Ambiente</h1>
-            <p>Cadastre um novo ambiente do sistema.</p>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </header>
 
+        <a href="./index.php" class="btn-voltar">
+            <i class="fa-solid fa-arrow-left"></i>
+            Voltar
+        </a>
+
         <div class="cadastro-area">
-            <a href="./index.php" class="btn-voltar">← Voltar</a>
 
             <?php if (!empty($erro)): ?>
                 <div class="alerta erro"><?= htmlspecialchars($erro) ?></div>
@@ -84,12 +90,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Capacidade: *</label>
-                    <input type="number" name="capacidade" value="<?= htmlspecialchars($ambiente['capacidade']) ?>" required>
+                    <input type="number" name="capacidade" value="<?= htmlspecialchars($ambiente['capacidade']) ?>"
+                        required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Descrição: *</label>
-                    <input type="text" name="descricao" value="<?= htmlspecialchars($ambiente['descricao']) ?>" required>
+                    <input type="text" name="descricao" value="<?= htmlspecialchars($ambiente['descricao']) ?>"
+                        required>
                 </div>
 
                 <div class="form-grupo">
@@ -104,7 +112,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-botoes">
-                    <button type="submit" class="btn btn-salvar">💾 Salvar</button>
+                    <button class="btn btn-salvar">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Salvar
+                    </button>
                     <a href="./index.php" class="btn btn-cancelar">Cancelar</a>
                 </div>
             </form>
@@ -112,4 +123,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
 </div>
 
-<?php include "../includes/footer.php"; ?>
+<?php include '../../includes/layout/footer.php'; ?>

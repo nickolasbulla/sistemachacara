@@ -65,6 +65,23 @@
     }
 }
 
+/* Ícones ativo / inativo */
+td {
+    i.fa-check {
+        color: #22c55e;
+        font-size: 22px;
+        padding: 6px;
+        border-radius: 6px;
+    }
+
+    i.fa-xmark {
+        color: #ef4444;
+        font-size: 22px;
+        padding: 6px;
+        border-radius: 6px;
+    }
+}
+
 /* Responsividade */
 @media (max-width: 900px) {
 
@@ -99,6 +116,10 @@
             border-radius: 10px;
             padding: 15px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+
+            &:hover {
+                background: none !important;
+            }
         }
 
         td {
@@ -121,6 +142,10 @@
                 font-weight: 600;
                 color: $text-gray;
                 min-width: 70px;
+            }
+            i.fa-check,
+            i.fa-xmark {
+                padding: 0;
             }
         }
 

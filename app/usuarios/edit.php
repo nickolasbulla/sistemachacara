@@ -1,10 +1,12 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
+
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
+
 $titulo_pagina = "Usuários - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
-include "../includes/header.php";
+$body_class = "painel-page";
+include "../../includes/layout/header.php";
 
 $id = $_GET['id'] ?? null;
 
@@ -48,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $observacoes = $_POST['observacoes'];
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-    // verifica se existe outro login igual
     $check = $conn->prepare("SELECT id_usuario FROM usuarios WHERE login = ? AND id_usuario != ?");
     $check->bind_param("si", $login, $id);
     $check->execute();
@@ -64,15 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($erro) && $alterarSenha) {
         if (empty($novaSenha) || empty($confirmarSenha)) {
             $erro = "Para alterar a senha, preencha a Nova Senha e a Confirmação.";
-        } 
-        elseif ($novaSenha !== $confirmarSenha) {
+        } elseif ($novaSenha !== $confirmarSenha) {
             $erro = "A nova senha e a confirmação não coincidem.";
-        } 
-        elseif ($is_self_edit) {
+        } elseif ($is_self_edit) {
             if (empty($senhaAtual)) {
                 $erro = "Para alterar sua própria senha, você deve informar a Senha Atual.";
-            } 
-            elseif (!password_verify($senhaAtual, $usuario['senha'])) {
+            } elseif (!password_verify($senhaAtual, $usuario['senha'])) {
                 $erro = "A Senha Atual está incorreta.";
             }
         }
@@ -102,7 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
 
         } else {
-            // sem alterar senha
             $stmt = $conn->prepare(
                 "UPDATE usuarios
                  SET nome_completo=?, login=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
@@ -133,27 +130,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
-            <h1>Editar Usuário</h1>
-            <p>Atualize as informações deste usuário.</p>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </header>
 
-        <div class="cadastro-area">
-            <a href="./index.php" class="btn-voltar">← Voltar</a>
+        <a href="./index.php" class="btn-voltar">
+            <i class="fa-solid fa-arrow-left"></i>
+            Voltar
+        </a>
 
-            <?php if (!empty($erro)) : ?>
+        <div class="cadastro-area">
+
+            <?php if (!empty($erro)): ?>
                 <div class="alerta erro"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
                 <div class="form-grupo">
                     <label>Nome completo: *</label>
-                    <input type="text" name="nome_completo" value="<?= htmlspecialchars($usuario['nome_completo']) ?>" required>
+                    <input type="text" name="nome_completo" value="<?= htmlspecialchars($usuario['nome_completo']) ?>"
+                        required>
                 </div>
 
                 <div class="form-grupo">
@@ -161,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="text" name="login" value="<?= htmlspecialchars($usuario['login']) ?>" required>
                 </div>
 
-                <?php if ($is_self_edit) : ?>
+                <?php if ($is_self_edit): ?>
                     <div class="form-grupo">
                         <label>Senha atual:</label>
                         <input type="password" name="senha_atual" placeholder="Digite sua senha atual">
@@ -180,20 +182,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Tipo de permissão: *</label>
-                    <select name="tipo_permissao" required>
-                        <option value="admin" <?= $usuario['tipo_permissao'] === 'admin' ? 'selected' : '' ?>>Administrador</option>
-                        <option value="reserveiro" <?= $usuario['tipo_permissao'] === 'reserveiro' ? 'selected' : '' ?>>Reserveiro</option>
-                    </select>
+                    <div class="select-wrapper">
+                        <select name="tipo_permissao" required>
+                            <option value="admin" <?= $usuario['tipo_permissao'] === 'admin' ? 'selected' : '' ?>>
+                                Administrador
+                            </option>
+                            <option value="reserveiro" <?= $usuario['tipo_permissao'] === 'reserveiro' ? 'selected' : '' ?>>
+                                Reserveiro</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="date" name="data_nascimento" value="<?= htmlspecialchars($usuario['data_nascimento']) ?>">
+                    <input type="date" name="data_nascimento" tabindex="-1"
+                        value="<?= htmlspecialchars($usuario['data_nascimento']) ?>">
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone:</label>
-                    <input type="text" name="telefone" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($usuario['telefone']) ?>">
+                    <input type="text" name="telefone" data-mask='(00) 00000 - 0000'
+                        value="<?= htmlspecialchars($usuario['telefone']) ?>">
                 </div>
 
                 <div class="form-grupo">
@@ -208,7 +217,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-botoes">
-                    <button type="submit" class="btn btn-salvar">💾 Salvar</button>
+                    <button class="btn btn-salvar">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Salvar
+                    </button>
                     <a href="./index.php" class="btn btn-cancelar">Cancelar</a>
                 </div>
             </form>
@@ -216,4 +228,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
 </div>
 
-<?php include "../includes/footer.php"; ?>
+<?php include '../../includes/layout/footer.php'; ?>

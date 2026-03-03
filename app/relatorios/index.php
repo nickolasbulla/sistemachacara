@@ -1,23 +1,26 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
-$titulo_pagina = "Relatórios - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css", "../assets/css/relatorios.css"];
-include "../includes/header.php";
+
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
+
+$titulo_pagina = "Funcionários - Chácara Portal";
+$body_class = "painel-page";
+include "../../includes/layout/header.php";
 ?>
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
 
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <h1>Relatórios</h1>
-            <p>Gere arquivos PDF com informações do sistema.</p>
         </header>
 
         <div class="relatorios-grid">
@@ -48,56 +51,4 @@ include "../includes/header.php";
     </main>
 </div>
 
-<!-- popup personalizado para os relatorios -->
-<div id="relatorioModal" class="popup-modal">
-    <div class="popup-box">
-        <h2 id="tituloRelatorio">Gerar Relatório</h2>
-
-        <form id="formRelatorio" method="GET" action="">
-            
-            <!-- período -->
-            <div id="campoPeriodo" style="display:none; margin-bottom: 15px;">
-                <label>Data inicial:</label>
-                <input type="date" name="inicio">
-
-                <label style="margin-top:10px;">Data final:</label>
-                <input type="date" name="fim">
-            </div>
-
-            <!-- usuário -->
-            <div id="campoUsuario" style="display:none; margin-bottom: 15px;">
-                <label>Selecione o usuário:</label>
-                <select name="id_usuario">
-                    <option value="">Selecione</option>
-                    <?php
-                        $users = $conn->query("SELECT id_usuario, nome_completo FROM usuarios ORDER BY nome_completo");
-                        while ($u = $users->fetch_assoc()):
-                    ?>
-                        <option value="<?= $u['id_usuario'] ?>"><?= $u['nome_completo'] ?></option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-            
-            <div id="campoAmbiente" style="display:none; margin-bottom:15px;">
-                <label>Selecione o ambiente:</label>
-                <select name="id_ambiente" required>
-                    <option value="">Selecione</option>
-                    <?php
-                        $ambs = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes ORDER BY nome_ambiente");
-                        while ($a = $ambs->fetch_assoc()):
-                    ?>
-                        <option value="<?= $a['id_ambiente'] ?>"><?= $a['nome_ambiente'] ?></option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-
-            <div class="popup-buttons" style="margin-top:20px;">
-                <button type="button" id="cancelRelatorio" class="btn btn-cancelar">Cancelar</button>
-                <button type="submit" class="btn btn-confirmar">Gerar PDF</button>
-            </div>
-        </form>
-
-    </div>
-</div>
-
-<?php include "../includes/footer.php"; ?>
+<?php include '../../includes/layout/footer.php'; ?>

@@ -1,12 +1,13 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
-$titulo_pagina = "Funcionários - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
-include "../includes/header.php";
 
-// se o formulário foi enviado
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
+
+$titulo_pagina = "Funcionários - Chácara Portal";
+$body_class = "painel-page";
+include "../../includes/layout/header.php";
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nome_completo = $_POST["nome_completo"];
     $data_nascimento = $_POST["data_nascimento"];
@@ -14,7 +15,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $observacoes = $_POST["observacoes"];
     $ativo = isset($_POST["ativo"]) ? 1 : 0;
 
-    // verifica se o funcionario existe
     $check = $conn->prepare("SELECT id_funcionario FROM funcionarios WHERE nome_completo = ?");
     $check->bind_param("s", $nome_completo);
     $check->execute();
@@ -46,20 +46,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <h1>Novo Funcionário</h1>
-            <p>Cadastre um novo funcionário do sistema.</p>
         </header>
 
-        <div class="cadastro-area">
-            <a href="./index.php" class="btn-voltar">← Voltar</a>
+        <a href="./index.php" class="btn-voltar">
+            <i class="fa-solid fa-arrow-left"></i>
+            Voltar
+        </a>
 
-            <?php if (!empty($erro)) : ?>
+        <div class="cadastro-area">
+
+            <?php if (!empty($erro)): ?>
                 <div class="alerta erro"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
@@ -91,7 +96,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="form-botoes">
-                    <button type="submit" class="btn btn-salvar">💾 Salvar</button>
+                    <button class="btn btn-salvar">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Salvar
+                    </button>
                     <a href="./index.php" class="btn btn-cancelar">Cancelar</a>
                 </div>
             </form>
@@ -99,4 +107,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </main>
 </div>
 
-<?php include "../includes/footer.php"; ?>
+<?php include '../../includes/layout/footer.php'; ?>

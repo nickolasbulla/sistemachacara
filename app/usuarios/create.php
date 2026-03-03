@@ -1,10 +1,12 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
+
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
+
 $titulo_pagina = "Usuários - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
-include "../includes/header.php";
+$body_class = "painel-page";
+include "../../includes/layout/header.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nome_completo = $_POST["nome_completo"];
@@ -47,20 +49,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <h1>Novo Usuário</h1>
-            <p>Cadastre um novo usuário do sistema.</p>
         </header>
 
-        <div class="cadastro-area">
-            <a href="./index.php" class="btn-voltar">← Voltar</a>
+        <a href="./index.php" class="btn-voltar">
+            <i class="fa-solid fa-arrow-left"></i>
+            Voltar
+        </a>
 
-            <?php if (!empty($erro)) : ?>
+        <div class="cadastro-area">
+
+            <?php if (!empty($erro)): ?>
                 <div class="alerta erro"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
@@ -82,15 +89,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="form-grupo">
                     <label>Tipo de permissão: *</label>
-                    <select name="tipo_permissao" required>
-                        <option value="admin">Administrador</option>
-                        <option value="reserveiro">Reserveiro</option>
-                    </select>
+                    <div class="select-wrapper">
+                        <select name="tipo_permissao" required>
+                            <option value="admin">Administrador</option>
+                            <option value="reserveiro">Reserveiro</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="date" name="data_nascimento">
+                    <input type="date" name="data_nascimento" min="1900-01-01" max="<?= date('Y-m-d') ?>" required>
                 </div>
 
                 <div class="form-grupo">
@@ -104,13 +113,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <div class="form-grupo checkbox">
-                    <label>
-                        <input type="checkbox" name="ativo" checked> Usuário ativo
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="ativo" checked>
+                        <span class="checkmark"></span>
+                        Usuário ativo
                     </label>
                 </div>
 
                 <div class="form-botoes">
-                    <button type="submit" class="btn btn-salvar">💾 Salvar</button>
+                    <button class="btn btn-salvar">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Salvar
+                    </button>
                     <a href="./index.php" class="btn btn-cancelar">Cancelar</a>
                 </div>
             </form>
@@ -118,4 +132,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </main>
 </div>
 
-<?php include "../includes/footer.php"; ?>
+<?php include '../../includes/layout/footer.php'; ?>

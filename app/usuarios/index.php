@@ -1,16 +1,17 @@
 <?php
 session_start();
-include '../includes/login_verify.php';
-include '../includes/db.php';
+
+include '../../includes/auth/login_verify.php';
+include '../../config/db.php';
+
 $titulo_pagina = "Usuários - Chácara Portal";
-$css_pagina = ["../assets/css/painel.css", "../assets/css/crud.css"];
-include '../includes/header.php';
+$body_class = "painel-page";
+include "../../includes/layout/header.php";
 
 if (isset($_GET['delete_id'])) {
 
     $id = (int) $_GET['delete_id'];
 
-    // impedir que o usuário apague ele mesmo
     if ($id === $_SESSION['usuario_id']) {
         header("Location: index.php?erro=nao_pode_se_excluir");
         exit;
@@ -27,7 +28,6 @@ if (isset($_GET['delete_id'])) {
 
     } catch (mysqli_sql_exception $e) {
 
-        // cai aqui quando o usuário tem reservas relacionadas
         header("Location: index.php?erro_relacionado=1");
         exit;
     }
@@ -36,15 +36,16 @@ if (isset($_GET['delete_id'])) {
 
 <div class="painel-container">
 
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../../includes/layout/sidebar.php'; ?>
 
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
         <header class="painel-header">
-            <button class="menu-toggle">☰</button>
+            <button class="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <h1>Usuários</h1>
-            <p>Gerencie os usuários do sistema.</p>
         </header>
 
         <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
@@ -56,7 +57,10 @@ if (isset($_GET['delete_id'])) {
         <?php endif; ?>
 
         <div class="area-crud">
-            <a href="./create.php" class="btn btn-novo">+ Novo Usuário</a>
+            <a href="./create.php" class="btn btn-novo">
+                <i class="fa-solid fa-plus"></i>
+                Novo Usuário
+            </a>
 
             <?php
             $query = "SELECT * FROM usuarios ORDER BY id_usuario DESC";
@@ -79,13 +83,20 @@ if (isset($_GET['delete_id'])) {
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Login"><?= htmlspecialchars($row['login']) ?></td>
                                 <td data-label="Permissão"><?= ($row['tipo_permissao']) ?></td>
-                                <td data-label="Ativo"><?= $row['ativo'] ? '✅' : '❌' ?></td>
+                                <td data-label="Ativo">
+                                    <?= $row['ativo'] ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>' ?>
+                                </td>
                                 <td data-label="Ações">
-                                    <a href="./edit.php?id=<?= $row['id_usuario'] ?>" class="btn-editar">Selecionar</a>
+                                    <a href="./edit.php?id=<?= $row['id_usuario'] ?>" class="btn-editar">
+                                        <i class="fa-solid fa-hand-pointer"></i>
+                                        Selecionar
+                                    </a>
                                     <!-- usuario nao pode excluir ele mesmo, botão nao aparece. -->
                                     <?php if ($row['id_usuario'] != $_SESSION['usuario_id']): ?>
-                                        <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_usuario'] ?>">🗑️
-                                            Excluir</a>
+                                        <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_usuario'] ?>">
+                                            <i class="fa-solid fa-trash"></i>
+                                            Excluir
+                                        </a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -109,6 +120,4 @@ if (isset($_GET['delete_id'])) {
     </div>
 </div>
 
-<?php
-include '../includes/footer.php';
-?>
+<?php include '../../includes/layout/footer.php'; ?>
