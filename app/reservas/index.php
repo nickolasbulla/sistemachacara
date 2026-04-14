@@ -7,6 +7,7 @@ include '../../config/db.php';
 $titulo_pagina = "Reservas - Chácara Portal";
 $body_class = "painel-page page-calendario";
 include "../../includes/layout/header.php";
+include '../../includes/layout/deletemodal.php';
 
 // calendario
 $mesAtual = isset($_GET['mes']) ? (int) $_GET['mes'] : (int) date('m');
@@ -38,8 +39,8 @@ $nomesMes = [
 
 $primeiroDiaMes = strtotime("$anoAtual-$mesAtual-01");
 $nomeMesAtual = $nomesMes[$mesAtual] ?? 'Mês';
-$qtdeDiasMes = (int) date('t', $primeiroDiaMes); // quantos dias tem o mês
-$diaSemanaPrimeiro = (int) date('w', $primeiroDiaMes); // 0 = domingo ... 6 = sábado
+$qtdeDiasMes = (int) date('t', $primeiroDiaMes);
+$diaSemanaPrimeiro = (int) date('w', $primeiroDiaMes);
 
 // navegação anterior / próximo
 $mesAnterior = $mesAtual - 1;
@@ -56,9 +57,9 @@ if ($mesProximo > 12) {
     $anoProximo++;
 }
 
-//  busca das reservas do mes
+// busca das reservas do mês
 $inicioMes = date('Y-m-01', $primeiroDiaMes);
-$fimMes = date('Y-m-t', $primeiroDiaMes);
+$fimMes    = date('Y-m-t',  $primeiroDiaMes);
 
 $sql = "SELECT id_reserva, nome_reserva, data_reserva, hora_inicio, hora_fim, valor_cobrado, valor_pago
         FROM reservas
@@ -71,24 +72,54 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 $reservasPorDia = [];
-
 while ($row = $result->fetch_assoc()) {
     $data = $row['data_reserva'];
     if (!isset($reservasPorDia[$data])) {
         $reservasPorDia[$data] = [];
     }
     $reservasPorDia[$data][] = [
-        'id_reserva' => $row['id_reserva'],
-        'nome_reserva' => $row['nome_reserva'],
-        'hora_inicio' => substr($row['hora_inicio'], 0, 5),
-        'hora_fim' => substr($row['hora_fim'], 0, 5),
+        'id_reserva'    => $row['id_reserva'],
+        'nome_reserva'  => $row['nome_reserva'],
+        'hora_inicio'   => substr($row['hora_inicio'], 0, 5),
+        'hora_fim'      => substr($row['hora_fim'], 0, 5),
         'valor_cobrado' => (float) $row['valor_cobrado'],
-        'valor_pago' => (float) $row['valor_pago'],
-        'falta' => (float) $row['valor_cobrado'] - (float) $row['valor_pago'],
+        'valor_pago'    => (float) $row['valor_pago'],
+        'falta'         => (float) $row['valor_cobrado'] - (float) $row['valor_pago'],
     ];
 }
 
 $stmt->close();
+
+// busca dos bloqueios ativos que tocam o mês exibido
+$sqlBloqueios = "SELECT id_bloqueio, data_inicio, data_fim, motivo
+                 FROM bloqueios
+                 WHERE ativo = 1
+                   AND data_inicio <= ?
+                   AND data_fim    >= ?";
+
+$stmtBl = $conn->prepare($sqlBloqueios);
+$stmtBl->bind_param("ss", $fimMes, $inicioMes);
+$stmtBl->execute();
+$resultBl = $stmtBl->get_result();
+
+$bloqueiosPorDia = [];
+while ($bl = $resultBl->fetch_assoc()) {
+    $cursor = strtotime($bl['data_inicio']);
+    $fim    = strtotime($bl['data_fim']);
+    while ($cursor <= $fim) {
+        $dataCursor = date('Y-m-d', $cursor);
+        if ($dataCursor >= $inicioMes && $dataCursor <= $fimMes) {
+            $bloqueiosPorDia[$dataCursor][] = [
+                'id_bloqueio' => $bl['id_bloqueio'],
+                'data_inicio' => $bl['data_inicio'],
+                'data_fim'    => $bl['data_fim'],
+                'motivo'      => $bl['motivo'],
+            ];
+        }
+        $cursor = strtotime('+1 day', $cursor);
+    }
+}
+$stmtBl->close();
 
 $hoje = date('Y-m-d');
 ?>
@@ -114,14 +145,11 @@ $hoje = date('Y-m-d');
 
             <div class="calendar-header">
 
-                <!-- botão anterior -->
                 <a href="?mes=<?= $mesAnterior ?>&ano=<?= $anoAnterior ?>" class="cal-nav">
                     <i class="fa-solid fa-chevron-left"></i>
                 </a>
 
-                <!-- seletor mês + ano -->
                 <form method="GET" class="cal-selector">
-
                     <div class="select-wrapper">
                         <select name="mes" onchange="this.form.submit()">
                             <?php foreach ($nomesMes as $num => $nome): ?>
@@ -136,8 +164,7 @@ $hoje = date('Y-m-d');
                         <select name="ano" onchange="this.form.submit()">
                             <?php
                             $anoInicio = $anoAtual - 5;
-                            $anoFim = $anoAtual + 5;
-
+                            $anoFim    = $anoAtual + 5;
                             for ($ano = $anoInicio; $ano <= $anoFim; $ano++): ?>
                                 <option value="<?= $ano ?>" <?= $ano == $anoAtual ? 'selected' : '' ?>>
                                     <?= $ano ?>
@@ -145,10 +172,8 @@ $hoje = date('Y-m-d');
                             <?php endfor; ?>
                         </select>
                     </div>
-
                 </form>
 
-                <!-- botão próximo -->
                 <a href="?mes=<?= $mesProximo ?>&ano=<?= $anoProximo ?>" class="cal-nav">
                     <i class="fa-solid fa-chevron-right"></i>
                 </a>
@@ -164,22 +189,26 @@ $hoje = date('Y-m-d');
                 <div class="cal-weekday">Sex</div>
                 <div class="cal-weekday">Sáb</div>
 
-                <?php
-                // espaços em branco antes do dia 1 se o mês não começa no domingo
-                for ($i = 0; $i < $diaSemanaPrimeiro; $i++): ?>
+                <?php for ($i = 0; $i < $diaSemanaPrimeiro; $i++): ?>
                     <div class="cal-dia vazio"></div>
                 <?php endfor; ?>
 
                 <?php
-                //dias do mês
                 for ($dia = 1; $dia <= $qtdeDiasMes; $dia++):
-                    $dataDia = sprintf('%04d-%02d-%02d', $anoAtual, $mesAtual, $dia);
-                    $temReservas = isset($reservasPorDia[$dataDia]);
+                    $dataDia      = sprintf('%04d-%02d-%02d', $anoAtual, $mesAtual, $dia);
+                    $temReservas  = isset($reservasPorDia[$dataDia]);
+                    $temBloqueio  = isset($bloqueiosPorDia[$dataDia]);
                     $reservasDoDia = $temReservas ? $reservasPorDia[$dataDia] : [];
-                    $qtdReservas = $temReservas ? count($reservasDoDia) : 0;
-                    $isHoje = ($dataDia === $hoje);
+                    $bloqueiosDoDia = $temBloqueio ? $bloqueiosPorDia[$dataDia] : [];
+                    $qtdReservas  = count($reservasDoDia);
+                    $isHoje       = ($dataDia === $hoje);
 
-                    // dados para js
+                    $classes = ['cal-dia'];
+                    if ($temBloqueio)   $classes[] = 'bloqueado';
+                    elseif ($temReservas) $classes[] = 'reservado';
+                    else                $classes[] = 'livre';
+                    if ($isHoje)        $classes[] = 'hoje';
+
                     $dataAttrs = '';
                     if ($temReservas) {
                         $dataAttrs .= ' data-has-reserva="1"';
@@ -189,16 +218,22 @@ $hoje = date('Y-m-d');
                     } else {
                         $dataAttrs .= ' data-has-reserva="0"';
                     }
+                    if ($temBloqueio) {
+                        $dataAttrs .= ' data-bloqueios="' . htmlspecialchars(json_encode($bloqueiosDoDia), ENT_QUOTES, 'UTF-8') . '"';
+                    }
                     ?>
                     <button type="button"
-                        class="cal-dia <?= $temReservas ? 'reservado' : 'livre' ?> <?= $isHoje ? 'hoje' : '' ?>"
-                        data-date="<?= $dataDia ?>" <?= $dataAttrs ?>>
+                        class="<?= implode(' ', $classes) ?>"
+                        data-date="<?= $dataDia ?>"
+                        <?= $dataAttrs ?>>
                         <span class="cal-dia-num"><?= $dia ?></span>
 
-                        <?php if ($qtdReservas >= 2): ?>
-                            <span class="cal-dia-info">
-                                <?= $qtdReservas ?>
+                        <?php if ($temBloqueio): ?>
+                            <span class="cal-dia-info bloqueado-icone">
+                                <i class="fa-solid fa-ban"></i>
                             </span>
+                        <?php elseif ($qtdReservas >= 2): ?>
+                            <span class="cal-dia-info"><?= $qtdReservas ?></span>
                         <?php endif; ?>
                     </button>
                 <?php endfor; ?>
@@ -213,20 +248,27 @@ $hoje = date('Y-m-d');
         <h2>
             Reservas do dia <span id="calModalData"></span>
         </h2>
-
         <div id="calModalLista"></div>
-
         <div class="popup-buttons">
-
-            <button id="fecharCalModal" class="btn btn-fechar">
-                Fechar
-            </button>
-
+            <button id="fecharCalModal" class="btn btn-fechar">Fechar</button>
             <a href="#" id="btnNovaReservaDia" class="btn btn-novo">
                 <i class="fa-solid fa-plus"></i>
                 Nova reserva
             </a>
-            
+        </div>
+    </div>
+</div>
+
+<!-- Modal de bloqueio -->
+<div id="bloqueioModal" class="popup-modal">
+    <div class="popup-box">
+        <h2>
+            <i class="fa-solid fa-ban"></i>
+            Data Bloqueada<span id="bloqueioModalData"></span>
+        </h2>
+        <div id="bloqueioModalLista"></div>
+        <div class="popup-buttons">
+            <button id="fecharBloqueioModal" class="btn btn-fechar">Fechar</button>
         </div>
     </div>
 </div>

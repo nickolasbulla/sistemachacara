@@ -37,6 +37,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = "Não é possível criar reservas no passado.";
     }
 
+    if (!$erro) {
+        $stmtBl = $conn->prepare("
+        SELECT id_bloqueio FROM bloqueios 
+        WHERE ativo = 1 
+          AND data_inicio <= ? 
+          AND data_fim >= ?
+    ");
+        $stmtBl->bind_param("ss", $data, $data);
+        $stmtBl->execute();
+        $stmtBl->store_result();
+
+        if ($stmtBl->num_rows > 0) {
+            $erro = "Esta data está bloqueada e não pode receber reservas.";
+        }
+        $stmtBl->close();
+    }
+
     if (!$erro && $valor_pago > $valor_cobrado) {
         $erro = "O valor pago não pode ser maior que o valor cobrado.";
     }

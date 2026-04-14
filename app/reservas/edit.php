@@ -11,7 +11,7 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-//delete
+// delete
 if (isset($_GET['delete_id'])) {
     $id = (int) $_GET['delete_id'];
 
@@ -28,7 +28,8 @@ if (isset($_GET['delete_id'])) {
 
 $id = intval($_GET['id']);
 $erro = '';
-$sucesso = '';
+$erro_vistoria = '';
+$sucesso_vistoria = '';
 
 $sql = "SELECT * FROM reservas WHERE id_reserva = ?";
 $stmt = $conn->prepare($sql);
@@ -43,21 +44,23 @@ if (!$reserva) {
 }
 
 $ambientes = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHERE ativo = 1 ORDER BY nome_ambiente");
-
 $funcionarios = $conn->query("SELECT id_funcionario, nome_completo FROM funcionarios WHERE ativo = 1 ORDER BY nome_completo");
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$is_passada = $reserva['data_reserva'] < date('Y-m-d');
 
-    $nome = trim($_POST['nome_reserva']);
-    $tel = trim($_POST['telefone_reserva']);
-    $data = $_POST['data_reserva'];
-    $inicio = $_POST['hora_inicio'];
-    $fim = $_POST['hora_fim'];
-    $ambiente = $_POST['id_ambiente'];
-    $func = $_POST['id_funcionario'] ?: null;
+// ─── POST: salvar edição da reserva ───────────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
+
+    $nome          = trim($_POST['nome_reserva']);
+    $tel           = trim($_POST['telefone_reserva']);
+    $data          = $_POST['data_reserva'];
+    $inicio        = $_POST['hora_inicio'];
+    $fim           = $_POST['hora_fim'];
+    $ambiente      = $_POST['id_ambiente'];
+    $func          = $_POST['id_funcionario'] ?: null;
     $valor_cobrado = floatval($_POST['valor_cobrado']);
-    $valor_pago = floatval($_POST['valor_pago']);
-    $obs = trim($_POST['observacoes']);
+    $valor_pago    = floatval($_POST['valor_pago']);
+    $obs           = trim($_POST['observacoes']);
 
     if ($fim <= $inicio) {
         $erro = "A hora de término deve ser maior que a hora de início.";
@@ -75,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = "O valor pago não pode ser maior que o valor cobrado.";
     }
 
-    // valida conflito de horário menos com a própria reserva
     if (!$erro) {
         $sql_conf = "
             SELECT id_reserva FROM reservas 
@@ -88,29 +90,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 OR (hora_inicio BETWEEN ? AND ?)
             )
         ";
-
         $stmt_conf = $conn->prepare($sql_conf);
-        $stmt_conf->bind_param(
-            "isisiss",
-            $ambiente,
-            $data,
-            $id,
-            $inicio,
-            $fim,
-            $inicio,
-            $fim
-        );
-
+        $stmt_conf->bind_param("isisiss", $ambiente, $data, $id, $inicio, $fim, $inicio, $fim);
         $stmt_conf->execute();
-        $conf = $stmt_conf->get_result();
-
-        if ($conf->num_rows > 0) {
+        if ($stmt_conf->get_result()->num_rows > 0) {
             $erro = "Este ambiente já possui reserva nesse período!";
         }
     }
 
     if (!$erro) {
-
         $sql_up = "
             UPDATE reservas SET 
                 nome_reserva = ?,
@@ -125,27 +113,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 observacoes = ?
             WHERE id_reserva = ?
         ";
-
         $stmt_up = $conn->prepare($sql_up);
-        $stmt_up->bind_param(
-            "sssssiiddsi",
-            $nome,
-            $tel,
-            $data,
-            $inicio,
-            $fim,
-            $ambiente,
-            $func,
-            $valor_cobrado,
-            $valor_pago,
-            $obs,
-            $id
-        );
-
+        $stmt_up->bind_param("sssssiiddsi", $nome, $tel, $data, $inicio, $fim, $ambiente, $func, $valor_cobrado, $valor_pago, $obs, $id);
         $stmt_up->execute();
 
         header("Location: index.php?editado=1");
         exit;
+    }
+}
+
+// ─── POST: registrar vistoria ─────────────────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_vistoria'])) {
+
+    $id_usuario = $_SESSION['usuario_id'];
+    $itens_form = $_POST['itens'] ?? [];
+    $descricoes = $_POST['descricao'] ?? [];
+
+    // verifica se já existe vistoria pra essa reserva
+    $chk = $conn->prepare("SELECT id_vistoria_resultado FROM vistoria_resultados WHERE id_reserva = ? LIMIT 1");
+    $chk->bind_param("i", $id);
+    $chk->execute();
+    $chk->store_result();
+
+    if ($chk->num_rows > 0) {
+        $erro_vistoria = "Já existe uma vistoria registrada para esta reserva.";
+    } else {
+        // busca todos os itens ativos
+        $itens_ativos = [];
+        $res = $conn->query("SELECT id_item_vistoria FROM itens_vistoria WHERE ativo = 1");
+        while ($row = $res->fetch_assoc()) {
+            $itens_ativos[] = $row['id_item_vistoria'];
+        }
+
+        $conn->begin_transaction();
+        try {
+            foreach ($itens_ativos as $id_item) {
+                $conforme           = isset($itens_form[$id_item]) ? 1 : 0;
+                $descricao_problema = $conforme ? null : ($descricoes[$id_item] ?? null);
+
+                $stmt_vi = $conn->prepare("
+                    INSERT INTO vistoria_resultados (id_reserva, id_item_vistoria, id_usuario, conforme, descricao_problema)
+                    VALUES (?, ?, ?, ?, ?)
+                ");
+                $stmt_vi->bind_param("iiiis", $id, $id_item, $id_usuario, $conforme, $descricao_problema);
+                $stmt_vi->execute();
+                $id_vistoria_resultado = $conn->insert_id;
+
+                // abre ocorrência se não conforme
+                if (!$conforme && !empty($descricao_problema)) {
+                    $stmt_oc = $conn->prepare("
+                        INSERT INTO ocorrencias (id_vistoria_resultado, id_reserva, id_item_vistoria, id_usuario, descricao)
+                        VALUES (?, ?, ?, ?, ?)
+                    ");
+                    $stmt_oc->bind_param("iiiis", $id_vistoria_resultado, $id, $id_item, $id_usuario, $descricao_problema);
+                    $stmt_oc->execute();
+                }
+            }
+
+            $conn->commit();
+            $sucesso_vistoria = "Vistoria registrada com sucesso!";
+
+        } catch (Exception $e) {
+            $conn->rollback();
+            $erro_vistoria = "Erro ao registrar a vistoria. Tente novamente.";
+        }
+    }
+}
+
+// ─── Dados da vistoria (para exibir se já registrada) ────────────────────────
+$vistoria_registrada = null;
+if ($is_passada) {
+    $stmt_vr = $conn->prepare("
+        SELECT vr.*, iv.nome_item
+        FROM vistoria_resultados vr
+        INNER JOIN itens_vistoria iv ON iv.id_item_vistoria = vr.id_item_vistoria
+        WHERE vr.id_reserva = ?
+        ORDER BY iv.nome_item ASC
+    ");
+    $stmt_vr->bind_param("i", $id);
+    $stmt_vr->execute();
+    $result_vr = $stmt_vr->get_result();
+    if ($result_vr->num_rows > 0) {
+        $vistoria_registrada = [];
+        while ($row = $result_vr->fetch_assoc()) {
+            $vistoria_registrada[] = $row;
+        }
+    }
+}
+
+// Itens ativos para o form de vistoria
+$itens_vistoria_lista = [];
+if ($is_passada && !$vistoria_registrada) {
+    $res_itens = $conn->query("SELECT * FROM itens_vistoria WHERE ativo = 1 ORDER BY nome_item ASC");
+    while ($row = $res_itens->fetch_assoc()) {
+        $itens_vistoria_lista[] = $row;
     }
 }
 ?>
@@ -164,18 +225,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </header>
 
         <div class="form-botoes">
-
             <a href="index.php" class="btn-voltar">
                 <i class="fa-solid fa-arrow-left"></i>
                 Voltar
             </a>
-
             <a href="#" class="btn btn-excluir btnpopup" data-id="<?= $reserva['id_reserva'] ?>">
-
                 <i class="fa-solid fa-trash"></i>
                 Excluir Reserva
             </a>
-
         </div>
 
         <div class="cadastro-area">
@@ -186,22 +243,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST" class="form-cadastro">
 
+                <input type="hidden" name="salvar_reserva" value="1">
+
                 <div class="form-grupo">
                     <label>Nome *</label>
-                    <input type="text" name="nome_reserva" value="<?= htmlspecialchars($reserva['nome_reserva']) ?>"
-                        required>
+                    <input type="text" name="nome_reserva" value="<?= htmlspecialchars($reserva['nome_reserva']) ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone *</label>
-                    <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000'
-                        value="<?= htmlspecialchars($reserva['telefone_reserva']) ?>">
+                    <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($reserva['telefone_reserva']) ?>">
                 </div>
 
                 <div class="form-grupo">
                     <label>Data da reserva</label>
-                    <input type="date" name="data_reserva" value="<?= $reserva['data_reserva'] ?>" tabindex="-1"
-                        readonly required>
+                    <input type="date" name="data_reserva" value="<?= $reserva['data_reserva'] ?>" tabindex="-1" readonly required>
                 </div>
 
                 <div class="form-grupo">
@@ -234,8 +290,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select name="id_funcionario">
                             <option value="">Não definido</option>
                             <?php while ($f = $funcionarios->fetch_assoc()): ?>
-                                <option value="<?= $f['id_funcionario'] ?>"
-                                    <?= $f['id_funcionario'] == $reserva['id_funcionario'] ? 'selected' : '' ?>>
+                                <option value="<?= $f['id_funcionario'] ?>" <?= $f['id_funcionario'] == $reserva['id_funcionario'] ? 'selected' : '' ?>>
                                     <?= $f['nome_completo'] ?>
                                 </option>
                             <?php endwhile; ?>
@@ -245,15 +300,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Valor cobrado (R$) *</label>
-                    <input type="number" min="0" step="0.01" name="valor_cobrado" id="valor_cobrado"
-                        value="<?= number_format($reserva['valor_cobrado'], 2, '.', '') ?>" oninput="calcularFalta()"
-                        required>
+                    <input type="number" min="0" step="0.01" name="valor_cobrado" id="valor_cobrado" value="<?= number_format($reserva['valor_cobrado'], 2, '.', '') ?>" oninput="calcularFalta()" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Valor pago (R$)</label>
-                    <input type="number" min="0" step="0.01" name="valor_pago" id="valor_pago"
-                        value="<?= number_format($reserva['valor_pago'], 2, '.', '') ?>" oninput="calcularFalta()">
+                    <input type="number" min="0" step="0.01" name="valor_pago" id="valor_pago" value="<?= number_format($reserva['valor_pago'], 2, '.', '') ?>" oninput="calcularFalta()">
                 </div>
 
                 <div class="form-grupo">
@@ -276,6 +328,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             </form>
         </div>
+
+        <?php if ($is_passada): ?>
+        <!-- ─── Bloco de Vistoria ─────────────────────────────────────── -->
+        <div class="cadastro-area vistoria-bloco">
+
+            <h3 class="vistoria-titulo">
+                <i class="fa-solid fa-clipboard-check"></i>
+                Vistoria de Saída
+            </h3>
+
+            <?php if (!empty($erro_vistoria)): ?>
+                <div class="alerta erro"><?= htmlspecialchars($erro_vistoria) ?></div>
+            <?php endif; ?>
+
+            <?php if (!empty($sucesso_vistoria)): ?>
+                <div class="alerta sucesso"><?= htmlspecialchars($sucesso_vistoria) ?></div>
+            <?php endif; ?>
+
+            <?php if ($vistoria_registrada): ?>
+                <!-- Vistoria já feita: exibe somente leitura -->
+                <div class="vistoria-registrada">
+                    <?php foreach ($vistoria_registrada as $vr): ?>
+                        <div class="vistoria-item-registrado <?= $vr['conforme'] ? 'conforme' : 'nao-conforme' ?>">
+                            <span class="vi-icone">
+                                <?= $vr['conforme']
+                                    ? '<i class="fa-solid fa-check"></i>'
+                                    : '<i class="fa-solid fa-xmark"></i>' ?>
+                            </span>
+                            <span class="vi-nome"><?= htmlspecialchars($vr['nome_item']) ?></span>
+                            <?php if (!$vr['conforme'] && !empty($vr['descricao_problema'])): ?>
+                                <span class="vi-problema"><?= htmlspecialchars($vr['descricao_problema']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+            <?php elseif (empty($itens_vistoria_lista)): ?>
+                <p>Nenhum item de vistoria cadastrado.</p>
+
+            <?php else: ?>
+                <!-- Form de vistoria -->
+                <form method="POST" class="form-cadastro">
+                    <input type="hidden" name="registrar_vistoria" value="1">
+
+                    <div class="vistoria-lista">
+                        <?php foreach ($itens_vistoria_lista as $item): ?>
+                            <div class="vistoria-item" id="vi-wrap-<?= $item['id_item_vistoria'] ?>">
+                                <label class="vistoria-item-label">
+                                    <input
+                                        type="checkbox"
+                                        name="itens[<?= $item['id_item_vistoria'] ?>]"
+                                        value="1"
+                                        checked
+                                        onchange="toggleProblema(<?= $item['id_item_vistoria'] ?>, this)"
+                                    >
+                                    <span class="vi-checkmark"></span>
+                                    <?= htmlspecialchars($item['nome_item']) ?>
+                                    <?php if (!empty($item['descricao'])): ?>
+                                        <span class="vi-dica" title="<?= htmlspecialchars($item['descricao']) ?>">
+                                            <i class="fa-solid fa-circle-info"></i>
+                                        </span>
+                                    <?php endif; ?>
+                                </label>
+                                <div class="vi-problema-wrap" id="vi-problema-<?= $item['id_item_vistoria'] ?>" style="display:none;">
+                                    <textarea
+                                        name="descricao[<?= $item['id_item_vistoria'] ?>]"
+                                        rows="2"
+                                        placeholder="Descreva o problema encontrado..."
+                                    ></textarea>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="form-botoes">
+                        <button type="submit" class="btn btn-salvar">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Registrar Vistoria
+                        </button>
+                    </div>
+                </form>
+
+                <script>
+                function toggleProblema(id, checkbox) {
+                    var wrap = document.getElementById('vi-problema-' + id);
+                    if (!checkbox.checked) {
+                        wrap.style.display = 'block';
+                    } else {
+                        wrap.style.display = 'none';
+                        wrap.querySelector('textarea').value = '';
+                    }
+                }
+                </script>
+            <?php endif; ?>
+
+        </div>
+        <?php endif; ?>
+
     </main>
 </div>
 
@@ -284,7 +434,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="popup-box">
         <h2>Excluir reserva?</h2>
         <p>Essa ação não pode ser desfeita.</p>
-
         <div class="popup-buttons">
             <button id="cancelDelete" class="btn btn-cancelar">Cancelar</button>
             <a href="#" id="confirmDelete" class="btn btn-confirmar">Sim, excluir</a>

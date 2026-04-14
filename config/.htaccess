@@ -1,0 +1,5 @@
+Options -Indexes
+
+RewriteEngine On
+RewriteCond %{THE_REQUEST} \s/sistemachacara/(config|includes) [NC]
+RewriteRule ^.*$ /sistemachacara/ [R=302,L]

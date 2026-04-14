@@ -10,6 +10,13 @@
                 </a>
             </li>
 
+            <li>
+                <a href="../ocorrencias/index.php">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Ocorrências
+                </a>
+            </li>
+
             <?php if ($_SESSION['usuario_tipo'] === 'admin'): ?>
 
                 <li>
@@ -41,6 +48,18 @@
                             <a href="../ambientes/index.php">
                                 <i class="fa-solid fa-house"></i>
                                 Ambientes
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../bloqueios/index.php">
+                                <i class="fa-solid fa-ban"></i>
+                                Bloqueios
+                            </a>
+                        </li>
+                        <li>
+                            <a href="../itens_vistoria/index.php">
+                                <i class="fa-solid fa-clipboard-list"></i>
+                                Itens de Vistoria
                             </a>
                         </li>
                     </ul>

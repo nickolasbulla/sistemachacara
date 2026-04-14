@@ -162,6 +162,17 @@
                 border: none !important;
             }
 
+            &.bloqueado {
+                background-color: $danger !important;
+                color: #fff;
+                cursor: pointer;
+
+                .bloqueado-icone {
+                    font-size: clamp(11px, 1.8vw, 19px);
+                    margin-top: 3px;
+                }
+            }
+
             .cal-dia-num {
                 font-weight: 700;
                 font-size: clamp(12px, 1.8vw, 21px);
@@ -172,7 +183,7 @@
                 position: absolute;
                 bottom: 6px;
 
-                font-size: clamp(10px, 1.5vw, 15px);
+                font-size: clamp(10px, 1.5vw, 17px);
                 font-weight: 700;
                 line-height: 1;
                 padding: 2px 0;
@@ -279,6 +290,16 @@ body.page-calendario {
         .cal-dia {
             aspect-ratio: 1 / 1 !important;
             height: auto !important;
+
+            &.bloqueado {
+                .bloqueado-icone {
+                   bottom:1px !important;
+                }
+            }
+
+            .cal-dia-info {
+                bottom: 3px !important;
+            }
         }
     }
 

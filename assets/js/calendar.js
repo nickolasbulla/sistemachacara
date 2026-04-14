@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dias.forEach(dia => {
 
         if (dia.classList.contains('vazio')) return;
+        if (dia.classList.contains('bloqueado')) return;
 
         dia.addEventListener('click', () => {
 
@@ -93,5 +94,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 modal.classList.remove('active');
             }
         });
+    }
+
+    document.querySelectorAll('.cal-dia.bloqueado').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const bloqueios = JSON.parse(this.dataset.bloqueios || '[]');
+            const data = this.dataset.date;
+
+            const [y, m, d] = data.split('-');
+            document.getElementById('bloqueioModalData').textContent = `${d}/${m}/${y}`;
+
+            // monta lista de bloqueios
+            let html = '';
+            bloqueios.forEach(b => {
+                const ini = formatarData(b.data_inicio);
+                const fim = formatarData(b.data_fim);
+                html += `
+                <div class="bloqueio-item">
+                    <span class="bloqueio-periodo">
+                        <i class="fa-solid fa-calendar-xmark"></i>
+                        ${ini} &rarr; ${fim}
+                    </span>
+                    <p class="bloqueio-motivo">${b.motivo}</p>
+                </div>
+            `;
+            });
+            document.getElementById('bloqueioModalLista').innerHTML = html;
+
+            document.getElementById('bloqueioModal').classList.add('active');
+        });
+    });
+
+    document.getElementById('fecharBloqueioModal')?.addEventListener('click', () => {
+        document.getElementById('bloqueioModal').classList.remove('active');
+    });
+
+    document.getElementById('bloqueioModal')?.addEventListener('click', function (e) {
+        if (e.target === this) this.classList.remove('active');
+    });
+
+    function formatarData(str) {
+        const [y, m, d] = str.split('-');
+        return `${d}/${m}/${y}`;
     }
 });

@@ -8,7 +8,6 @@ if (empty($_POST['usuario']) || empty($_POST['senha'])) {
     exit;
 }
 
-//limpa entradas
 $usuario = trim($_POST['usuario']);
 $senha = trim($_POST['senha']);
 

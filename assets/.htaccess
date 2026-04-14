@@ -1,0 +1,6 @@
+Options -Indexes
+
+RewriteEngine On
+
+RewriteRule ^$ /sistemachacara/ [R=302,L]
+RewriteRule ^(css|js|img)/$ /sistemachacara/ [R=302,L]

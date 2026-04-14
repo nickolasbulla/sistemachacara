@@ -1,0 +1,15 @@
+regras de negocio - e2
+
+
+DATAS BLOQUEADAS
+Data inicial deve ser menor que data final.
+Datas bloqueadas devem impedir criação de reservas no período.
+Não é possível sobrepor datas bloqueadas.
+
+
+Observação é campo opcional
+Datas bloqueadas podem ser desativadas ou excluidas
+
+
+
+RELATÓRIOS

@@ -4,34 +4,52 @@ session_start();
 include '../../includes/auth/login_verify.php';
 include '../../config/db.php';
 
-$titulo_pagina = "Ambientes - Chácara Portal";
+$titulo_pagina = "Bloqueios - Chácara Portal";
 $body_class = "painel-page";
 include "../../includes/layout/header.php";
 include '../../includes/layout/deletemodal.php';
 
 if (isset($_GET['delete_id'])) {
-
     $id = (int) $_GET['delete_id'];
 
     try {
-        $stmt = $conn->prepare("DELETE FROM ambientes WHERE id_ambiente = ?");
+        $stmt = $conn->prepare("DELETE FROM bloqueios WHERE id_bloqueio = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
 
         header("Location: index.php?deletado=1");
         exit;
-
     } catch (mysqli_sql_exception $e) {
         header("Location: index.php?erro_relacionado=1");
         exit;
     }
 }
+
+if (isset($_GET['toggle_id'])) {
+    $id = (int) $_GET['toggle_id'];
+    $conn->prepare("UPDATE bloqueios SET ativo = NOT ativo WHERE id_bloqueio = ?")->bind_param("i", $id);
+    $conn->prepare("UPDATE bloqueios SET ativo = NOT ativo WHERE id_bloqueio = ?")->execute();
+
+    $stmt = $conn->prepare("UPDATE bloqueios SET ativo = IF(ativo = 1, 0, 1) WHERE id_bloqueio = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+
+    header("Location: index.php");
+    exit;
+}
+
+$query = "
+    SELECT b.*, u.nome_completo
+    FROM bloqueios b
+    LEFT JOIN usuarios u ON u.id_usuario = b.id_usuario
+    ORDER BY b.data_inicio DESC
+";
+$result = $conn->query($query);
 ?>
 
 <div class="painel-container">
 
     <?php include '../../includes/layout/sidebar.php'; ?>
-
     <div class="sidebar-overlay"></div>
 
     <main class="conteudo">
@@ -39,34 +57,34 @@ if (isset($_GET['delete_id'])) {
             <button class="menu-toggle">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <h1>Ambientes</h1>
+            <h1>Bloqueios</h1>
         </header>
 
-        <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
-            <div class="alerta sucesso">Ambiente cadastrado com sucesso!</div>
+        <?php if (isset($_GET['sucesso'])): ?>
+            <div class="alerta sucesso">Bloqueio cadastrado com sucesso!</div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['deletado'])): ?>
+            <div class="alerta sucesso">Bloqueio removido com sucesso!</div>
         <?php endif; ?>
 
         <?php if (isset($_GET['erro_relacionado'])): ?>
-            <div class="alerta erro">Não é possível excluir: este registro está vinculado a uma ou mais reservas.</div>
+            <div class="alerta erro">Não foi possível excluir este bloqueio.</div>
         <?php endif; ?>
 
         <div class="area-crud">
             <a href="./create.php" class="btn btn-novo">
                 <i class="fa-solid fa-plus"></i>
-                Novo Ambiente
+                Novo Bloqueio
             </a>
 
-            <?php
-            $query = "SELECT * FROM ambientes ORDER BY id_ambiente DESC";
-            $result = $conn->query($query);
-            ?>
             <div class="tabela-wrapper">
                 <table class="tabela-crud">
                     <thead>
                         <tr>
-                            <th>Nome</th>
-                            <th>Capacidade</th>
-                            <th>Descrição</th>
+                            <th>Período</th>
+                            <th>Motivo</th>
+                            <th>Cadastrado por</th>
                             <th>Ativo</th>
                             <th>Ações</th>
                         </tr>
@@ -74,18 +92,24 @@ if (isset($_GET['delete_id'])) {
                     <tbody>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
-                                <td data-label="Nome"><?= htmlspecialchars($row['nome_ambiente']) ?></td>
-                                <td data-label="Capacidade"><?= htmlspecialchars($row['capacidade']) ?></td>
-                                <td data-label="Descrição"><?= $row['descricao'] ?></td>
+                                <td data-label="Período">
+                                    <?= date('d/m/Y', strtotime($row['data_inicio'])) ?>
+                                    &rarr;
+                                    <?= date('d/m/Y', strtotime($row['data_fim'])) ?>
+                                </td>
+                                <td data-label="Motivo"><?= htmlspecialchars($row['motivo']) ?></td>
+                                <td data-label="Cadastrado por"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Ativo">
-                                    <?= $row['ativo'] ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>' ?>
+                                    <?= $row['ativo']
+                                        ? '<i class="fa-solid fa-check"></i>'
+                                        : '<i class="fa-solid fa-xmark"></i>' ?>
                                 </td>
                                 <td data-label="Ações">
-                                    <a href="./edit.php?id=<?= $row['id_ambiente'] ?>" class="btn-editar">
+                                    <a href="./edit.php?id=<?= $row['id_bloqueio'] ?>" class="btn-editar">
                                         <i class="fa-solid fa-hand-pointer"></i>
                                         Selecionar
                                     </a>
-                                    <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_ambiente'] ?>">
+                                    <a href="#" class="btn-excluir btnpopup" data-id="<?= $row['id_bloqueio'] ?>">
                                         <i class="fa-solid fa-trash"></i>
                                         Excluir
                                     </a>

@@ -1,0 +1,29 @@
+@use "../abstracts/variables" as *;
+
+.bloqueio-item {
+    padding: 14px 0;
+    border-bottom: 1px solid $border-neutral;
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+}
+
+.bloqueio-periodo {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: $danger;
+
+    i {
+        margin-right: 6px;
+    }
+}
+
+.bloqueio-motivo {
+    margin: 6px 0 0;
+    color: $text-dark;
+    font-size: 15px;
+    line-height: 1.5;
+}
