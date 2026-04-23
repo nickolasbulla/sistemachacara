@@ -8,51 +8,79 @@ $titulo_pagina = "Ocorrências - Chácara Portal";
 $body_class = "painel-page";
 include "../../includes/layout/header.php";
 
-$id   = $_GET['id'] ?? null;
+$id_reserva = $_GET['id_reserva'] ?? null;
 $erro = '';
 
-if (!$id) {
+if (!$id_reserva) {
     header('Location: index.php');
     exit;
 }
 
+// Busca info da reserva
 $stmt = $conn->prepare("
+    SELECT r.nome_reserva, r.data_reserva, r.telefone_reserva
+    FROM reservas r
+    WHERE r.id_reserva = ?
+");
+$stmt->bind_param("i", $id_reserva);
+$stmt->execute();
+$reserva = $stmt->get_result()->fetch_assoc();
+
+if (!$reserva) {
+    header('Location: index.php');
+    exit;
+}
+
+// Busca todos os itens da ocorrência desta reserva
+$stmt2 = $conn->prepare("
     SELECT
-        o.*,
-        r.nome_reserva,
-        r.data_reserva,
-        r.telefone_reserva,
+        o.id_ocorrencia,
+        o.descricao,
+        o.status,
+        o.data_hora_registro,
         iv.nome_item,
         iv.descricao AS descricao_item,
         u.nome_completo AS usuario_nome
     FROM ocorrencias o
-    INNER JOIN reservas r ON r.id_reserva = o.id_reserva
     INNER JOIN itens_vistoria iv ON iv.id_item_vistoria = o.id_item_vistoria
     INNER JOIN usuarios u ON u.id_usuario = o.id_usuario
-    WHERE o.id_ocorrencia = ?
+    WHERE o.id_reserva = ?
+    ORDER BY iv.nome_item
 ");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$ocorrencia = $stmt->get_result()->fetch_assoc();
+$stmt2->bind_param("i", $id_reserva);
+$stmt2->execute();
+$itens = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
 
-if (!$ocorrencia) {
+if (empty($itens)) {
     header('Location: index.php');
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $descricao = $_POST['descricao'];
-    $status    = $_POST['status'];
+    $statuses = $_POST['status'] ?? [];
 
-    $upd = $conn->prepare("UPDATE ocorrencias SET descricao = ?, status = ? WHERE id_ocorrencia = ?");
-    $upd->bind_param("ssi", $descricao, $status, $id);
+    $upd = $conn->prepare("UPDATE ocorrencias SET status = ? WHERE id_ocorrencia = ? AND id_reserva = ?");
+    $sucesso = true;
 
-    if ($upd->execute()) {
+    foreach ($statuses as $id_oc => $status) {
+        $id_oc = (int) $id_oc;
+        $upd->bind_param("sii", $status, $id_oc, $id_reserva);
+        if (!$upd->execute()) {
+            $sucesso = false;
+        }
+    }
+
+    if ($sucesso) {
+        registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'ocorrencia', (int) $id_reserva);
         header("Location: index.php?sucesso=1");
         exit;
     } else {
-        $erro = "Erro ao atualizar a ocorrência.";
+        $erro = "Erro ao atualizar as ocorrências.";
     }
+
+    // Recarrega itens atualizados após erro
+    $stmt2->execute();
+    $itens = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 ?>
 
@@ -80,55 +108,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="alerta erro"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
-            <!-- Informações somente leitura -->
+            <!-- Informações da reserva (somente leitura) -->
             <div class="form-cadastro">
                 <div class="form-grupo">
                     <label>Reserva:</label>
-                    <input type="text" value="<?= htmlspecialchars($ocorrencia['nome_reserva']) ?>" disabled>
+                    <input type="text" value="<?= htmlspecialchars($reserva['nome_reserva']) ?>" disabled>
                 </div>
 
                 <div class="form-grupo">
                     <label>Data da reserva:</label>
-                    <input type="text" value="<?= date('d/m/Y', strtotime($ocorrencia['data_reserva'])) ?>" disabled>
+                    <input type="text" value="<?= date('d/m/Y', strtotime($reserva['data_reserva'])) ?>" disabled>
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone:</label>
-                    <input type="text" value="<?= htmlspecialchars($ocorrencia['telefone_reserva'] ?? '-') ?>" disabled>
-                </div>
-
-                <div class="form-grupo">
-                    <label>Item da vistoria:</label>
-                    <input type="text" value="<?= htmlspecialchars($ocorrencia['nome_item']) ?>" disabled>
-                </div>
-
-                <div class="form-grupo">
-                    <label>Registrado por:</label>
-                    <input type="text" value="<?= htmlspecialchars($ocorrencia['usuario_nome']) ?>" disabled>
-                </div>
-
-                <div class="form-grupo">
-                    <label>Data e hora do registro:</label>
-                    <input type="text" value="<?= date('d/m/Y H:i', strtotime($ocorrencia['data_hora_registro'])) ?>" disabled>
+                    <input type="text" value="<?= htmlspecialchars($reserva['telefone_reserva'] ?? '-') ?>" disabled>
                 </div>
             </div>
 
-            <!-- Campos editáveis -->
+            <!-- Itens da ocorrência (editáveis) -->
             <form method="POST" class="form-cadastro">
-                <div class="form-grupo">
-                    <label>Descrição da ocorrência: *</label>
-                    <textarea name="descricao" rows="4" required><?= htmlspecialchars($ocorrencia['descricao']) ?></textarea>
-                </div>
+                <?php foreach ($itens as $item): ?>
+                    <div class="ocorrencia-item">
+                        <div class="ocorrencia-item-header">
+                            <strong><?= htmlspecialchars($item['nome_item']) ?></strong>
+                            <small>Registrado por <?= htmlspecialchars($item['usuario_nome']) ?> em <?= date('d/m/Y H:i', strtotime($item['data_hora_registro'])) ?></small>
+                        </div>
 
-                <div class="form-grupo">
-                    <label>Status: *</label>
-                    <div class="select-wrapper">
-                        <select name="status" required>
-                            <option value="aberta"    <?= $ocorrencia['status'] === 'aberta'    ? 'selected' : '' ?>>Aberta</option>
-                            <option value="resolvida" <?= $ocorrencia['status'] === 'resolvida' ? 'selected' : '' ?>>Resolvida</option>
-                        </select>
+                        <div class="form-grupo">
+                            <label>Descrição:</label>
+                            <textarea rows="3" disabled><?= htmlspecialchars($item['descricao']) ?></textarea>
+                        </div>
+
+                        <div class="form-grupo">
+                            <label>Status: *</label>
+                            <div class="select-wrapper">
+                                <select name="status[<?= $item['id_ocorrencia'] ?>]" required>
+                                    <option value="aberta"    <?= $item['status'] === 'aberta'    ? 'selected' : '' ?>>Aberta</option>
+                                    <option value="resolvida" <?= $item['status'] === 'resolvida' ? 'selected' : '' ?>>Resolvida</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                <?php endforeach; ?>
 
                 <div class="form-botoes">
                     <button class="btn btn-salvar">

@@ -11,10 +11,17 @@ include '../../includes/layout/deletemodal.php';
 
 if (isset($_GET['delete_id'])) {
     $id = (int) $_GET['delete_id'];
+    $info = $conn->prepare("SELECT nome_item FROM itens_vistoria WHERE id_item_vistoria = ?");
+    $info->bind_param("i", $id);
+    $info->execute();
+    $row = $info->get_result()->fetch_assoc();
+    $detalhes = $row ? "nome: {$row['nome_item']}" : null;
+
     try {
         $stmt = $conn->prepare("DELETE FROM itens_vistoria WHERE id_item_vistoria = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
+        registrar_log($conn, $_SESSION['usuario_id'], 'excluir', 'item_vistoria', $id, $detalhes);
         header("Location: index.php?deletado=1");
         exit;
     } catch (mysqli_sql_exception $e) {

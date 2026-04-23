@@ -12,10 +12,17 @@ include '../../includes/layout/deletemodal.php';
 if (isset($_GET['delete_id'])) {
     $id = (int) $_GET['delete_id'];
 
+    $info = $conn->prepare("SELECT data_inicio, data_fim, motivo FROM bloqueios WHERE id_bloqueio = ?");
+    $info->bind_param("i", $id);
+    $info->execute();
+    $row = $info->get_result()->fetch_assoc();
+    $detalhes = $row ? "período: {$row['data_inicio']} a {$row['data_fim']} | motivo: {$row['motivo']}" : null;
+
     try {
         $stmt = $conn->prepare("DELETE FROM bloqueios WHERE id_bloqueio = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
+        registrar_log($conn, $_SESSION['usuario_id'], 'excluir', 'bloqueio', $id, $detalhes);
 
         header("Location: index.php?deletado=1");
         exit;
@@ -27,9 +34,6 @@ if (isset($_GET['delete_id'])) {
 
 if (isset($_GET['toggle_id'])) {
     $id = (int) $_GET['toggle_id'];
-    $conn->prepare("UPDATE bloqueios SET ativo = NOT ativo WHERE id_bloqueio = ?")->bind_param("i", $id);
-    $conn->prepare("UPDATE bloqueios SET ativo = NOT ativo WHERE id_bloqueio = ?")->execute();
-
     $stmt = $conn->prepare("UPDATE bloqueios SET ativo = IF(ativo = 1, 0, 1) WHERE id_bloqueio = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

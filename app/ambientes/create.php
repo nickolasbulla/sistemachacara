@@ -27,17 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("ssssi", $nome_ambiente, $capacidade, $descricao, $observacoes, $ativo);
 
         if ($stmt->execute()) {
+            registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'ambiente', $conn->insert_id);
             header("Location: index.php?sucesso=1");
             exit;
         } else {
             $erro = "Erro ao cadastrar o ambiente. Tente novamente.";
-        }
-
-        if ($stmt->execute()) {
-            header("Location: index.php?msg=Ambiente cadastrado com sucesso!");
-            exit;
-        } else {
-            $erro = "Erro ao cadastrar ambiente: " . $conn->error;
         }
     }
 }

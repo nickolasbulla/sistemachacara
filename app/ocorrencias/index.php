@@ -34,19 +34,21 @@ include "../../includes/layout/header.php";
             <?php
             $query = "
                 SELECT
-                    o.id_ocorrencia,
-                    o.descricao,
-                    o.status,
-                    o.data_hora_registro,
+                    o.id_reserva,
                     r.nome_reserva,
                     r.data_reserva,
-                    iv.nome_item,
-                    u.nome_completo AS usuario_nome
+                    GROUP_CONCAT(iv.nome_item ORDER BY iv.nome_item SEPARATOR ', ') AS itens,
+                    COUNT(o.id_ocorrencia) AS total_itens,
+                    SUM(o.status = 'aberta') AS total_abertas,
+                    SUM(o.status = 'resolvida') AS total_resolvidas,
+                    MIN(u.nome_completo) AS usuario_nome,
+                    MIN(o.data_hora_registro) AS data_hora_registro
                 FROM ocorrencias o
                 INNER JOIN reservas r ON r.id_reserva = o.id_reserva
                 INNER JOIN itens_vistoria iv ON iv.id_item_vistoria = o.id_item_vistoria
                 INNER JOIN usuarios u ON u.id_usuario = o.id_usuario
-                ORDER BY o.data_hora_registro DESC
+                GROUP BY o.id_reserva, r.nome_reserva, r.data_reserva
+                ORDER BY MIN(o.data_hora_registro) DESC
             ";
             $result = $conn->query($query);
             ?>
@@ -56,8 +58,7 @@ include "../../includes/layout/header.php";
                         <tr>
                             <th>Reserva</th>
                             <th>Data da Reserva</th>
-                            <th>Item</th>
-                            <th>Descrição</th>
+                            <th>Itens</th>
                             <th>Status</th>
                             <th>Registrado por</th>
                             <th>Data do Registro</th>
@@ -69,17 +70,23 @@ include "../../includes/layout/header.php";
                             <tr>
                                 <td data-label="Reserva"><?= htmlspecialchars($row['nome_reserva']) ?></td>
                                 <td data-label="Data da Reserva"><?= date('d/m/Y', strtotime($row['data_reserva'])) ?></td>
-                                <td data-label="Item"><?= htmlspecialchars($row['nome_item']) ?></td>
-                                <td data-label="Descrição"><?= htmlspecialchars($row['descricao']) ?></td>
+                                <td data-label="Itens"><?= htmlspecialchars($row['itens']) ?></td>
                                 <td data-label="Status">
-                                    <span class="badge-status <?= $row['status'] === 'aberta' ? 'status-aberta' : 'status-resolvida' ?>">
-                                        <?= $row['status'] === 'aberta' ? 'Aberta' : 'Resolvida' ?>
-                                    </span>
+                                    <?php if ($row['total_abertas'] > 0): ?>
+                                        <span class="badge-status status-aberta">
+                                            <?= $row['total_abertas'] ?> aberta<?= $row['total_abertas'] > 1 ? 's' : '' ?>
+                                        </span>
+                                    <?php endif; ?>
+                                    <?php if ($row['total_resolvidas'] > 0): ?>
+                                        <span class="badge-status status-resolvida">
+                                            <?= $row['total_resolvidas'] ?> resolvida<?= $row['total_resolvidas'] > 1 ? 's' : '' ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td data-label="Registrado por"><?= htmlspecialchars($row['usuario_nome']) ?></td>
                                 <td data-label="Data do Registro"><?= date('d/m/Y H:i', strtotime($row['data_hora_registro'])) ?></td>
                                 <td data-label="Ações">
-                                    <a href="./edit.php?id=<?= $row['id_ocorrencia'] ?>" class="btn-editar">
+                                    <a href="./edit.php?id_reserva=<?= $row['id_reserva'] ?>" class="btn-editar">
                                         <i class="fa-solid fa-hand-pointer"></i>
                                         Selecionar
                                     </a>

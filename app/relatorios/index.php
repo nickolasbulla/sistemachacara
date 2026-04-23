@@ -4,7 +4,7 @@ session_start();
 include '../../includes/auth/login_verify.php';
 include '../../config/db.php';
 
-$titulo_pagina = "Funcionários - Chácara Portal";
+$titulo_pagina = "Relatórios - Chácara Portal";
 $body_class = "painel-page";
 include "../../includes/layout/header.php";
 ?>

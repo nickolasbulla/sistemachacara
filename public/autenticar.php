@@ -33,6 +33,7 @@ if ($result->num_rows === 1) {
         $_SESSION['usuario_nome'] = $user['nome_completo'];
         $_SESSION['usuario_tipo'] = $user['tipo_permissao'];
 
+        registrar_log($conn, $user['id_usuario'], 'login', 'sistema');
         session_write_close();
         header("Location: ../app/reservas/index.php");
         exit;

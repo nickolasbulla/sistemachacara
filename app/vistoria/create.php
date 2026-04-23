@@ -27,6 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("ssi", $nome_item, $descricao, $ativo);
  
         if ($stmt->execute()) {
+            registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'item_vistoria', $conn->insert_id);
             header("Location: index.php?sucesso=1");
             exit;
         } else {

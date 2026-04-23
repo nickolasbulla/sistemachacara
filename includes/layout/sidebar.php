@@ -57,9 +57,9 @@
                             </a>
                         </li>
                         <li>
-                            <a href="../itens_vistoria/index.php">
+                            <a href="../vistoria/index.php">
                                 <i class="fa-solid fa-clipboard-list"></i>
-                                Itens de Vistoria
+                                Vistoria
                             </a>
                         </li>
                     </ul>
@@ -72,6 +72,12 @@
 
     <div class="menu-bottom">
         <ul>
+            <li>
+                <a href="../logs/index.php">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    Logs
+                </a>
+            </li>
             <li>
                 <a href="#" id="btnLogout">
                     <i class="fa-solid fa-right-from-bracket"></i>

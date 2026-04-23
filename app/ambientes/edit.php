@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sissii", $nome_ambiente, $capacidade, $descricao, $observacoes, $ativo, $id);
 
         if ($stmt->execute()) {
+            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'ambiente', (int) $id);
             header("Location: index.php?sucesso=1");
             exit;
         } else {

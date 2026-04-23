@@ -140,6 +140,10 @@ $hoje = date('Y-m-d');
             <div class="alerta sucesso">Reserva excluída com sucesso!</div>
         <?php endif; ?>
 
+        <?php if (isset($_GET['erro_relacionado'])): ?>
+            <div class="alerta erro">Não é possível excluir: esta reserva possui vistoria ou ocorrências vinculadas.</div>
+        <?php endif; ?>
+
         <!-- calendario -->
         <div class="calendar-container">
 

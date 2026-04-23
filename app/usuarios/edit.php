@@ -119,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($stmt->execute()) {
+            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'usuario', (int) $id);
             header("Location: index.php?sucesso=1");
             exit;
         } else {

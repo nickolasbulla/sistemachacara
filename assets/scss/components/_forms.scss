@@ -102,21 +102,6 @@
     }
 }
 
-.error-message {
-    color: $danger;
-    background-color: $danger-bg;
-    padding: 10px;
-    border-radius: $radius-sm;
-    margin-bottom: 10px;
-    text-align: center;
-    font-weight: bold;
-    display: none;
-
-    &.show {
-        display: block;
-    }
-}
-
 /* Setinha dos inputs select */
 .select-wrapper {
     position: relative;

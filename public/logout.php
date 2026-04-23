@@ -1,5 +1,11 @@
 <?php
 session_start();
+$id_usuario_logado = $_SESSION['usuario_id'] ?? null;
+
+if ($id_usuario_logado) {
+    include '../config/db.php';
+    registrar_log($conn, $id_usuario_logado, 'logout', 'sistema');
+}
 session_unset();
 session_destroy();
 

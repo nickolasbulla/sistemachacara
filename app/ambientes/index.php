@@ -13,10 +13,17 @@ if (isset($_GET['delete_id'])) {
 
     $id = (int) $_GET['delete_id'];
 
+    $info = $conn->prepare("SELECT nome_ambiente, capacidade FROM ambientes WHERE id_ambiente = ?");
+    $info->bind_param("i", $id);
+    $info->execute();
+    $row = $info->get_result()->fetch_assoc();
+    $detalhes = $row ? "nome: {$row['nome_ambiente']} | capacidade: {$row['capacidade']}" : null;
+
     try {
         $stmt = $conn->prepare("DELETE FROM ambientes WHERE id_ambiente = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
+        registrar_log($conn, $_SESSION['usuario_id'], 'excluir', 'ambiente', $id, $detalhes);
 
         header("Location: index.php?deletado=1");
         exit;

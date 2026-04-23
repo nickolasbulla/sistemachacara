@@ -27,17 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("ssssi", $nome_completo, $data_nascimento, $telefone, $observacoes, $ativo);
 
         if ($stmt->execute()) {
+            registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'funcionario', $conn->insert_id);
             header("Location: index.php?sucesso=1");
             exit;
         } else {
             $erro = "Erro ao cadastrar o funcionário. Tente novamente.";
-        }
-
-        if ($stmt->execute()) {
-            header("Location: index.php?msg=Funcionário cadastrado com sucesso!");
-            exit;
-        } else {
-            $erro = "Erro ao cadastrar funcionário: " . $conn->error;
         }
     }
 }

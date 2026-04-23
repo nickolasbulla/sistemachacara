@@ -10,7 +10,7 @@ $id_usuario = $_SESSION['usuario_id'];
 $erro = '';
 $sucesso = '';
 
-$data_previa = isset($_GET['data']) ? $_GET['data'] : '';
+$data_previa = $_GET['data'] ?? '';
 
 $ambientes = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHERE ativo = 1 ORDER BY nome_ambiente");
 
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
 
         $stmt->bind_param(
-            "isssssiiids",
+            "isssssisdds",
             $id_usuario,
             $nome,
             $tel,
@@ -103,10 +103,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $obs
         );
 
-        $stmt->execute();
-
-        header("Location: index.php?sucesso=1");
-        exit;
+        if ($stmt->execute()) {
+            registrar_log($conn, $id_usuario, 'criar', 'reserva', $conn->insert_id);
+            header("Location: index.php?sucesso=1");
+            exit;
+        } else {
+            $erro = "Erro ao cadastrar a reserva. Tente novamente.";
+        }
     }
 }
 ?>

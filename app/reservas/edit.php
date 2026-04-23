@@ -16,10 +16,22 @@ if (isset($_GET['delete_id'])) {
     $id = (int) $_GET['delete_id'];
 
     if ($id > 0) {
-        $stmt = $conn->prepare("DELETE FROM reservas WHERE id_reserva = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $stmt->close();
+        $info = $conn->prepare("SELECT nome_reserva, data_reserva, hora_inicio, hora_fim FROM reservas WHERE id_reserva = ?");
+        $info->bind_param("i", $id);
+        $info->execute();
+        $row = $info->get_result()->fetch_assoc();
+        $detalhes = $row ? "nome: {$row['nome_reserva']} | data: {$row['data_reserva']} | horário: {$row['hora_inicio']}-{$row['hora_fim']}" : null;
+
+        try {
+            $stmt = $conn->prepare("DELETE FROM reservas WHERE id_reserva = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->close();
+            registrar_log($conn, $_SESSION['usuario_id'], 'excluir', 'reserva', $id, $detalhes);
+        } catch (mysqli_sql_exception $e) {
+            header("Location: index.php?erro_relacionado=1");
+            exit;
+        }
     }
 
     header("Location: index.php?deletado=1");
@@ -70,6 +82,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
         $erro = "Não é possível editar para uma data no passado.";
     }
 
+    if (!$erro) {
+        $stmtBl = $conn->prepare("
+            SELECT id_bloqueio FROM bloqueios
+            WHERE ativo = 1
+              AND data_inicio <= ?
+              AND data_fim >= ?
+        ");
+        $stmtBl->bind_param("ss", $data, $data);
+        $stmtBl->execute();
+        $stmtBl->store_result();
+        if ($stmtBl->num_rows > 0) {
+            $erro = "Esta data está bloqueada e não pode receber reservas.";
+        }
+        $stmtBl->close();
+    }
+
     if ($valor_cobrado < 0 || $valor_pago < 0) {
         $erro = "Valores não podem ser negativos.";
     }
@@ -115,10 +143,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
         ";
         $stmt_up = $conn->prepare($sql_up);
         $stmt_up->bind_param("sssssiiddsi", $nome, $tel, $data, $inicio, $fim, $ambiente, $func, $valor_cobrado, $valor_pago, $obs, $id);
-        $stmt_up->execute();
-
-        header("Location: index.php?editado=1");
-        exit;
+        if ($stmt_up->execute()) {
+            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'reserva', $id);
+            header("Location: index.php?editado=1");
+            exit;
+        } else {
+            $erro = "Erro ao atualizar a reserva. Tente novamente.";
+        }
     }
 }
 
@@ -171,6 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_vistoria'])
             }
 
             $conn->commit();
+            registrar_log($conn, $id_usuario, 'registrar_vistoria', 'reserva', $id);
             $sucesso_vistoria = "Vistoria registrada com sucesso!";
 
         } catch (Exception $e) {
@@ -331,10 +363,10 @@ if ($is_passada && !$vistoria_registrada) {
 
         <?php if ($is_passada): ?>
         <!-- ─── Bloco de Vistoria ─────────────────────────────────────── -->
-        <div class="cadastro-area vistoria-bloco">
+        <div class="cadastro-area">
 
-            <h3 class="vistoria-titulo">
-                <i class="fa-solid fa-clipboard-check"></i>
+            <h3 style="margin: 0 0 20px; font-size: 21px; color: #333; text-align: center;">
+                <i class="fa-solid fa-clipboard-list" style="color: #667eea; margin-right: 8px;"></i>
                 Vistoria de Saída
             </h3>
 
@@ -348,20 +380,33 @@ if ($is_passada && !$vistoria_registrada) {
 
             <?php if ($vistoria_registrada): ?>
                 <!-- Vistoria já feita: exibe somente leitura -->
-                <div class="vistoria-registrada">
-                    <?php foreach ($vistoria_registrada as $vr): ?>
-                        <div class="vistoria-item-registrado <?= $vr['conforme'] ? 'conforme' : 'nao-conforme' ?>">
-                            <span class="vi-icone">
-                                <?= $vr['conforme']
-                                    ? '<i class="fa-solid fa-check"></i>'
-                                    : '<i class="fa-solid fa-xmark"></i>' ?>
-                            </span>
-                            <span class="vi-nome"><?= htmlspecialchars($vr['nome_item']) ?></span>
-                            <?php if (!$vr['conforme'] && !empty($vr['descricao_problema'])): ?>
-                                <span class="vi-problema"><?= htmlspecialchars($vr['descricao_problema']) ?></span>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
+                <div class="tabela-wrapper">
+                    <table class="tabela-crud">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Situação</th>
+                                <th>Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($vistoria_registrada as $vr): ?>
+                                <tr>
+                                    <td data-label="Item"><?= htmlspecialchars($vr['nome_item']) ?></td>
+                                    <td data-label="Situação">
+                                        <?= $vr['conforme']
+                                            ? '<i class="fa-solid fa-check"></i>'
+                                            : '<i class="fa-solid fa-xmark"></i>' ?>
+                                    </td>
+                                    <td data-label="Observação">
+                                        <?= (!$vr['conforme'] && !empty($vr['descricao_problema']))
+                                            ? htmlspecialchars($vr['descricao_problema'])
+                                            : '—' ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
 
             <?php elseif (empty($itens_vistoria_lista)): ?>
@@ -372,35 +417,27 @@ if ($is_passada && !$vistoria_registrada) {
                 <form method="POST" class="form-cadastro">
                     <input type="hidden" name="registrar_vistoria" value="1">
 
-                    <div class="vistoria-lista">
-                        <?php foreach ($itens_vistoria_lista as $item): ?>
-                            <div class="vistoria-item" id="vi-wrap-<?= $item['id_item_vistoria'] ?>">
-                                <label class="vistoria-item-label">
-                                    <input
-                                        type="checkbox"
-                                        name="itens[<?= $item['id_item_vistoria'] ?>]"
-                                        value="1"
-                                        checked
-                                        onchange="toggleProblema(<?= $item['id_item_vistoria'] ?>, this)"
-                                    >
-                                    <span class="vi-checkmark"></span>
-                                    <?= htmlspecialchars($item['nome_item']) ?>
-                                    <?php if (!empty($item['descricao'])): ?>
-                                        <span class="vi-dica" title="<?= htmlspecialchars($item['descricao']) ?>">
-                                            <i class="fa-solid fa-circle-info"></i>
-                                        </span>
-                                    <?php endif; ?>
-                                </label>
-                                <div class="vi-problema-wrap" id="vi-problema-<?= $item['id_item_vistoria'] ?>" style="display:none;">
-                                    <textarea
-                                        name="descricao[<?= $item['id_item_vistoria'] ?>]"
-                                        rows="2"
-                                        placeholder="Descreva o problema encontrado..."
-                                    ></textarea>
-                                </div>
+                    <?php foreach ($itens_vistoria_lista as $item): ?>
+                        <div class="form-grupo checkbox" id="vi-wrap-<?= $item['id_item_vistoria'] ?>">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="itens[<?= $item['id_item_vistoria'] ?>]"
+                                    value="1"
+                                    checked
+                                    onchange="toggleProblema(<?= $item['id_item_vistoria'] ?>, this)"
+                                >
+                                <?= htmlspecialchars($item['nome_item']) ?>
+                            </label>
+                            <div id="vi-problema-<?= $item['id_item_vistoria'] ?>" style="display:none; margin-top: 8px;">
+                                <textarea
+                                    name="descricao[<?= $item['id_item_vistoria'] ?>]"
+                                    rows="2"
+                                    placeholder="Descreva o problema encontrado..."
+                                ></textarea>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
+                        </div>
+                    <?php endforeach; ?>
 
                     <div class="form-botoes">
                         <button type="submit" class="btn btn-salvar">

@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("ssii", $nome_item, $descricao, $ativo, $id);
 
         if ($stmt->execute()) {
+            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'item_vistoria', (int) $id);
             header("Location: index.php?sucesso=1");
             exit;
         } else {

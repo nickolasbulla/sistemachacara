@@ -61,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("sssi", $data_inicio, $data_fim, $motivo, $id);
 
             if ($stmt->execute()) {
+                registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'bloqueio', (int) $id);
                 header("Location: index.php?sucesso=1");
                 exit;
             } else {

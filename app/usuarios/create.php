@@ -30,17 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("sssssssi", $nome_completo, $login, $senha, $tipo_permissao, $data_nascimento, $telefone, $observacoes, $ativo);
 
         if ($stmt->execute()) {
+            registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'usuario', $conn->insert_id);
             header("Location: index.php?sucesso=1");
             exit;
         } else {
             $erro = "Erro ao cadastrar o usuário. Tente novamente.";
-        }
-
-        if ($stmt->execute()) {
-            header("Location: index.php?msg=Usuario cadastrado com sucesso!");
-            exit;
-        } else {
-            $erro = "Erro ao cadastrar usuário: " . $conn->error;
         }
     }
 }

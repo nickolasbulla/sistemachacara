@@ -1,3 +1,16 @@
+<?php if (($body_class ?? '') === 'painel-page'): ?>
+<!-- Modal de inatividade -->
+<div id="inatividade-modal" class="popup-modal">
+    <div class="popup-box">
+        <h2><i class="fa-solid fa-clock"></i> Sessão expirando</h2>
+        <p>Você será desconectado por inatividade em <strong><span id="inatividade-contador">60</span>s</strong>.</p>
+        <div class="popup-buttons">
+            <button id="inatividade-continuar" class="btn btn-salvar">Continuar conectado</button>
+        </div>
+    </div>
+</div>
+<script src="/sistemachacara/assets/js/inatividade.js"></script>
+<?php endif; ?>
 <script src="/sistemachacara/assets/js/painel.js"></script>
 <script src="/sistemachacara/assets/js/popup.js"></script>
 <script src="/sistemachacara/assets/js/calendar.js"></script>

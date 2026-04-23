@@ -13,10 +13,17 @@ if (isset($_GET['delete_id'])) {
 
     $id = (int) $_GET['delete_id'];
 
+    $info = $conn->prepare("SELECT nome_completo, telefone FROM funcionarios WHERE id_funcionario = ?");
+    $info->bind_param("i", $id);
+    $info->execute();
+    $row = $info->get_result()->fetch_assoc();
+    $detalhes = $row ? "nome: {$row['nome_completo']} | telefone: {$row['telefone']}" : null;
+
     try {
         $stmt = $conn->prepare("DELETE FROM funcionarios WHERE id_funcionario = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
+        registrar_log($conn, $_SESSION['usuario_id'], 'excluir', 'funcionario', $id, $detalhes);
 
         header("Location: index.php?deletado=1");
         exit;

@@ -13,14 +13,12 @@ include '../includes/layout/header.php';
     </div>
 
     <!-- mensagem de erro -->
-    <div id="errorMessage" class="error-message <?php echo isset($_SESSION['erro_login']) ? 'show' : ''; ?>">
-        <?php
-        if (isset($_SESSION['erro_login'])) {
-            echo htmlspecialchars($_SESSION['erro_login']);
-            unset($_SESSION['erro_login']);
-        }
-        ?>
-    </div>
+    <?php if (isset($_SESSION['erro_login'])): ?>
+        <div class="alerta erro">
+            <?= htmlspecialchars($_SESSION['erro_login']) ?>
+        </div>
+        <?php unset($_SESSION['erro_login']); ?>
+    <?php endif; ?>
 
     <form action="autenticar.php" method="POST" id="login-form">
         <div class="form-group">

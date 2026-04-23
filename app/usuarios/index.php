@@ -18,11 +18,18 @@ if (isset($_GET['delete_id'])) {
         exit;
     }
 
+    $info = $conn->prepare("SELECT nome_completo, login FROM usuarios WHERE id_usuario = ?");
+    $info->bind_param("i", $id);
+    $info->execute();
+    $row = $info->get_result()->fetch_assoc();
+    $detalhes = $row ? "nome: {$row['nome_completo']} | login: {$row['login']}" : null;
+
     try {
 
         $stmt = $conn->prepare("DELETE FROM usuarios WHERE id_usuario = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
+        registrar_log($conn, $_SESSION['usuario_id'], 'excluir', 'usuario', $id, $detalhes);
 
         header("Location: index.php?deletado=1");
         exit;

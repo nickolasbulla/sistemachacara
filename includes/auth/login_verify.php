@@ -20,7 +20,8 @@ if ($tipo !== 'admin') {
         '/usuarios',
         '/funcionarios',
         '/ambientes',
-        '/relatorios'
+        '/relatorios',
+        '/logs'
     ];
 
     foreach ($bloqueados as $rota) {
