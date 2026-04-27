@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $login = $_POST["login"];
     $senha = password_hash($_POST["senha"], PASSWORD_DEFAULT);
     $tipo_permissao = $_POST["tipo_permissao"];
-    $data_nascimento = $_POST["data_nascimento"];
+    $data_nascimento = parse_data($_POST["data_nascimento"]);
     $telefone = $_POST["telefone"];
     $observacoes = $_POST["observacoes"];
     $ativo = isset($_POST["ativo"]) ? 1 : 0;
@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="date" name="data_nascimento" min="1900-01-01" max="<?= date('Y-m-d') ?>" required>
+                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" required>
                 </div>
 
                 <div class="form-grupo">

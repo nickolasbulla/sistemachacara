@@ -1,0 +1,142 @@
+$cor-primaria:   #667eea;
+$cor-secundaria: #764ba2;
+$cor-texto:      #222;
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: DejaVu Sans, sans-serif;
+    font-size: 14px;
+    color: $cor-texto;
+    padding-bottom: 10mm;
+}
+
+// CABEÇALHO
+.header {
+    background-color: white;
+    color: $cor-texto;
+    padding: 0 24px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid $cor-primaria;
+
+    table { width: 100%; }
+
+    td {
+        vertical-align: middle;
+        color: $cor-texto;
+        padding-top: 18px;
+        padding-bottom: 18px;
+    }
+
+    .sistema    { font-size: 14px; font-weight: bold; }
+    .titulo-rel { font-size: 14px; margin-top: 4px; }
+    .periodo    { font-size: 14px; margin-top: 4px; }
+    .meta       { text-align: right; font-size: 14px; line-height: 1.8; }
+}
+
+// RESUMO
+.resumo {
+    margin: 0 24px;
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 8px;
+    }
+
+    td {
+        border: 1px solid #e2e2e2;
+        background-color: #f9f9f9;
+        padding: 10px 12px;
+        text-align: center;
+        width: 25%;
+
+        &.destaque {
+            background-color: #f0edff;
+            border-color: $cor-secundaria;
+        }
+    }
+
+    .label {
+        font-size: 9px;
+        font-weight: bold;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+    }
+
+    .valor {
+        font-size: 17px;
+        font-weight: bold;
+        color: #111;
+        margin-top: 4px;
+
+        &.roxo { color: $cor-secundaria; }
+    }
+}
+
+// TABELA PRINCIPAL
+.dados {
+    margin: 0 24px;
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10.5px;
+
+        thead {
+            tr {
+                background-color: $cor-primaria;
+                color: white;
+            }
+
+            th {
+                padding: 8px 10px;
+                text-align: left;
+                font-size: 10px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: .3px;
+            }
+        }
+
+        tbody {
+            tr.par { background-color: #f4f2ff; }
+
+            td {
+                padding: 7px 10px;
+                border-bottom: 1px solid #ebebeb;
+            }
+        }
+
+        tfoot {
+            tr { background-color: #ede9ff; }
+
+            td {
+                padding: 8px 10px;
+                font-weight: bold;
+                border-top: 2px solid $cor-secundaria;
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+.direita { text-align: right; }
+
+.moeda-cell {
+    width: 100%;
+    border-collapse: collapse;
+
+    td { border: none !important; padding: 0 !important; }
+    .rs  { text-align: left; }
+    .num { text-align: right; }
+}
+.vermelho { color: #c0392b; font-weight: bold; }
+
+.sem-dados {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 13px;
+}

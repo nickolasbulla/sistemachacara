@@ -11,8 +11,8 @@ include "../../includes/layout/header.php";
 $erro = '';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $data_inicio = $_POST["data_inicio"];
-    $data_fim = $_POST["data_fim"];
+    $data_inicio = parse_data($_POST["data_inicio"]);
+    $data_fim    = parse_data($_POST["data_fim"]);
     $motivo = trim($_POST["motivo"]);
     $id_usuario = $_SESSION['usuario_id'];
 
@@ -84,15 +84,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="form-grupo">
                     <label>Data de início: *</label>
-                    <input type="date" name="data_inicio" required 
-                        min="<?= date('Y-m-d') ?>"
+                    <input type="text" class="input-data" name="data_inicio" placeholder="DD/MM/AAAA" required
                         value="<?= htmlspecialchars($_POST['data_inicio'] ?? '') ?>">
                 </div>
 
                 <div class="form-grupo">
                     <label>Data de fim: *</label>
-                    <input type="date" name="data_fim" required
-                        min="<?= date('Y-m-d') ?>"
+                    <input type="text" class="input-data" name="data_fim" placeholder="DD/MM/AAAA" required
                         value="<?= htmlspecialchars($_POST['data_fim'] ?? '') ?>">
                 </div>
 

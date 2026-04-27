@@ -7,6 +7,7 @@
 
     <!-- css -->
     <link rel="stylesheet" href="/sistemachacara/assets/css/style.css">
+    <link rel="icon" type="image/png" href="/sistemachacara/assets/images/favicon.png">
 
     <!-- para cada página definir seu título -->
     <title><?php echo $titulo_pagina; ?></title>

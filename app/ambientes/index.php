@@ -83,7 +83,7 @@ if (isset($_GET['delete_id'])) {
                             <tr>
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_ambiente']) ?></td>
                                 <td data-label="Capacidade"><?= htmlspecialchars($row['capacidade']) ?></td>
-                                <td data-label="Descrição"><?= $row['descricao'] ?></td>
+                                <td data-label="Descrição"><?= htmlspecialchars($row['descricao'] ?? '') ?></td>
                                 <td data-label="Ativo">
                                     <?= $row['ativo'] ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>' ?>
                                 </td>

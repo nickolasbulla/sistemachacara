@@ -1,0 +1,18 @@
+@use "../abstracts/variables" as *;
+
+.vistoria-titulo {
+    margin: 0 0 20px;
+    font-size: 21px;
+    color: $text-dark;
+    text-align: center;
+
+    i {
+        color: #667eea;
+        margin-right: 8px;
+    }
+}
+
+.vi-problema {
+    display: none;
+    margin-top: 8px;
+}

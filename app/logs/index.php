@@ -29,7 +29,7 @@ if ($filtro_entidade) {
 }
 if ($filtro_data) {
     $where[] = "DATE(l.data_hora) = ?";
-    $params[] = $filtro_data;
+    $params[] = parse_data($filtro_data);
     $tipos   .= 's';
 }
 
@@ -53,12 +53,12 @@ $stmt->execute();
 $logs = $stmt->get_result();
 
 $icones = [
-    'criar'               => '<i class="fa-solid fa-plus"        style="color:#4caf50"></i>',
-    'editar'              => '<i class="fa-solid fa-pen"          style="color:#2196f3"></i>',
-    'excluir'             => '<i class="fa-solid fa-trash"        style="color:#f44336"></i>',
-    'login'               => '<i class="fa-solid fa-right-to-bracket" style="color:#9c27b0"></i>',
-    'logout'              => '<i class="fa-solid fa-right-from-bracket" style="color:#ff9800"></i>',
-    'registrar_vistoria'  => '<i class="fa-solid fa-clipboard-check" style="color:#00bcd4"></i>',
+    'criar'               => '<i class="fa-solid fa-plus log-icone-criar"></i>',
+    'editar'              => '<i class="fa-solid fa-pen log-icone-editar"></i>',
+    'excluir'             => '<i class="fa-solid fa-trash log-icone-excluir"></i>',
+    'login'               => '<i class="fa-solid fa-right-to-bracket log-icone-login"></i>',
+    'logout'              => '<i class="fa-solid fa-right-from-bracket log-icone-logout"></i>',
+    'registrar_vistoria'  => '<i class="fa-solid fa-clipboard-check log-icone-vistoria"></i>',
 ];
 ?>
 
@@ -76,8 +76,8 @@ $icones = [
         </header>
 
         <!-- Filtros -->
-        <form method="GET" class="form-cadastro" style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:20px;">
-            <div class="form-grupo" style="flex:1; min-width:140px;">
+        <form method="GET" class="form-cadastro logs-filtros">
+            <div class="form-grupo">
                 <label>Ação</label>
                 <div class="select-wrapper">
                     <select name="acao">
@@ -89,7 +89,7 @@ $icones = [
                 </div>
             </div>
 
-            <div class="form-grupo" style="flex:1; min-width:140px;">
+            <div class="form-grupo">
                 <label>Entidade</label>
                 <div class="select-wrapper">
                     <select name="entidade">
@@ -101,12 +101,12 @@ $icones = [
                 </div>
             </div>
 
-            <div class="form-grupo" style="flex:1; min-width:140px;">
+            <div class="form-grupo">
                 <label>Data</label>
-                <input type="date" name="data" value="<?= htmlspecialchars($filtro_data) ?>">
+                <input type="text" class="input-data" name="data" placeholder="DD/MM/AAAA" value="<?= htmlspecialchars($filtro_data) ?>">
             </div>
 
-            <div class="form-botoes" style="margin-bottom:0;">
+            <div class="form-botoes">
                 <button type="submit" class="btn btn-salvar">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     Filtrar
@@ -123,7 +123,6 @@ $icones = [
                         <th>Usuário</th>
                         <th>Ação</th>
                         <th>Entidade</th>
-                        <th>ID</th>
                         <th>Detalhes</th>
                     </tr>
                 </thead>
@@ -142,9 +141,6 @@ $icones = [
                             </td>
                             <td data-label="Entidade">
                                 <?= htmlspecialchars($row['entidade']) ?>
-                            </td>
-                            <td data-label="ID">
-                                <?= $row['id_registro'] ?? '—' ?>
                             </td>
                             <td data-label="Detalhes">
                                 <?= $row['detalhes'] ? htmlspecialchars($row['detalhes']) : '—' ?>

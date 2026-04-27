@@ -80,8 +80,8 @@ if (isset($_GET['delete_id'])) {
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_completo']) ?></td>
-                                <td data-label="Telefone"><?= $row['telefone'] ?></td>
-                                <td data-label="Observacoes"><?= $row['observacoes'] ?></td>
+                                <td data-label="Telefone"><?= htmlspecialchars($row['telefone'] ?? '') ?></td>
+                                <td data-label="Observacoes"><?= htmlspecialchars($row['observacoes'] ?? '') ?></td>
                                 <td data-label="Ações">
                                     <a href="./edit.php?id=<?= $row['id_funcionario'] ?>" class="btn-editar">
                                         <i class="fa-solid fa-hand-pointer"></i>

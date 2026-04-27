@@ -3,7 +3,7 @@ session_start();
 include '../../includes/auth/login_verify.php';
 include '../../config/db.php';
 $titulo_pagina = "Reservas - Chácara Portal";
-
+$body_class = "painel-page";
 include "../../includes/layout/header.php";
 
 if (!isset($_GET['id'])) {
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
 
     $nome          = trim($_POST['nome_reserva']);
     $tel           = trim($_POST['telefone_reserva']);
-    $data          = $_POST['data_reserva'];
+    $data          = parse_data($_POST['data_reserva']);
     $inicio        = $_POST['hora_inicio'];
     $fim           = $_POST['hora_fim'];
     $ambiente      = $_POST['id_ambiente'];
@@ -289,7 +289,8 @@ if ($is_passada && !$vistoria_registrada) {
 
                 <div class="form-grupo">
                     <label>Data da reserva</label>
-                    <input type="date" name="data_reserva" value="<?= $reserva['data_reserva'] ?>" tabindex="-1" readonly required>
+                    <input type="text" class="input-data" name="data_reserva" placeholder="DD/MM/AAAA" tabindex="-1" readonly required
+                        value="<?= fmt_data($reserva['data_reserva']) ?>">
                 </div>
 
                 <div class="form-grupo">
@@ -365,8 +366,8 @@ if ($is_passada && !$vistoria_registrada) {
         <!-- ─── Bloco de Vistoria ─────────────────────────────────────── -->
         <div class="cadastro-area">
 
-            <h3 style="margin: 0 0 20px; font-size: 21px; color: #333; text-align: center;">
-                <i class="fa-solid fa-clipboard-list" style="color: #667eea; margin-right: 8px;"></i>
+            <h3 class="vistoria-titulo">
+                <i class="fa-solid fa-clipboard-list"></i>
                 Vistoria de Saída
             </h3>
 
@@ -429,7 +430,7 @@ if ($is_passada && !$vistoria_registrada) {
                                 >
                                 <?= htmlspecialchars($item['nome_item']) ?>
                             </label>
-                            <div id="vi-problema-<?= $item['id_item_vistoria'] ?>" style="display:none; margin-top: 8px;">
+                            <div id="vi-problema-<?= $item['id_item_vistoria'] ?>" class="vi-problema">
                                 <textarea
                                     name="descricao[<?= $item['id_item_vistoria'] ?>]"
                                     rows="2"

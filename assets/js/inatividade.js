@@ -1,9 +1,9 @@
 (() => {
     const TEMPO_TOTAL    = 10 * 60 * 1000; // 10 minutos
-    const TEMPO_AVISO    =  9 * 60 * 1000; //  9 minutos (avisa 1 min antes)
+    const TEMPO_AVISO    =  9 * 60 * 1000; //  9 minutos
     const LOGOUT_URL     = '/sistemachacara/public/logout.php';
 
-    let timerAviso;
+    let timerAviso; 
     let timerLogout;
     let countdown;
     let segundosRestantes = 60;
@@ -43,12 +43,6 @@
     function deslogar() {
         window.location.href = LOGOUT_URL;
     }
-
-    // botão "Continuar"
-    document.getElementById('inatividade-continuar')
-        .addEventListener('click', () => {
-            resetar();
-        });
 
     // eventos que indicam atividade
     ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(ev => {

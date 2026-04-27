@@ -1,12 +1,9 @@
-<?php if (($body_class ?? '') === 'painel-page'): ?>
+<?php if (str_contains($body_class ?? '', 'painel-page')): ?>
 <!-- Modal de inatividade -->
 <div id="inatividade-modal" class="popup-modal">
     <div class="popup-box">
         <h2><i class="fa-solid fa-clock"></i> Sessão expirando</h2>
         <p>Você será desconectado por inatividade em <strong><span id="inatividade-contador">60</span>s</strong>.</p>
-        <div class="popup-buttons">
-            <button id="inatividade-continuar" class="btn btn-salvar">Continuar conectado</button>
-        </div>
     </div>
 </div>
 <script src="/sistemachacara/assets/js/inatividade.js"></script>
@@ -21,6 +18,9 @@
 <!-- jquery somente para usar o datamask  -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+    $('.input-data').mask('00/00/0000');
+</script>
 
 </body>
 </html>

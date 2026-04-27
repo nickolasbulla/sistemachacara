@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmarSenha = $_POST['confirmar_senha'] ?? '';
 
     $tipo_permissao = $_POST['tipo_permissao'];
-    $data_nascimento = $_POST['data_nascimento'];
+    $data_nascimento = parse_data($_POST['data_nascimento']);
     $telefone = $_POST['telefone'];
     $observacoes = $_POST['observacoes'];
     $ativo = isset($_POST['ativo']) ? 1 : 0;
@@ -196,8 +196,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="date" name="data_nascimento" tabindex="-1"
-                        value="<?= htmlspecialchars($usuario['data_nascimento']) ?>">
+                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" tabindex="-1"
+                        value="<?= htmlspecialchars(fmt_data($usuario['data_nascimento'])) ?>">
                 </div>
 
                 <div class="form-grupo">

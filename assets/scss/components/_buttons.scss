@@ -202,8 +202,10 @@
     gap: 12px;
 }
 
-//* RELATÓRIO */
+/* RELATÓRIO */
 .btn-relatorio {
+    border: none;
+    cursor: pointer;
     align-self: flex-start;
     background: $gradient-75;
     color: #fff;

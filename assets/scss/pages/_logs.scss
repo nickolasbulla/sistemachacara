@@ -1,0 +1,25 @@
+@use "../abstracts/variables" as *;
+
+.logs-filtros {
+    flex-direction: row;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 20px;
+
+    .form-grupo {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .form-botoes {
+        margin-bottom: 0;
+    }
+}
+
+.log-icone-criar    { color: #4caf50; }
+.log-icone-editar   { color: #2196f3; }
+.log-icone-excluir  { color: #f44336; }
+.log-icone-login    { color: #9c27b0; }
+.log-icone-logout   { color: #ff9800; }
+.log-icone-vistoria { color: #00bcd4; }

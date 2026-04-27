@@ -10,14 +10,14 @@
                 </a>
             </li>
 
+            <?php if ($_SESSION['usuario_tipo'] === 'admin'): ?>
+
             <li>
                 <a href="../ocorrencias/index.php">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     Ocorrências
                 </a>
             </li>
-
-            <?php if ($_SESSION['usuario_tipo'] === 'admin'): ?>
 
                 <li>
                     <a href="../relatorios/index.php">
@@ -72,12 +72,14 @@
 
     <div class="menu-bottom">
         <ul>
+            <?php if ($_SESSION['usuario_tipo'] === 'admin'): ?>
             <li>
                 <a href="../logs/index.php">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     Logs
                 </a>
             </li>
+            <?php endif; ?>
             <li>
                 <a href="#" id="btnLogout">
                     <i class="fa-solid fa-right-from-bracket"></i>

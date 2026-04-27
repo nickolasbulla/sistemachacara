@@ -3,7 +3,7 @@ session_start();
 include '../../includes/auth/login_verify.php';
 include '../../config/db.php';
 $titulo_pagina = "Reservas - Chácara Portal";
-
+$body_class = "painel-page";
 include "../../includes/layout/header.php";
 
 $id_usuario = $_SESSION['usuario_id'];
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $nome = trim($_POST['nome_reserva']);
     $tel = trim($_POST['telefone_reserva']);
-    $data = $_POST['data_reserva'];
+    $data = parse_data($_POST['data_reserva']);
     $inicio = $_POST['hora_inicio'];
     $fim = $_POST['hora_fim'];
     $ambiente = $_POST['id_ambiente'];
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="cadastro-area">
 
             <?php if (!empty($erro)): ?>
-                <div class="alerta erro"><?= $erro ?></div>
+                <div class="alerta erro"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
@@ -153,7 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Data da reserva</label>
-                    <input type="date" name="data_reserva" value="<?= $data_previa ?>" tabindex="-1" readonly required>
+                    <input type="text" class="input-data" name="data_reserva" placeholder="DD/MM/AAAA" tabindex="-1" readonly required
+                        value="<?= fmt_data($data_previa) ?>">
                 </div>
 
                 <div class="form-grupo">

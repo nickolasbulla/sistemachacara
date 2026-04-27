@@ -90,7 +90,7 @@ if (isset($_GET['delete_id'])) {
                             <tr>
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Login"><?= htmlspecialchars($row['login']) ?></td>
-                                <td data-label="Permissão"><?= ($row['tipo_permissao']) ?></td>
+                                <td data-label="Permissão"><?= htmlspecialchars($row['tipo_permissao']) ?></td>
                                 <td data-label="Ativo">
                                     <?= $row['ativo'] ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>' ?>
                                 </td>

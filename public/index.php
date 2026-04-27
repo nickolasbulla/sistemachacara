@@ -8,8 +8,7 @@ include '../includes/layout/header.php';
 
 <div class="login-container">
     <div class="login-header">
-        <img src="../assets/logo.jpg" alt="">
-        <p>Gerenciamento de Aluguéis</p>
+        <img src="../assets/images/logo2.png" alt="">
     </div>
 
     <!-- mensagem de erro -->

@@ -30,8 +30,8 @@ if (!$bloqueio) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data_inicio = $_POST['data_inicio'];
-    $data_fim    = $_POST['data_fim'];
+    $data_inicio = parse_data($_POST['data_inicio']);
+    $data_fim    = parse_data($_POST['data_fim']);
     $motivo      = trim($_POST['motivo']);
 
     if (empty($data_inicio) || empty($data_fim) || empty($motivo)) {
@@ -101,14 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Data de início: *</label>
-                    <input type="date" name="data_inicio" required
-                           value="<?= htmlspecialchars($_POST['data_inicio'] ?? $bloqueio['data_inicio']) ?>">
+                    <input type="text" class="input-data" name="data_inicio" placeholder="DD/MM/AAAA" required
+                           value="<?= htmlspecialchars($_POST['data_inicio'] ?? fmt_data($bloqueio['data_inicio'])) ?>">
                 </div>
 
                 <div class="form-grupo">
                     <label>Data de fim: *</label>
-                    <input type="date" name="data_fim" required
-                           value="<?= htmlspecialchars($_POST['data_fim'] ?? $bloqueio['data_fim']) ?>">
+                    <input type="text" class="input-data" name="data_fim" placeholder="DD/MM/AAAA" required
+                           value="<?= htmlspecialchars($_POST['data_fim'] ?? fmt_data($bloqueio['data_fim'])) ?>">
                 </div>
 
                 <div class="form-grupo">

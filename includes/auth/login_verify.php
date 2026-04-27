@@ -21,12 +21,13 @@ if ($tipo !== 'admin') {
         '/funcionarios',
         '/ambientes',
         '/relatorios',
-        '/logs'
+        '/logs',
+        '/ocorrencias'
     ];
 
     foreach ($bloqueados as $rota) {
         if (strpos($url, $rota) !== false) {
-            header("Location: /sistemachacara/app/reservas/index.php?erro=sem_permissao");
+            header("Location: /sistemachacara/public/logout.php");
             exit;
         }
     }

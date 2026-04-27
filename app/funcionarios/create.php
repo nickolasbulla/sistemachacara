@@ -10,7 +10,7 @@ include "../../includes/layout/header.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nome_completo = $_POST["nome_completo"];
-    $data_nascimento = $_POST["data_nascimento"];
+    $data_nascimento = parse_data($_POST["data_nascimento"]);
     $telefone = $_POST["telefone"];
     $observacoes = $_POST["observacoes"];
     $ativo = isset($_POST["ativo"]) ? 1 : 0;
@@ -70,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="date" name="data_nascimento" required>
+                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" required>
                 </div>
 
                 <div class="form-grupo">
