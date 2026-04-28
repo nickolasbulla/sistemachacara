@@ -9,8 +9,9 @@ $body_class = "painel-page";
 include "../../includes/layout/header.php";
 include '../../includes/layout/deletemodal.php';
 
-if (isset($_GET['delete_id'])) {
-    $id = (int) $_GET['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    csrf_verify();
+    $id = (int) $_POST['delete_id'];
     $info = $conn->prepare("SELECT nome_item FROM itens_vistoria WHERE id_item_vistoria = ?");
     $info->bind_param("i", $id);
     $info->execute();
@@ -44,11 +45,11 @@ if (isset($_GET['delete_id'])) {
             <h1>Itens de Vistoria</h1>
         </header>
 
-        <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
+        <?php if (isset($_GET['sucesso'])): ?>
             <div class="alerta sucesso">Item cadastrado com sucesso!</div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['deletado'])): ?>
+        <?php elseif (isset($_GET['editado'])): ?>
+            <div class="alerta sucesso">Item atualizado com sucesso!</div>
+        <?php elseif (isset($_GET['deletado'])): ?>
             <div class="alerta sucesso">Item excluído com sucesso!</div>
         <?php endif; ?>
 

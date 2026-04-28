@@ -9,9 +9,9 @@ $body_class = "painel-page";
 include "../../includes/layout/header.php";
 include '../../includes/layout/deletemodal.php';
 
-if (isset($_GET['delete_id'])) {
-
-    $id = (int) $_GET['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    csrf_verify();
+    $id = (int) $_POST['delete_id'];
 
     $info = $conn->prepare("SELECT nome_completo, telefone FROM funcionarios WHERE id_funcionario = ?");
     $info->bind_param("i", $id);
@@ -48,8 +48,12 @@ if (isset($_GET['delete_id'])) {
             <h1>Funcionários</h1>
         </header>
 
-        <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
+        <?php if (isset($_GET['sucesso'])): ?>
             <div class="alerta sucesso">Funcionário cadastrado com sucesso!</div>
+        <?php elseif (isset($_GET['editado'])): ?>
+            <div class="alerta sucesso">Funcionário atualizado com sucesso!</div>
+        <?php elseif (isset($_GET['deletado'])): ?>
+            <div class="alerta sucesso">Funcionário excluído com sucesso!</div>
         <?php endif; ?>
 
         <?php if (isset($_GET['erro_relacionado'])): ?>

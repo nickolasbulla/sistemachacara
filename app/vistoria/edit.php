@@ -27,6 +27,7 @@ if (!$item) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verify();
     $nome_item = $_POST['nome_item'];
     $descricao = $_POST['descricao'];
     $ativo     = isset($_POST['ativo']) ? 1 : 0;
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'item_vistoria', (int) $id);
-            header("Location: index.php?sucesso=1");
+            header("Location: index.php?editado=1");
             exit;
         } else {
             $erro = "Erro ao atualizar o item.";
@@ -78,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome do item: *</label>
                     <input type="text" name="nome_item" value="<?= htmlspecialchars($item['nome_item']) ?>" required>

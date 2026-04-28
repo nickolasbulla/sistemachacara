@@ -30,9 +30,11 @@ if (!$bloqueio) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verify();
     $data_inicio = parse_data($_POST['data_inicio']);
     $data_fim    = parse_data($_POST['data_fim']);
     $motivo      = trim($_POST['motivo']);
+    $ativo       = isset($_POST['ativo']) ? 1 : 0;
 
     if (empty($data_inicio) || empty($data_fim) || empty($motivo)) {
         $erro = "Preencha todos os campos obrigatórios.";
@@ -57,12 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 . date('d/m/Y', strtotime($reservaConflito['data_reserva']))
                 . " (" . htmlspecialchars($reservaConflito['nome_reserva']) . ").";
         } else {
-            $stmt = $conn->prepare("UPDATE bloqueios SET data_inicio = ?, data_fim = ?, motivo = ? WHERE id_bloqueio = ?");
-            $stmt->bind_param("sssi", $data_inicio, $data_fim, $motivo, $id);
+            $stmt = $conn->prepare("UPDATE bloqueios SET data_inicio = ?, data_fim = ?, motivo = ?, ativo = ? WHERE id_bloqueio = ?");
+            $stmt->bind_param("sssii", $data_inicio, $data_fim, $motivo, $ativo, $id);
 
             if ($stmt->execute()) {
                 registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'bloqueio', (int) $id);
-                header("Location: index.php?sucesso=1");
+                header("Location: index.php?editado=1");
                 exit;
             } else {
                 $erro = "Erro ao atualizar o bloqueio. Tente novamente.";
@@ -98,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
 
                 <div class="form-grupo">
                     <label>Data de início: *</label>

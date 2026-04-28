@@ -32,14 +32,6 @@ function buildHtml(string $titulo, string $periodo, string $corpo): string {
 
         <?= $corpo ?>
 
-        <script type="text/php">
-            if (isset($pdf)) {
-                $font  = $fontMetrics->getFont("DejaVu Sans", "normal");
-                $color = [0.5, 0.5, 0.5];
-                $pdf->page_text(252, 816, "Página {PAGE_NUM} de {PAGE_COUNT}", $font, 8, $color);
-            }
-        </script>
-
     </body>
     </html>
     <?php

@@ -18,14 +18,17 @@ include '_layout.php';
 
 $tipo = $_GET['tipo'] ?? '';
 
-if (!preg_match('/^[a-z_]+$/', $tipo)) {
+$relatorios_validos = [
+    'faturamento',
+    'por_usuario',
+    'por_ambiente',
+    'ocorrencias',
+    'bloqueios',
+    'sem_funcionario',
+];
+
+if (!in_array($tipo, $relatorios_validos, true)) {
     die('Relatório inválido.');
 }
 
-$report = __DIR__ . "/reports/{$tipo}.php";
-
-if (!file_exists($report)) {
-    die('Relatório inválido.');
-}
-
-include $report;
+include __DIR__ . "/reports/{$tipo}.php";

@@ -9,6 +9,7 @@ $body_class = "painel-page";
 include "../../includes/layout/header.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    csrf_verify();
     $nome_completo = $_POST["nome_completo"];
     $data_nascimento = parse_data($_POST["data_nascimento"]);
     $telefone = $_POST["telefone"];
@@ -63,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome completo: *</label>
                     <input type="text" name="nome_completo" required>

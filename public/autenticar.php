@@ -2,6 +2,8 @@
 session_start();
 include '../config/db.php';
 
+csrf_verify();
+
 if (empty($_POST['usuario']) || empty($_POST['senha'])) {
     $_SESSION['erro_login'] = "Preencha todos os campos!";
     header("Location: index.php");

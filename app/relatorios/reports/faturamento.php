@@ -5,6 +5,9 @@ $data_fim    = parse_data($_GET['data_fim']    ?? '');
 if (!$data_inicio || !$data_fim) {
     die('Parâmetros inválidos.');
 }
+if ($data_fim < $data_inicio) {
+    die('A data fim não pode ser anterior à data início.');
+}
 
 $stmt = $conn->prepare("
     SELECT

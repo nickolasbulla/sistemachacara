@@ -36,6 +36,7 @@ if (!$usuario) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verify();
     $nome_completo = $_POST['nome_completo'];
     $login = $_POST['login'];
 
@@ -120,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'usuario', (int) $id);
-            header("Location: index.php?sucesso=1");
+            header("Location: index.php?editado=1");
             exit;
         } else {
             $erro = "Erro ao atualizar o usuário.";
@@ -153,6 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome completo: *</label>
                     <input type="text" name="nome_completo" value="<?= htmlspecialchars($usuario['nome_completo']) ?>"
@@ -169,17 +171,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label>Senha atual:</label>
                         <input type="password" name="senha_atual" placeholder="Digite sua senha atual">
                     </div>
+                    <div class="form-grupo">
+                        <label>Nova senha:</label>
+                        <input type="password" name="nova_senha" placeholder="Deixe em branco para não alterar">
+                    </div>
+                    <div class="form-grupo">
+                        <label>Confirmar nova senha:</label>
+                        <input type="password" name="confirmar_senha" placeholder="Repita a nova senha">
+                    </div>
+                <?php else: ?>
+                    <div class="form-grupo">
+                        <label>Redefinir senha:</label>
+                        <input type="password" name="nova_senha" placeholder="Deixe em branco para não alterar">
+                    </div>
+                    <div class="form-grupo">
+                        <label>Confirmar nova senha:</label>
+                        <input type="password" name="confirmar_senha" placeholder="Repita a nova senha">
+                    </div>
                 <?php endif; ?>
-
-                <div class="form-grupo">
-                    <label></label>
-                    <input type="password" name="nova_senha" placeholder="Nova senha">
-                </div>
-
-                <div class="form-grupo">
-                    <label></label>
-                    <input type="password" name="confirmar_senha" placeholder="Repita a nova senha">
-                </div>
 
                 <div class="form-grupo">
                     <label>Tipo de permissão: *</label>

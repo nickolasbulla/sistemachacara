@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../includes/csrf.php';
 
 $titulo_pagina = "Login - Chácara Portal";
 $body_class = "login-page";
@@ -20,6 +21,7 @@ include '../includes/layout/header.php';
     <?php endif; ?>
 
     <form action="autenticar.php" method="POST" id="login-form">
+        <?= csrf_field() ?>
         <div class="form-group">
             <label for="usuario">Usuário</label>
             <input type="text" id="usuario" name="usuario" placeholder="Digite seu username" required

@@ -20,14 +20,20 @@ function fmt(float|int|string $v): string {
 function renderPdf(string $html, string $filename): void {
     $options = new Options();
     $options->set('defaultFont', 'DejaVu Sans');
-    $options->set('isHtml5ParserEnabled', true);
+    $options->set('isHtml5ParserEnabled', false);
     $options->set('isRemoteEnabled', false);
-    $options->set('isPhpEnabled', true);
+    $options->set('isPhpEnabled', false);
+    $options->set('fontCache', __DIR__ . '/../../cache/fonts');
 
     $dompdf = new Dompdf($options);
     $dompdf->loadHtml($html, 'UTF-8');
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
+
+    $canvas = $dompdf->getCanvas();
+    $font   = $dompdf->getFontMetrics()->getFont('DejaVu Sans', 'normal');
+    $canvas->page_text(252, 820, 'Página {PAGE_NUM} de {PAGE_COUNT}', $font, 8, [0.5, 0.5, 0.5]);
+
     $dompdf->stream($filename, ['Attachment' => true]);
     exit;
 }

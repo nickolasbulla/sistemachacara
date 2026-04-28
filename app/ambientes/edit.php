@@ -28,6 +28,7 @@ if (!$ambiente) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verify();
     $nome_ambiente = $_POST['nome_ambiente'];
     $capacidade = $_POST['capacidade'];
     $descricao = $_POST['descricao'];
@@ -50,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'ambiente', (int) $id);
-            header("Location: index.php?sucesso=1");
+            header("Location: index.php?editado=1");
             exit;
         } else {
             $erro = "Erro ao atualizar o ambiente.";
@@ -83,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome: *</label>
                     <input type="text" name="nome_ambiente" value="<?= htmlspecialchars($ambiente['nome_ambiente']) ?>"

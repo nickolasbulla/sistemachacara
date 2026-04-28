@@ -40,13 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         confirmDelete.addEventListener("click", (e) => {
             e.preventDefault();
-
-            const id = confirmDelete.dataset.id;
-
-            // pega o nome do arquivo atual
-            const currentPage = window.location.pathname.split('/').pop();
-
-            window.location.href = `${currentPage}?delete_id=${id}&id=${id}`;
+            document.getElementById('deleteId').value = confirmDelete.dataset.id;
+            document.getElementById('deleteForm').submit();
         });
     }
 });

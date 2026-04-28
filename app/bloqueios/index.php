@@ -9,8 +9,9 @@ $body_class = "painel-page";
 include "../../includes/layout/header.php";
 include '../../includes/layout/deletemodal.php';
 
-if (isset($_GET['delete_id'])) {
-    $id = (int) $_GET['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    csrf_verify();
+    $id = (int) $_POST['delete_id'];
 
     $info = $conn->prepare("SELECT data_inicio, data_fim, motivo FROM bloqueios WHERE id_bloqueio = ?");
     $info->bind_param("i", $id);
@@ -66,9 +67,9 @@ $result = $conn->query($query);
 
         <?php if (isset($_GET['sucesso'])): ?>
             <div class="alerta sucesso">Bloqueio cadastrado com sucesso!</div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['deletado'])): ?>
+        <?php elseif (isset($_GET['editado'])): ?>
+            <div class="alerta sucesso">Bloqueio atualizado com sucesso!</div>
+        <?php elseif (isset($_GET['deletado'])): ?>
             <div class="alerta sucesso">Bloqueio removido com sucesso!</div>
         <?php endif; ?>
 

@@ -6,6 +6,9 @@ $id_ambiente = (int)($_GET['id_ambiente'] ?? 0);
 if (!$data_inicio || !$data_fim) {
     die('Parâmetros inválidos.');
 }
+if ($data_fim < $data_inicio) {
+    die('A data fim não pode ser anterior à data início.');
+}
 
 $periodo = date('d/m/Y', strtotime($data_inicio)) . ' a ' . date('d/m/Y', strtotime($data_fim));
 

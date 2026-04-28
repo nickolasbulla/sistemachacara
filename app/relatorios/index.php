@@ -4,7 +4,7 @@ session_start();
 include '../../includes/auth/login_verify.php';
 include '../../config/db.php';
 
-$usuarios_lista  = $conn->query("SELECT id_usuario, nome_completo FROM usuarios WHERE ativo = 1 ORDER BY nome_completo ASC")->fetch_all(MYSQLI_ASSOC);
+$usuarios_lista = $conn->query("SELECT id_usuario, nome_completo FROM usuarios WHERE ativo = 1 ORDER BY nome_completo ASC")->fetch_all(MYSQLI_ASSOC);
 $ambientes_lista = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHERE ativo = 1 ORDER BY nome_ambiente ASC")->fetch_all(MYSQLI_ASSOC);
 
 $titulo_pagina = "Relatórios - Chácara Portal";
@@ -29,14 +29,6 @@ include "../../includes/layout/header.php";
         <div class="relatorios-grid">
 
             <div class="relatorio-card">
-                <h2>Faturamento</h2>
-                <p>Exibe o faturamento total, recebido e em aberto de todas as reservas dentro de um período.</p>
-                <button class="btn-relatorio btnRelatorio" data-relatorio="faturamento">
-                    <i class="fa-solid fa-download"></i> Gerar PDF
-                </button>
-            </div>
-
-            <div class="relatorio-card">
                 <h2>Reservas por usuário</h2>
                 <p>Lista todas as reservas feitas por um usuário específico.</p>
                 <button class="btn-relatorio btnRelatorio" data-relatorio="por_usuario">
@@ -46,8 +38,24 @@ include "../../includes/layout/header.php";
 
             <div class="relatorio-card">
                 <h2>Reservas por ambiente</h2>
-                <p>Exibe as reservas de um ambiente específico ou de todos dentro de um período.</p>
+                <p>Lista as reservas de um ambiente específico ou de todos dentro de um período.</p>
                 <button class="btn-relatorio btnRelatorio" data-relatorio="por_ambiente">
+                    <i class="fa-solid fa-download"></i> Gerar PDF
+                </button>
+            </div>
+
+            <div class="relatorio-card">
+                <h2>Reservas sem funcionário</h2>
+                <p>Lista reservas do período que não têm funcionário atribuído.</p>
+                <button class="btn-relatorio btnRelatorio" data-relatorio="sem_funcionario">
+                    <i class="fa-solid fa-download"></i> Gerar PDF
+                </button>
+            </div>
+
+            <div class="relatorio-card">
+                <h2>Faturamento</h2>
+                <p>Exibe o faturamento total, recebido e em aberto de todas as reservas dentro de um período.</p>
+                <button class="btn-relatorio btnRelatorio" data-relatorio="faturamento">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
             </div>
@@ -97,19 +105,21 @@ include "../../includes/layout/header.php";
             <div class="relatorio-modal-campos">
                 <div class="form-grupo">
                     <label for="pa_data_inicio">Data início</label>
-                    <input type="text" class="input-data" id="pa_data_inicio" name="data_inicio" placeholder="DD/MM/AAAA" required>
+                    <input type="text" class="input-data" id="pa_data_inicio" name="data_inicio"
+                        placeholder="DD/MM/AAAA" required>
                 </div>
                 <div class="form-grupo">
                     <label for="pa_data_fim">Data fim</label>
-                    <input type="text" class="input-data" id="pa_data_fim" name="data_fim" placeholder="DD/MM/AAAA" required>
+                    <input type="text" class="input-data" id="pa_data_fim" name="data_fim" placeholder="DD/MM/AAAA"
+                        required>
                 </div>
             </div>
 
             <div class="popup-buttons" style="margin-top: 24px;">
-                <button type="button" class="btn-cancelar" id="btnFecharModalPorAmbiente">Cancelar</button>
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
+                <button type="button" class="btn-cancelar" id="btnFecharModalPorAmbiente">Cancelar</button>
             </div>
         </form>
     </div>
@@ -138,10 +148,10 @@ include "../../includes/layout/header.php";
             </div>
 
             <div class="popup-buttons" style="margin-top: 24px;">
-                <button type="button" class="btn-cancelar" id="btnFecharModalFaturamento">Cancelar</button>
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
+                <button type="button" class="btn-cancelar" id="btnFecharModalFaturamento">Cancelar</button>
             </div>
         </form>
     </div>
@@ -225,10 +235,42 @@ include "../../includes/layout/header.php";
             </div>
 
             <div class="popup-buttons" style="margin-top: 24px;">
-                <button type="button" class="btn-cancelar" id="btnFecharModalOcorrencias">Cancelar</button>
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
+                <button type="button" class="btn-cancelar" id="btnFecharModalOcorrencias">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Sem funcionário -->
+<div id="modalSemFuncionario" class="popup-modal">
+    <div class="popup-box relatorio-modal-box">
+        <h2>Sem funcionário</h2>
+        <p>Selecione o período para o relatório</p>
+
+        <form id="formSemFuncionario" action="gerar.php" method="GET">
+            <input type="hidden" name="tipo" value="sem_funcionario">
+
+            <div class="relatorio-modal-campos">
+                <div class="form-grupo">
+                    <label for="sf_data_inicio">Data início</label>
+                    <input type="text" class="input-data" id="sf_data_inicio" name="data_inicio"
+                        placeholder="DD/MM/AAAA" required>
+                </div>
+                <div class="form-grupo">
+                    <label for="sf_data_fim">Data fim</label>
+                    <input type="text" class="input-data" id="sf_data_fim" name="data_fim" placeholder="DD/MM/AAAA"
+                        required>
+                </div>
+            </div>
+
+            <div class="popup-buttons" style="margin-top: 24px;">
+                <button type="submit" class="btn-confirmar">
+                    <i class="fa-solid fa-download"></i> Gerar PDF
+                </button>
+                <button type="button" class="btn-cancelar" id="btnFecharModalSemFuncionario">Cancelar</button>
             </div>
         </form>
     </div>
@@ -268,10 +310,10 @@ include "../../includes/layout/header.php";
             </div>
 
             <div class="popup-buttons" style="margin-top: 24px;">
-                <button type="button" class="btn-cancelar" id="btnFecharModalBloqueios">Cancelar</button>
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
+                <button type="button" class="btn-cancelar" id="btnFecharModalBloqueios">Cancelar</button>
             </div>
         </form>
     </div>
@@ -279,11 +321,12 @@ include "../../includes/layout/header.php";
 
 <script>
     const modais = {
-        faturamento:  document.getElementById('modalFaturamento'),
-        por_usuario:  document.getElementById('modalPorUsuario'),
-        ocorrencias:  document.getElementById('modalOcorrencias'),
-        bloqueios:    document.getElementById('modalBloqueios'),
+        faturamento: document.getElementById('modalFaturamento'),
+        por_usuario: document.getElementById('modalPorUsuario'),
+        ocorrencias: document.getElementById('modalOcorrencias'),
+        bloqueios: document.getElementById('modalBloqueios'),
         por_ambiente: document.getElementById('modalPorAmbiente'),
+        sem_funcionario: document.getElementById('modalSemFuncionario'),
     };
 
     document.querySelectorAll('.btnRelatorio').forEach(btn => {
@@ -293,7 +336,29 @@ include "../../includes/layout/header.php";
         });
     });
 
+    function parseDataBR(s) {
+        const [d, m, y] = s.split('/');
+        return new Date(y, m - 1, d);
+    }
+
     function abrirPdf(form, modalId) {
+        const campoInicio = form.querySelector('[name="data_inicio"]');
+        const campoFim    = form.querySelector('[name="data_fim"]');
+
+        if (campoInicio?.value && campoFim?.value) {
+            if (parseDataBR(campoFim.value) < parseDataBR(campoInicio.value)) {
+                let erroDiv = form.querySelector('.modal-erro-data');
+                if (!erroDiv) {
+                    erroDiv = document.createElement('div');
+                    erroDiv.className = 'alerta erro modal-erro-data';
+                    form.querySelector('.popup-buttons').before(erroDiv);
+                }
+                erroDiv.textContent = 'A data fim não pode ser anterior à data início.';
+                return;
+            }
+        }
+
+        form.querySelector('.modal-erro-data')?.remove();
         const url = 'gerar.php?' + new URLSearchParams(new FormData(form));
         window.location.href = url;
         document.getElementById(modalId).classList.remove('active');
@@ -352,6 +417,17 @@ include "../../includes/layout/header.php";
     document.getElementById('formPorAmbiente').addEventListener('submit', (e) => {
         e.preventDefault();
         abrirPdf(e.target, 'modalPorAmbiente');
+    });
+
+    document.getElementById('btnFecharModalSemFuncionario').addEventListener('click', () => {
+        document.getElementById('modalSemFuncionario').classList.remove('active');
+    });
+    document.getElementById('modalSemFuncionario').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) e.currentTarget.classList.remove('active');
+    });
+    document.getElementById('formSemFuncionario').addEventListener('submit', (e) => {
+        e.preventDefault();
+        abrirPdf(e.target, 'modalSemFuncionario');
     });
 </script>
 

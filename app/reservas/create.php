@@ -17,7 +17,7 @@ $ambientes = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHER
 $funcionarios = $conn->query("SELECT id_funcionario, nome_completo FROM funcionarios WHERE ativo = 1 ORDER BY nome_completo");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+    csrf_verify();
     $nome = trim($_POST['nome_reserva']);
     $tel = trim($_POST['telefone_reserva']);
     $data = parse_data($_POST['data_reserva']);
@@ -140,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
 
                 <div class="form-grupo">
                     <label>Nome *</label>

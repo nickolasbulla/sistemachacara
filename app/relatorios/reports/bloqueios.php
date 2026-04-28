@@ -6,6 +6,9 @@ $status_filtro = $_GET['status'] ?? '';
 if (!$data_inicio || !$data_fim) {
     die('Parâmetros inválidos.');
 }
+if ($data_fim < $data_inicio) {
+    die('A data fim não pode ser anterior à data início.');
+}
 
 if ($status_filtro !== '' && !in_array($status_filtro, ['1', '0'])) {
     die('Parâmetros inválidos.');

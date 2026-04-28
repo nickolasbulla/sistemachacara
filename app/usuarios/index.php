@@ -9,9 +9,9 @@ $body_class = "painel-page";
 include "../../includes/layout/header.php";
 include '../../includes/layout/deletemodal.php';
 
-if (isset($_GET['delete_id'])) {
-
-    $id = (int) $_GET['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    csrf_verify();
+    $id = (int) $_POST['delete_id'];
 
     if ($id === $_SESSION['usuario_id']) {
         header("Location: index.php?erro=nao_pode_se_excluir");
@@ -56,12 +56,18 @@ if (isset($_GET['delete_id'])) {
             <h1>Usuários</h1>
         </header>
 
-        <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1): ?>
+        <?php if (isset($_GET['sucesso'])): ?>
             <div class="alerta sucesso">Usuário cadastrado com sucesso!</div>
+        <?php elseif (isset($_GET['editado'])): ?>
+            <div class="alerta sucesso">Usuário atualizado com sucesso!</div>
+        <?php elseif (isset($_GET['deletado'])): ?>
+            <div class="alerta sucesso">Usuário excluído com sucesso!</div>
         <?php endif; ?>
 
         <?php if (isset($_GET['erro_relacionado'])): ?>
             <div class="alerta erro">Não é possível excluir: este registro está vinculado a uma ou mais reservas.</div>
+        <?php elseif (isset($_GET['erro']) && $_GET['erro'] === 'nao_pode_se_excluir'): ?>
+            <div class="alerta erro">Você não pode excluir seu próprio usuário.</div>
         <?php endif; ?>
 
         <div class="area-crud">

@@ -11,6 +11,7 @@ include "../../includes/layout/header.php";
 $erro = '';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    csrf_verify();
     $data_inicio = parse_data($_POST["data_inicio"]);
     $data_fim    = parse_data($_POST["data_fim"]);
     $motivo = trim($_POST["motivo"]);
@@ -81,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
 
                 <div class="form-grupo">
                     <label>Data de início: *</label>

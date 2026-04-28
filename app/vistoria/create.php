@@ -11,6 +11,7 @@ include "../../includes/layout/header.php";
 $erro = '';
  
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    csrf_verify();
     $nome_item    = $_POST["nome_item"];
     $descricao    = $_POST["descricao"];
     $ativo        = isset($_POST["ativo"]) ? 1 : 0;
@@ -62,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <?php endif; ?>
  
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome do item: *</label>
                     <input type="text" name="nome_item" required>

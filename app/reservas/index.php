@@ -136,7 +136,11 @@ $hoje = date('Y-m-d');
             </button>
         </header>
 
-        <?php if (isset($_GET['deletado']) && $_GET['deletado'] == 1): ?>
+        <?php if (isset($_GET['sucesso'])): ?>
+            <div class="alerta sucesso">Reserva cadastrada com sucesso!</div>
+        <?php elseif (isset($_GET['editado'])): ?>
+            <div class="alerta sucesso">Reserva atualizada com sucesso!</div>
+        <?php elseif (isset($_GET['deletado'])): ?>
             <div class="alerta sucesso">Reserva excluída com sucesso!</div>
         <?php endif; ?>
 

@@ -12,8 +12,9 @@ if (!isset($_GET['id'])) {
 }
 
 // delete
-if (isset($_GET['delete_id'])) {
-    $id = (int) $_GET['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    csrf_verify();
+    $id = (int) $_POST['delete_id'];
 
     if ($id > 0) {
         $info = $conn->prepare("SELECT nome_reserva, data_reserva, hora_inicio, hora_fim FROM reservas WHERE id_reserva = ?");
@@ -62,7 +63,7 @@ $is_passada = $reserva['data_reserva'] < date('Y-m-d');
 
 // ─── POST: salvar edição da reserva ───────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
-
+    csrf_verify();
     $nome          = trim($_POST['nome_reserva']);
     $tel           = trim($_POST['telefone_reserva']);
     $data          = parse_data($_POST['data_reserva']);
@@ -155,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
 
 // ─── POST: registrar vistoria ─────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_vistoria'])) {
-
+    csrf_verify();
     $id_usuario = $_SESSION['usuario_id'];
     $itens_form = $_POST['itens'] ?? [];
     $descricoes = $_POST['descricao'] ?? [];
@@ -178,6 +179,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_vistoria'])
 
         $conn->begin_transaction();
         try {
+            $total_itens      = count($itens_ativos);
+            $total_ocorrencias = 0;
+
             foreach ($itens_ativos as $id_item) {
                 $conforme           = isset($itens_form[$id_item]) ? 1 : 0;
                 $descricao_problema = $conforme ? null : ($descricoes[$id_item] ?? null);
@@ -198,11 +202,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_vistoria'])
                     ");
                     $stmt_oc->bind_param("iiiis", $id_vistoria_resultado, $id, $id_item, $id_usuario, $descricao_problema);
                     $stmt_oc->execute();
+                    $total_ocorrencias++;
                 }
             }
 
             $conn->commit();
-            registrar_log($conn, $id_usuario, 'registrar_vistoria', 'reserva', $id);
+            $detalhes_log = "{$total_itens} " . ($total_itens === 1 ? 'item' : 'itens') . " vistoriado" . ($total_itens === 1 ? '' : 's');
+            if ($total_ocorrencias > 0) {
+                $detalhes_log .= ", {$total_ocorrencias} " . ($total_ocorrencias === 1 ? 'ocorrência aberta' : 'ocorrências abertas');
+            }
+            registrar_log($conn, $id_usuario, 'registrar_vistoria', 'reserva', $id, $detalhes_log);
             $sucesso_vistoria = "Vistoria registrada com sucesso!";
 
         } catch (Exception $e) {
@@ -274,7 +283,7 @@ if ($is_passada && !$vistoria_registrada) {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
-
+                <?= csrf_field() ?>
                 <input type="hidden" name="salvar_reserva" value="1">
 
                 <div class="form-grupo">
@@ -416,6 +425,7 @@ if ($is_passada && !$vistoria_registrada) {
             <?php else: ?>
                 <!-- Form de vistoria -->
                 <form method="POST" class="form-cadastro">
+                    <?= csrf_field() ?>
                     <input type="hidden" name="registrar_vistoria" value="1">
 
                     <?php foreach ($itens_vistoria_lista as $item): ?>

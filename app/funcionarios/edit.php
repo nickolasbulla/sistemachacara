@@ -28,7 +28,7 @@ if (!$funcionario) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+    csrf_verify();
     $nome_completo = $_POST['nome_completo'];
     $data_nascimento = parse_data($_POST['data_nascimento']);
     $telefone = $_POST['telefone'];
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($update->execute()) {
             registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'funcionario', (int) $id);
-            header("Location: index.php?sucesso=1");
+            header("Location: index.php?editado=1");
             exit;
         } else {
             $erro = "Erro ao atualizar o funcionário.";
@@ -94,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome completo: *</label>
                     <input type="text" name="nome_completo"

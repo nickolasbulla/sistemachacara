@@ -57,24 +57,24 @@ if (empty($itens)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verify();
     $statuses = $_POST['status'] ?? [];
 
     $upd = $conn->prepare("UPDATE ocorrencias SET status = ? WHERE id_ocorrencia = ? AND id_reserva = ?");
-    $sucesso = true;
 
-    foreach ($statuses as $id_oc => $status) {
-        $id_oc = (int) $id_oc;
-        $upd->bind_param("sii", $status, $id_oc, $id_reserva);
-        if (!$upd->execute()) {
-            $sucesso = false;
+    $conn->begin_transaction();
+    try {
+        foreach ($statuses as $id_oc => $status) {
+            $id_oc = (int) $id_oc;
+            $upd->bind_param("sii", $status, $id_oc, $id_reserva);
+            $upd->execute();
         }
-    }
-
-    if ($sucesso) {
+        $conn->commit();
         registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'ocorrencia', (int) $id_reserva);
         header("Location: index.php?sucesso=1");
         exit;
-    } else {
+    } catch (Exception $e) {
+        $conn->rollback();
         $erro = "Erro ao atualizar as ocorrências.";
     }
 
@@ -128,6 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Itens da ocorrência (editáveis) -->
             <form method="POST" class="form-cadastro">
+                <?= csrf_field() ?>
                 <?php foreach ($itens as $item): ?>
                     <div class="ocorrencia-item">
                         <div class="ocorrencia-item-header">
