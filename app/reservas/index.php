@@ -61,10 +61,12 @@ if ($mesProximo > 12) {
 $inicioMes = date('Y-m-01', $primeiroDiaMes);
 $fimMes    = date('Y-m-t',  $primeiroDiaMes);
 
-$sql = "SELECT id_reserva, nome_reserva, data_reserva, hora_inicio, hora_fim, valor_cobrado, valor_pago
-        FROM reservas
-        WHERE data_reserva BETWEEN ? AND ?
-        ORDER BY data_reserva, hora_inicio";
+$sql = "SELECT r.id_reserva, r.nome_reserva, r.data_reserva, r.hora_inicio, r.hora_fim,
+               r.valor_cobrado, r.valor_pago, a.nome_ambiente
+        FROM reservas r
+        LEFT JOIN ambientes a ON a.id_ambiente = r.id_ambiente
+        WHERE r.data_reserva BETWEEN ? AND ?
+        ORDER BY r.data_reserva, r.hora_inicio";
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ss", $inicioMes, $fimMes);
@@ -82,9 +84,7 @@ while ($row = $result->fetch_assoc()) {
         'nome_reserva'  => $row['nome_reserva'],
         'hora_inicio'   => substr($row['hora_inicio'], 0, 5),
         'hora_fim'      => substr($row['hora_fim'], 0, 5),
-        'valor_cobrado' => (float) $row['valor_cobrado'],
-        'valor_pago'    => (float) $row['valor_pago'],
-        'falta'         => (float) $row['valor_cobrado'] - (float) $row['valor_pago'],
+        'nome_ambiente' => $row['nome_ambiente'] ?? '',
     ];
 }
 
@@ -136,18 +136,6 @@ $hoje = date('Y-m-d');
             </button>
         </header>
 
-        <?php if (isset($_GET['sucesso'])): ?>
-            <div class="alerta sucesso">Reserva cadastrada com sucesso!</div>
-        <?php elseif (isset($_GET['editado'])): ?>
-            <div class="alerta sucesso">Reserva atualizada com sucesso!</div>
-        <?php elseif (isset($_GET['deletado'])): ?>
-            <div class="alerta sucesso">Reserva excluída com sucesso!</div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['erro_relacionado'])): ?>
-            <div class="alerta erro">Não é possível excluir: esta reserva possui vistoria ou ocorrências vinculadas.</div>
-        <?php endif; ?>
-
         <!-- calendario -->
         <div class="calendar-container">
 
@@ -172,7 +160,7 @@ $hoje = date('Y-m-d');
                         <select name="ano" onchange="this.form.submit()">
                             <?php
                             $anoInicio = $anoAtual - 5;
-                            $anoFim    = $anoAtual + 5;
+                            $anoFim = $anoAtual + 5;
                             for ($ano = $anoInicio; $ano <= $anoFim; $ano++): ?>
                                 <option value="<?= $ano ?>" <?= $ano == $anoAtual ? 'selected' : '' ?>>
                                     <?= $ano ?>
@@ -256,6 +244,8 @@ $hoje = date('Y-m-d');
         <h2>
             Reservas do dia <span id="calModalData"></span>
         </h2>
+        <div id="calModalFeriado"></div>
+        <div id="calModalClima"></div>
         <div id="calModalLista"></div>
         <div class="popup-buttons">
             <button id="fecharCalModal" class="btn btn-fechar">Fechar</button>

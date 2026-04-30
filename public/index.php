@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../includes/csrf.php';
+require_once __DIR__ . '/../includes/helpers/csrf.php';
 
 $titulo_pagina = "Login - Chácara Portal";
 $body_class = "login-page";

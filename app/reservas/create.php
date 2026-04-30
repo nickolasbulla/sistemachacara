@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if ($stmt->execute()) {
-            registrar_log($conn, $id_usuario, 'criar', 'reserva', $conn->insert_id);
+            registrar_log($conn, $id_usuario, 'criar', 'reserva', $conn->insert_id, "$nome | " . date('d/m/Y', strtotime($data)) . " | $inicio-$fim");
             header("Location: index.php?sucesso=1");
             exit;
         } else {
@@ -160,12 +160,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Hora de início *</label>
-                    <input type="time" name="hora_inicio" required>
+                    <input type="text" name="hora_inicio" class="input-hora" placeholder="HH:MM" maxlength="5" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Hora de término *</label>
-                    <input type="time" name="hora_fim" required>
+                    <input type="text" name="hora_fim" class="input-hora" placeholder="HH:MM" maxlength="5" required>
                 </div>
 
                 <div class="form-grupo">

@@ -5,6 +5,7 @@ include '../../config/db.php';
 $titulo_pagina = "Reservas - Chácara Portal";
 $body_class = "painel-page";
 include "../../includes/layout/header.php";
+include '../../includes/layout/deletemodal.php';
 
 if (!isset($_GET['id'])) {
     header("Location: index.php");
@@ -145,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
         $stmt_up = $conn->prepare($sql_up);
         $stmt_up->bind_param("sssssiiddsi", $nome, $tel, $data, $inicio, $fim, $ambiente, $func, $valor_cobrado, $valor_pago, $obs, $id);
         if ($stmt_up->execute()) {
-            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'reserva', $id);
+            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'reserva', $id, "$nome | " . date('d/m/Y', strtotime($data)) . " | $inicio-$fim");
             header("Location: index.php?editado=1");
             exit;
         } else {
@@ -176,6 +177,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_vistoria'])
         while ($row = $res->fetch_assoc()) {
             $itens_ativos[] = $row['id_item_vistoria'];
         }
+
+        foreach ($itens_ativos as $id_item) {
+            if (!isset($itens_form[$id_item]) && empty(trim($descricoes[$id_item] ?? ''))) {
+                $erro_vistoria = "Descreva o problema para todos os itens não conformes.";
+                break;
+            }
+        }
+
+        if (!empty($erro_vistoria)) goto fim_vistoria;
 
         $conn->begin_transaction();
         try {
@@ -218,6 +228,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_vistoria'])
             $conn->rollback();
             $erro_vistoria = "Erro ao registrar a vistoria. Tente novamente.";
         }
+
+        fim_vistoria:
     }
 }
 
@@ -304,12 +316,12 @@ if ($is_passada && !$vistoria_registrada) {
 
                 <div class="form-grupo">
                     <label>Hora de início *</label>
-                    <input type="time" name="hora_inicio" value="<?= $reserva['hora_inicio'] ?>" required>
+                    <input type="text" name="hora_inicio" class="input-hora" placeholder="HH:MM" maxlength="5" value="<?= substr($reserva['hora_inicio'], 0, 5) ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Hora de término *</label>
-                    <input type="time" name="hora_fim" value="<?= $reserva['hora_fim'] ?>" required>
+                    <input type="text" name="hora_fim" class="input-hora" placeholder="HH:MM" maxlength="5" value="<?= substr($reserva['hora_fim'], 0, 5) ?>" required>
                 </div>
 
                 <div class="form-grupo">
@@ -461,11 +473,14 @@ if ($is_passada && !$vistoria_registrada) {
                 <script>
                 function toggleProblema(id, checkbox) {
                     var wrap = document.getElementById('vi-problema-' + id);
+                    var ta   = wrap.querySelector('textarea');
                     if (!checkbox.checked) {
                         wrap.style.display = 'block';
+                        ta.required = true;
                     } else {
                         wrap.style.display = 'none';
-                        wrap.querySelector('textarea').value = '';
+                        ta.required = false;
+                        ta.value = '';
                     }
                 }
                 </script>
@@ -475,18 +490,6 @@ if ($is_passada && !$vistoria_registrada) {
         <?php endif; ?>
 
     </main>
-</div>
-
-<!-- pop up delete -->
-<div id="deleteModal" class="popup-modal">
-    <div class="popup-box">
-        <h2>Excluir reserva?</h2>
-        <p>Essa ação não pode ser desfeita.</p>
-        <div class="popup-buttons">
-            <button id="cancelDelete" class="btn btn-cancelar">Cancelar</button>
-            <a href="#" id="confirmDelete" class="btn btn-confirmar">Sim, excluir</a>
-        </div>
-    </div>
 </div>
 
 <?php include "../../includes/layout/footer.php"; ?>

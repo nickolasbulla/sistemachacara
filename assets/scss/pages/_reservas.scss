@@ -12,7 +12,87 @@
     }
 }
 
+/* Feriado no modal do calendário */
+.cal-feriado-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fef2f2;
+    color: #b91c1c;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+
+    i { font-size: 12px; }
+}
+
+/* Widget de clima no modal do calendário */
+.clima-widget {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f0f4ff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+
+    .clima-icone {
+        font-size: 34px;
+        width: 40px;
+        text-align: center;
+        color: #4f72ea;
+    }
+
+    .clima-dados {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .clima-desc {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .clima-temp {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .clima-chuva {
+        font-size: 12px;
+        color: #3b82f6;
+
+        i { margin-right: 3px; }
+    }
+}
+
+.clima-carregando,
+.clima-erro {
+    display: block;
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 10px;
+
+    i { margin-right: 4px; }
+}
+
+.cal-sem-reserva {
+    color: #9ca3af;
+    font-size: 14px;
+    text-align: center;
+    padding: 8px 0;
+}
+
 .vi-problema {
     display: none;
     margin-top: 8px;
+
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+    }
 }

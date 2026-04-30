@@ -22,26 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnsDelete = document.querySelectorAll(".btnpopup");
     const modalDelete = document.getElementById("deleteModal");
     const cancelDelete = document.getElementById("cancelDelete");
-    const confirmDelete = document.getElementById("confirmDelete");
+    const deleteIdInput = document.getElementById("deleteId");
 
-    if (btnsDelete.length && modalDelete && cancelDelete && confirmDelete) {
+    if (btnsDelete.length && modalDelete && cancelDelete && deleteIdInput) {
 
         btnsDelete.forEach(btn => {
             btn.addEventListener("click", (e) => {
                 e.preventDefault();
+                deleteIdInput.value = btn.dataset.id;
                 modalDelete.classList.add("active");
-                confirmDelete.dataset.id = btn.dataset.id;
             });
         });
 
         cancelDelete.addEventListener("click", () => {
             modalDelete.classList.remove("active");
-        });
-
-        confirmDelete.addEventListener("click", (e) => {
-            e.preventDefault();
-            document.getElementById('deleteId').value = confirmDelete.dataset.id;
-            document.getElementById('deleteForm').submit();
         });
     }
 });

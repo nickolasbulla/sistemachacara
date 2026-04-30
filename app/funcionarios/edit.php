@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         if ($update->execute()) {
-            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'funcionario', (int) $id);
+            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'funcionario', (int) $id, $nome_completo);
             header("Location: index.php?editado=1");
             exit;
         } else {

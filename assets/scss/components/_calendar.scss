@@ -143,6 +143,8 @@
             &.reservado {
                 background: $gradient-100;
                 color: #fff;
+
+                .cal-feriado-nome { color: rgba(255,255,255,0.9); }
             }
 
             &.hoje {
@@ -177,6 +179,17 @@
                 font-weight: 700;
                 font-size: clamp(12px, 1.8vw, 21px);
                 line-height: 1;
+            }
+
+            .cal-feriado-nome {
+                font-size: clamp(8px, 1.1vw, 11px);
+                font-weight: 700;
+                color: #dc2626;
+                line-height: 1.15;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                max-width: calc(100% - 8px);
             }
 
             .cal-dia-info {
@@ -299,6 +312,22 @@ body.page-calendario {
 
             .cal-dia-info {
                 bottom: 3px !important;
+            }
+
+            .cal-feriado-nome {
+                display: none;
+            }
+
+            &[data-feriado]::after {
+                content: '';
+                position: absolute;
+                top: 4px;
+                right: 4px;
+                width: 7px;
+                height: 7px;
+                background: #ef4444;
+                border: 1.5px solid #fff;
+                border-radius: 50%;
             }
         }
     }

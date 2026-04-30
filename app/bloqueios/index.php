@@ -33,8 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     }
 }
 
-if (isset($_GET['toggle_id'])) {
-    $id = (int) $_GET['toggle_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_id'])) {
+    csrf_verify();
+    $id = (int) $_POST['toggle_id'];
     $stmt = $conn->prepare("UPDATE bloqueios SET ativo = IF(ativo = 1, 0, 1) WHERE id_bloqueio = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -105,9 +106,13 @@ $result = $conn->query($query);
                                 <td data-label="Motivo"><?= htmlspecialchars($row['motivo']) ?></td>
                                 <td data-label="Cadastrado por"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Ativo">
-                                    <?= $row['ativo']
-                                        ? '<i class="fa-solid fa-check"></i>'
-                                        : '<i class="fa-solid fa-xmark"></i>' ?>
+                                    <form method="POST" style="display:inline">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="toggle_id" value="<?= $row['id_bloqueio'] ?>">
+                                        <button type="submit" class="btn-toggle-ativo <?= $row['ativo'] ? 'ativo' : 'inativo' ?>" title="<?= $row['ativo'] ? 'Clique para desativar' : 'Clique para ativar' ?>">
+                                            <i class="fa-solid <?= $row['ativo'] ? 'fa-check' : 'fa-xmark' ?>"></i>
+                                        </button>
+                                    </form>
                                 </td>
                                 <td data-label="Ações">
                                     <a href="./edit.php?id=<?= $row['id_bloqueio'] ?>" class="btn-editar">

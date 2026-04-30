@@ -24,12 +24,15 @@ if ($result->num_rows === 1) {
     $user = $result->fetch_assoc();
 
     if ($user['ativo'] == 0) {
+
         $_SESSION['erro_login'] = "Usuário ou senha incorretos!";
         header("Location: index.php");
         exit;
     }
 
     if (password_verify($senha, $user['senha'])) {
+
+        session_regenerate_id(true);
 
         $_SESSION['usuario_id'] = $user['id_usuario'];
         $_SESSION['usuario_nome'] = $user['nome_completo'];

@@ -10,6 +10,8 @@
 <?php endif; ?>
 <script src="/sistemachacara/assets/js/painel.js"></script>
 <script src="/sistemachacara/assets/js/popup.js"></script>
+<script src="/sistemachacara/assets/js/clima.js"></script>
+<script src="/sistemachacara/assets/js/feriados.js"></script>
 <script src="/sistemachacara/assets/js/calendar.js"></script>
 <script src="/sistemachacara/assets/js/pagamento.js"></script>
 <script src="/sistemachacara/assets/js/login.js"></script>
@@ -20,6 +22,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script>
     $('.input-data').mask('00/00/0000');
+    $('.input-hora').mask('00:00');
 </script>
 
 </body>

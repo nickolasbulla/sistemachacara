@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("ssssi", $nome_ambiente, $capacidade, $descricao, $observacoes, $ativo);
 
         if ($stmt->execute()) {
-            registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'ambiente', $conn->insert_id);
+            registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'ambiente', $conn->insert_id, $nome_ambiente);
             header("Location: index.php?sucesso=1");
             exit;
         } else {

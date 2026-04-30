@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $detalhes = $row ? "nome: {$row['nome_completo']} | login: {$row['login']}" : null;
 
     try {
-
         $stmt = $conn->prepare("DELETE FROM usuarios WHERE id_usuario = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -35,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
         exit;
 
     } catch (mysqli_sql_exception $e) {
-
         header("Location: index.php?erro_relacionado=1");
         exit;
     }

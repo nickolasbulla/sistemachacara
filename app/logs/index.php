@@ -13,44 +13,73 @@ $filtro_acao     = $_GET['acao']     ?? '';
 $filtro_entidade = $_GET['entidade'] ?? '';
 $filtro_data     = $_GET['data']     ?? '';
 
-$where = [];
+// paginação
+$por_pagina = 50;
+$pagina     = max(1, (int) ($_GET['pagina'] ?? 1));
+$offset     = ($pagina - 1) * $por_pagina;
+
+$where  = [];
 $params = [];
 $tipos  = '';
 
 if ($filtro_acao) {
-    $where[] = "l.acao = ?";
+    $where[]  = "l.acao = ?";
     $params[] = $filtro_acao;
     $tipos   .= 's';
 }
 if ($filtro_entidade) {
-    $where[] = "l.entidade = ?";
+    $where[]  = "l.entidade = ?";
     $params[] = $filtro_entidade;
     $tipos   .= 's';
 }
 if ($filtro_data) {
-    $where[] = "DATE(l.data_hora) = ?";
+    $where[]  = "DATE(l.data_hora) = ?";
     $params[] = parse_data($filtro_data);
     $tipos   .= 's';
 }
 
-$sql = "
-    SELECT l.id_log, u.nome_completo, l.acao, l.entidade, l.id_registro, l.detalhes, l.data_hora
-    FROM logs_acoes l
-    INNER JOIN usuarios u ON u.id_usuario = l.id_usuario
-";
+$where_sql = $where ? " WHERE " . implode(" AND ", $where) : "";
 
-if ($where) {
-    $sql .= " WHERE " . implode(" AND ", $where);
-}
+// total de registros (para calcular páginas)
+$sql_total = "SELECT COUNT(*)
+              FROM logs_acoes l
+              INNER JOIN usuarios u ON u.id_usuario = l.id_usuario"
+             . $where_sql;
 
-$sql .= " ORDER BY l.data_hora DESC LIMIT 200";
+$stmt_t = $conn->prepare($sql_total);
+if ($params) $stmt_t->bind_param($tipos, ...$params);
+$stmt_t->execute();
+$stmt_t->bind_result($total_registros);
+$stmt_t->fetch();
+$stmt_t->close();
+
+$total_paginas = max(1, (int) ceil($total_registros / $por_pagina));
+$pagina        = min($pagina, $total_paginas);
+$offset        = ($pagina - 1) * $por_pagina;
+
+// busca paginada
+$sql = "SELECT l.id_log, u.nome_completo, l.acao, l.entidade, l.id_registro, l.detalhes, l.data_hora
+        FROM logs_acoes l
+        INNER JOIN usuarios u ON u.id_usuario = l.id_usuario"
+       . $where_sql
+       . " ORDER BY l.data_hora DESC
+          LIMIT ? OFFSET ?";
+
+$params_pag  = array_merge($params, [$por_pagina, $offset]);
+$tipos_pag   = $tipos . 'ii';
 
 $stmt = $conn->prepare($sql);
-if ($params) {
-    $stmt->bind_param($tipos, ...$params);
-}
+if ($params_pag) $stmt->bind_param($tipos_pag, ...$params_pag);
 $stmt->execute();
 $logs = $stmt->get_result();
+
+// URL base preservando filtros (sem pagina)
+$query_filtros = http_build_query(array_filter([
+    'acao'     => $filtro_acao,
+    'entidade' => $filtro_entidade,
+    'data'     => $filtro_data,
+]));
+$base_url = 'index.php?' . ($query_filtros ? $query_filtros . '&' : '');
 
 $icones = [
     'criar'               => '<i class="fa-solid fa-plus log-icone-criar"></i>',
@@ -115,6 +144,52 @@ $icones = [
             </div>
         </form>
 
+        <?php
+        ob_start();
+        if ($total_paginas > 1):
+        $inicio = max(1, $pagina - 2);
+        $fim    = min($total_paginas, $pagina + 2);
+        ?>
+        <div class="paginacao">
+            <span class="paginacao-info">
+                <?= number_format($total_registros, 0, ',', '.') ?> registros &mdash; página <?= $pagina ?> de <?= $total_paginas ?>
+            </span>
+            <div class="paginacao-links">
+                <?php if ($pagina > 1): ?>
+                    <a href="<?= $base_url ?>pagina=<?= $pagina - 1 ?>" class="pag-btn">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+                <?php endif; ?>
+
+                <?php if ($inicio > 1): ?>
+                    <a href="<?= $base_url ?>pagina=1" class="pag-btn">1</a>
+                    <?php if ($inicio > 2): ?><span class="pag-ellipsis">&hellip;</span><?php endif; ?>
+                <?php endif; ?>
+
+                <?php for ($p = $inicio; $p <= $fim; $p++): ?>
+                    <a href="<?= $base_url ?>pagina=<?= $p ?>"
+                       class="pag-btn <?= $p === $pagina ? 'ativo' : '' ?>">
+                        <?= $p ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($fim < $total_paginas): ?>
+                    <?php if ($fim < $total_paginas - 1): ?><span class="pag-ellipsis">&hellip;</span><?php endif; ?>
+                    <a href="<?= $base_url ?>pagina=<?= $total_paginas ?>" class="pag-btn"><?= $total_paginas ?></a>
+                <?php endif; ?>
+
+                <?php if ($pagina < $total_paginas): ?>
+                    <a href="<?= $base_url ?>pagina=<?= $pagina + 1 ?>" class="pag-btn">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php endif;
+        $paginacao_html = ob_get_clean();
+        echo $paginacao_html;
+        ?>
+
         <div class="tabela-wrapper">
             <table class="tabela-crud">
                 <thead>
@@ -150,6 +225,8 @@ $icones = [
                 </tbody>
             </table>
         </div>
+
+        <?= $paginacao_html ?>
 
     </main>
 </div>

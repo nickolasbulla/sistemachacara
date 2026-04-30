@@ -14,13 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         dia.addEventListener('click', () => {
 
-            const data = dia.dataset.date;
+            const data      = dia.dataset.date;
             const hasReserva = dia.dataset.hasReserva === '1';
-
-            if (!hasReserva) {
-                window.location.href = 'create.php?data=' + data;
-                return;
-            }
 
             if (!modal || !modalLista || !modalDataSpan) return;
 
@@ -31,49 +26,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 modalDataSpan.textContent = data;
             }
 
-            if (btnNovaReserva) {
-                btnNovaReserva.href = 'create.php?data=' + data;
+            if (btnNovaReserva) btnNovaReserva.href = 'create.php?data=' + data;
+
+            // feriado
+            const feriadoEl = document.getElementById('calModalFeriado');
+            if (feriadoEl) {
+                const nome = Feriados.getNome(data);
+                feriadoEl.innerHTML = nome
+                    ? `<div class="cal-feriado-info"><i class="fa-solid fa-star"></i> ${nome}</div>`
+                    : '';
             }
 
+            // clima
+            const climaEl = document.getElementById('calModalClima');
+            if (climaEl) {
+                climaEl.innerHTML = '<span class="clima-carregando"><i class="fa-solid fa-spinner fa-spin"></i> Carregando clima...</span>';
+                Clima.buscar(data)
+                    .then(dados => { climaEl.innerHTML = Clima.html(dados); })
+                    .catch(()  => { climaEl.innerHTML = '<span class="clima-erro">Clima indisponível</span>'; });
+            }
+
+            // reservas
             modalLista.innerHTML = '';
 
-            let reservas = [];
-            try {
-                reservas = JSON.parse(dia.dataset.reservas || '[]');
-            } catch (e) {
-                reservas = [];
-            }
-
-            if (!reservas.length) {
-                modalLista.innerHTML =
-                    '<p>Não foi possível carregar as reservas.</p>';
+            if (!hasReserva) {
+                modalLista.innerHTML = '<p class="cal-sem-reserva">Nenhuma reserva para este dia.</p>';
             } else {
+                let reservas = [];
+                try { reservas = JSON.parse(dia.dataset.reservas || '[]'); } catch (e) {}
 
                 reservas.forEach(r => {
-
-                    const valorPago = parseFloat(r.valor_pago || 0);
-                    const valorCobrado = parseFloat(r.valor_cobrado || 0);
-                    const pagoTxt =
-                        valorPago >= valorCobrado ? 'Pago' : 'Pendente';
-
                     const item = document.createElement('div');
                     item.className = 'cal-reserva-item';
-
                     item.innerHTML = `
                         <div class="cal-reserva-info">
                             <strong>${r.nome_reserva}</strong><br>
-                            <small>
-                                ${r.hora_inicio} até ${r.hora_fim}
-                                — ${pagoTxt}
-                            </small>
+                            <small>${r.hora_inicio} até ${r.hora_fim}${r.nome_ambiente ? ' — ' + r.nome_ambiente : ''}</small>
                         </div>
-
-                        <a href="edit.php?id=${r.id_reserva}"
-                           class="btn btn-editar">
-                           Abrir
-                        </a>
-                    `;
-
+                        <a href="edit.php?id=${r.id_reserva}" class="btn btn-editar">Abrir</a>`;
                     modalLista.appendChild(item);
                 });
             }

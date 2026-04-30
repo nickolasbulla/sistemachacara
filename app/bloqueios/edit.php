@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("sssii", $data_inicio, $data_fim, $motivo, $ativo, $id);
 
             if ($stmt->execute()) {
-                registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'bloqueio', (int) $id);
+                registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'bloqueio', (int) $id, date('d/m/Y', strtotime($data_inicio)) . " até " . date('d/m/Y', strtotime($data_fim)) . " | $motivo");
                 header("Location: index.php?editado=1");
                 exit;
             } else {

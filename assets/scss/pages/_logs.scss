@@ -23,3 +23,57 @@
 .log-icone-login    { color: #9c27b0; }
 .log-icone-logout   { color: #ff9800; }
 .log-icone-vistoria { color: #00bcd4; }
+
+/* Paginação */
+.paginacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+    padding: 0 4px;
+
+    .paginacao-info {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .paginacao-links {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .pag-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 8px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: 0.15s;
+
+        &:hover { background: #f3f4f6; border-color: #9ca3af; }
+
+        &.ativo {
+            background: $gradient-100;
+            border-color: transparent;
+            color: #fff;
+            font-weight: 700;
+        }
+    }
+
+    .pag-ellipsis {
+        font-size: 13px;
+        color: #9ca3af;
+        padding: 0 4px;
+    }
+}
