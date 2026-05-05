@@ -6,16 +6,16 @@
         <p>Você será desconectado por inatividade em <strong><span id="inatividade-contador">60</span>s</strong>.</p>
     </div>
 </div>
-<script src="/sistemachacara/assets/js/inatividade.js"></script>
+<script src="<?= BASE_URL ?>assets/js/inatividade.js"></script>
 <?php endif; ?>
-<script src="/sistemachacara/assets/js/painel.js"></script>
-<script src="/sistemachacara/assets/js/popup.js"></script>
-<script src="/sistemachacara/assets/js/clima.js"></script>
-<script src="/sistemachacara/assets/js/feriados.js"></script>
-<script src="/sistemachacara/assets/js/calendar.js"></script>
-<script src="/sistemachacara/assets/js/pagamento.js"></script>
-<script src="/sistemachacara/assets/js/login.js"></script>
-<script src="/sistemachacara/assets/js/general.js"></script>
+<script src="<?= BASE_URL ?>assets/js/painel.js"></script>
+<script src="<?= BASE_URL ?>assets/js/popup.js"></script>
+<script src="<?= BASE_URL ?>assets/js/clima.js"></script>
+<script src="<?= BASE_URL ?>assets/js/feriados.js"></script>
+<script src="<?= BASE_URL ?>assets/js/calendar.js"></script>
+<script src="<?= BASE_URL ?>assets/js/pagamento.js"></script>
+<script src="<?= BASE_URL ?>assets/js/login.js"></script>
+<script src="<?= BASE_URL ?>assets/js/general.js"></script>
 
 <!-- jquery somente para usar o datamask  -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

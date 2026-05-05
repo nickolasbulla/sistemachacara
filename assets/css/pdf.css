@@ -147,25 +147,4 @@ body {
   padding: 40px;
   color: #999;
   font-size: 13px;
-}
-
-.resumo .valor.verde {
-  color: #27ae60;
-}
-
-.secao-header {
-  padding: 7px 10px;
-  font-size: 10.5px;
-  font-weight: bold;
-  letter-spacing: 0.3px;
-}
-
-.verde-header {
-  background-color: #e8f8ef;
-  color: #1e8449;
-}
-
-.roxo-header {
-  background-color: #f0edff;
-  color: #764ba2;
 }/*# sourceMappingURL=pdf.css.map */

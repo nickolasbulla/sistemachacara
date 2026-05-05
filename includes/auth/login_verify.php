@@ -7,7 +7,7 @@ header('Expires: 0');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
 if (empty($_SESSION['usuario_id'])) {
-    header('Location: /sistemachacara/index.php');
+    header('Location: /index.php');
     exit;
 }
 
@@ -27,7 +27,7 @@ if ($tipo !== 'admin') {
 
     foreach ($bloqueados as $rota) {
         if (strpos($url, $rota) !== false) {
-            header("Location: /sistemachacara/public/logout.php");
+            header("Location: /public/logout.php");
             exit;
         }
     }

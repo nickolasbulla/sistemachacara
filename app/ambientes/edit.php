@@ -2,7 +2,7 @@
 session_start();
 
 include '../../includes/auth/login_verify.php';
-include '../../config/db.php';
+include '../../config/init.php';
 
 $titulo_pagina = "Ambientes - Chácara Portal";
 $body_class = "painel-page";

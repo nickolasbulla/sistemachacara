@@ -2,7 +2,7 @@
 session_start();
 
 include '../../includes/auth/login_verify.php';
-include '../../config/db.php';
+include '../../config/init.php';
 
 $usuarios_lista = $conn->query("SELECT id_usuario, nome_completo FROM usuarios WHERE ativo = 1 ORDER BY nome_completo ASC")->fetch_all(MYSQLI_ASSOC);
 $ambientes_lista = $conn->query("SELECT id_ambiente, nome_ambiente FROM ambientes WHERE ativo = 1 ORDER BY nome_ambiente ASC")->fetch_all(MYSQLI_ASSOC);

@@ -2,16 +2,16 @@
 session_start();
 
 if (empty($_SESSION['usuario_id'])) {
-    header('Location: /sistemachacara/index.php');
+    header('Location: /index.php');
     exit;
 }
 if ($_SESSION['usuario_tipo'] !== 'admin') {
-    header('Location: /sistemachacara/public/logout.php');
+    header('Location: /public/logout.php');
     exit;
 }
 
 require_once '../../vendor/autoload.php';
-include '../../config/db.php';
+include '../../config/init.php';
 
 include '_base.php';
 include '_layout.php';

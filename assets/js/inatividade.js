@@ -1,7 +1,7 @@
 (() => {
     const TEMPO_TOTAL    = 10 * 60 * 1000; // 10 minutos
     const TEMPO_AVISO    =  9 * 60 * 1000; //  9 minutos
-    const LOGOUT_URL     = '/sistemachacara/public/logout.php';
+    const LOGOUT_URL     = '/public/logout.php';
 
     let timerAviso; 
     let timerLogout;

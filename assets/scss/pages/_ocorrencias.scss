@@ -1,0 +1,29 @@
+@use "../abstracts/variables" as *;
+
+.cadastro-area form.form-cadastro {
+    margin-top: 20px;
+}
+
+.ocorrencia-item {
+    background: #f9fafb;
+    border: 1px solid $border-neutral;
+    border-radius: $radius-lg;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .ocorrencia-item-header {
+        strong {
+            font-size: 15px;
+            color: $text-dark;
+        }
+    }
+
+    .ocorrencia-item-meta {
+        font-size: 12px;
+        color: #9ca3af;
+
+        i { margin-right: 4px; }
+    }
+}

@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- css -->
-    <link rel="stylesheet" href="/sistemachacara/assets/css/style.css">
-    <link rel="icon" type="image/png" href="/sistemachacara/assets/images/favicon.png">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>assets/images/favicon.png">
 
     <!-- para cada página definir seu título -->
     <title><?php echo $titulo_pagina; ?></title>

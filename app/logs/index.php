@@ -2,7 +2,7 @@
 session_start();
 
 include '../../includes/auth/login_verify.php';
-include '../../config/db.php';
+include '../../config/init.php';
 
 $titulo_pagina = "Logs - Chácara Portal";
 $body_class = "painel-page";
@@ -146,7 +146,6 @@ $icones = [
 
         <?php
         ob_start();
-        if ($total_paginas > 1):
         $inicio = max(1, $pagina - 2);
         $fim    = min($total_paginas, $pagina + 2);
         ?>
@@ -156,9 +155,15 @@ $icones = [
             </span>
             <div class="paginacao-links">
                 <?php if ($pagina > 1): ?>
+                    <a href="<?= $base_url ?>pagina=1" class="pag-btn">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </a>
                     <a href="<?= $base_url ?>pagina=<?= $pagina - 1 ?>" class="pag-btn">
                         <i class="fa-solid fa-chevron-left"></i>
                     </a>
+                <?php else: ?>
+                    <span class="pag-btn desabilitado"><i class="fa-solid fa-angles-left"></i></span>
+                    <span class="pag-btn desabilitado"><i class="fa-solid fa-chevron-left"></i></span>
                 <?php endif; ?>
 
                 <?php if ($inicio > 1): ?>
@@ -182,10 +187,16 @@ $icones = [
                     <a href="<?= $base_url ?>pagina=<?= $pagina + 1 ?>" class="pag-btn">
                         <i class="fa-solid fa-chevron-right"></i>
                     </a>
+                    <a href="<?= $base_url ?>pagina=<?= $total_paginas ?>" class="pag-btn">
+                        <i class="fa-solid fa-angles-right"></i>
+                    </a>
+                <?php else: ?>
+                    <span class="pag-btn desabilitado"><i class="fa-solid fa-chevron-right"></i></span>
+                    <span class="pag-btn desabilitado"><i class="fa-solid fa-angles-right"></i></span>
                 <?php endif; ?>
             </div>
         </div>
-        <?php endif;
+        <?php
         $paginacao_html = ob_get_clean();
         echo $paginacao_html;
         ?>

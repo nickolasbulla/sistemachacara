@@ -1,8 +1,8 @@
 CREATE TABLE `ambientes` (
   `id_ambiente` int(11) NOT NULL AUTO_INCREMENT,
   `nome_ambiente` varchar(100) NOT NULL,
-  `capacidade` int(11) DEFAULT NULL,
-  `descricao` text DEFAULT NULL,
+  `capacidade` int(11) NOT NULL,
+  `descricao` text NOT NULL,
   `observacoes` text DEFAULT NULL,
   `ativo` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id_ambiente`)
@@ -23,8 +23,8 @@ CREATE TABLE `bloqueios` (
 CREATE TABLE `funcionarios` (
   `id_funcionario` int(11) NOT NULL AUTO_INCREMENT,
   `nome_completo` varchar(100) NOT NULL,
-  `data_nascimento` date DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL,
+  `data_nascimento` date NOT NULL,
+  `telefone` varchar(20) NOT NULL,
   `observacoes` text DEFAULT NULL,
   `ativo` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id_funcionario`)
@@ -37,6 +37,19 @@ CREATE TABLE `itens_vistoria` (
   `ativo` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id_item_vistoria`),
   UNIQUE KEY `uq_nome_item` (`nome_item`)
+)
+
+CREATE TABLE `logs_acoes` (
+  `id_log` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `acao` varchar(20) NOT NULL,
+  `entidade` varchar(50) NOT NULL,
+  `id_registro` int(11) DEFAULT NULL,
+  `data_hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `detalhes` text DEFAULT NULL,
+  PRIMARY KEY (`id_log`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `logs_acoes_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`)
 )
 
 CREATE TABLE `ocorrencias` (
@@ -63,14 +76,14 @@ CREATE TABLE `reservas` (
   `id_reserva` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) NOT NULL,
   `nome_reserva` varchar(100) NOT NULL,
-  `telefone_reserva` varchar(20) DEFAULT NULL,
+  `telefone_reserva` varchar(20) NOT NULL,
   `data_reserva` date NOT NULL,
   `hora_inicio` time NOT NULL,
   `hora_fim` time NOT NULL,
   `id_ambiente` int(11) NOT NULL,
   `id_funcionario` int(11) DEFAULT NULL,
   `observacoes` text DEFAULT NULL,
-  `valor_cobrado` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `valor_cobrado` decimal(10,2) NOT NULL,
   `valor_pago` decimal(10,2) NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`id_reserva`),
   KEY `id_ambiente` (`id_ambiente`),
@@ -87,8 +100,8 @@ CREATE TABLE `usuarios` (
   `login` varchar(50) NOT NULL,
   `senha` varchar(255) NOT NULL,
   `tipo_permissao` enum('admin','reserveiro') NOT NULL,
-  `data_nascimento` date DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL,
+  `data_nascimento` date NOT NULL,
+  `telefone` varchar(20) NOT NULL,
   `observacoes` text DEFAULT NULL,
   `ativo` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id_usuario`),
