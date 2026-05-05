@@ -1,17 +1,17 @@
 <?php
 session_start();
 
+require_once '../../vendor/autoload.php';
+include '../../config/init.php';
+
 if (empty($_SESSION['usuario_id'])) {
-    header('Location: /sistemachacara/index.php');
+    header('Location: ' . BASE_URL . 'public/index.php');
     exit;
 }
 if ($_SESSION['usuario_tipo'] !== 'admin') {
-    header('Location: /sistemachacara/public/logout.php');
+    header('Location: ' . BASE_URL . 'public/logout.php');
     exit;
 }
-
-require_once '../../vendor/autoload.php';
-include '../../config/db.php';
 
 include '_base.php';
 include '_layout.php';

@@ -2,7 +2,7 @@
 session_start();
 
 include '../../includes/auth/login_verify.php';
-include '../../config/db.php';
+include '../../config/init.php';
 
 $titulo_pagina = "Reservas - Chácara Portal";
 $body_class = "painel-page page-calendario";
@@ -262,7 +262,7 @@ $hoje = date('Y-m-d');
     <div class="popup-box">
         <h2>
             <i class="fa-solid fa-ban"></i>
-            Data Bloqueada<span id="bloqueioModalData"></span>
+            Data Bloqueada<br><span id="bloqueioModalData"></span>
         </h2>
         <div id="bloqueioModalLista"></div>
         <div class="popup-buttons">

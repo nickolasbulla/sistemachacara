@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../config/db.php';
+include '../config/init.php';
 
 csrf_verify();
 
