@@ -1,0 +1,10 @@
+config/db.php
+config/init.php
+
+vendor/
+
+assets/css/style.css
+
+.DS_Store
+Thumbs.db
+*.log
