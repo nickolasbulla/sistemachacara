@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $upd->execute();
         }
         $conn->commit();
-        registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'ocorrencia', (int) $id_reserva);
+                registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'ocorrencia', (int) $id_reserva, $reserva['nome_reserva']);
         header("Location: index.php?sucesso=1");
         exit;
     } catch (Exception $e) {

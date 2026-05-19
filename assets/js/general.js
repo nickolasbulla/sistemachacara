@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    document.querySelectorAll("label").forEach(label => {
+        label.innerHTML = label.innerHTML.replace(/\*/g, '<span class="asterisco">*</span>');
+    });
+
     const textareas = document.querySelectorAll("textarea");
 
     textareas.forEach(textarea => {

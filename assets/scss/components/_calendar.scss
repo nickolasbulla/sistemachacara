@@ -149,7 +149,7 @@
 
             &.hoje {
                 border: none !important;
-                box-shadow: 0 0 0 3px #667eea;
+                box-shadow: 0 0 0 2px #fff, 0 0 0 5px #667eea;
             }
 
             &:hover {
@@ -221,10 +221,12 @@ body.page-calendario {
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        padding-top: 0;
     }
 
     .painel-header {
         flex: 0 0 auto;
+        padding: 6px 20px;
     }
 
     .calendar-container {
@@ -269,6 +271,108 @@ body.page-calendario {
             transform: translateY(-1px);
         }
     }
+}
+
+/* TOOLBAR DE BLOQUEIO */
+.bloqueio-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.btn-bloquear-periodo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: $radius-md;
+    border: 1.5px solid #d97706;
+    background: transparent;
+    color: #d97706;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s;
+    flex-shrink: 0;
+
+    &:hover, &.ativo {
+        background: #d97706;
+        color: #fff;
+    }
+}
+
+.bloqueio-instrucao {
+    font-size: 13px;
+    color: $text-gray;
+    font-style: italic;
+    flex: 1;
+}
+
+.btn-bloqueio-confirmar {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: $radius-md;
+    border: none;
+    background: #16a34a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: 0.15s;
+
+    &.visivel { display: flex; }
+    &:hover   { background: #15803d; }
+}
+
+.btn-bloqueio-cancelar {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: $radius-md;
+    border: none;
+    background: $danger;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: 0.15s;
+
+    &.visivel { display: flex; }
+    &:hover   { background: $danger-hover; }
+}
+
+/* DIAS SELECIONADOS NO MODO BLOQUEIO */
+.calendar-container.bloqueio-mode .cal-dia:not(.vazio) {
+    cursor: crosshair;
+    &:hover { transform: none; }
+
+    &.reservado {
+        cursor: not-allowed !important;
+    }
+
+    &.bloqueado {
+        cursor: not-allowed !important;
+    }
+}
+
+.cal-dia {
+    &.bl-inicio, &.bl-fim {
+        background: #f59e0b !important;
+        color: #fff !important;
+        box-shadow: 0 0 0 2px #f59e0b !important;
+        .cal-feriado-nome { color: rgba(255,255,255,0.9); }
+    }
+    &.bl-range        { background: rgba(245, 158, 11, 0.28) !important; }
+    &.bl-hover        { background: rgba(245, 158, 11, 0.16) !important; }
+    &.bl-hover-invalido { background: rgba($danger, 0.18) !important; }
 }
 
 /* RESPONSIVIDADE */

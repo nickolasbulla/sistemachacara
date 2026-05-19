@@ -23,7 +23,8 @@ if ($tipo !== 'admin') {
         '/ambientes',
         '/relatorios',
         '/logs',
-        '/ocorrencias'
+        '/ocorrencias',
+        '/vistoria'
     ];
 
     foreach ($bloqueados as $rota) {
@@ -33,12 +34,3 @@ if ($tipo !== 'admin') {
         }
     }
 }
-
-?>
-<script>
-    /* trata o bfcache: assim o usuario não volta pro painel
-    com o voltar do navegador depois de ter deslogado */
-    window.addEventListener('pageshow', function (e) {
-        if (e.persisted) location.reload();
-    });
-</script>

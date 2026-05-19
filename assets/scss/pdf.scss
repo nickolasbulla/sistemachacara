@@ -2,13 +2,13 @@ $cor-primaria:   #667eea;
 $cor-secundaria: #764ba2;
 $cor-texto:      #222;
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: DejaVu Sans, sans-serif;
     font-size: 14px;
     color: $cor-texto;
-    padding-bottom: 10mm;
 }
 
 // CABEÇALHO
@@ -78,11 +78,13 @@ body {
 // TABELA PRINCIPAL
 .dados {
     margin: 0 24px;
+    margin-bottom: 0;
 
     table {
         width: 100%;
         border-collapse: collapse;
         font-size: 10.5px;
+        margin-bottom: 0;
 
         thead {
             tr {
@@ -109,7 +111,7 @@ body {
             }
         }
 
-        tfoot {
+        tbody.tfoot {
             tr { background-color: #ede9ff; }
 
             td {

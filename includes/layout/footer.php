@@ -1,14 +1,23 @@
-<?php if (str_contains($body_class ?? '', 'painel-page')): ?>
-<!-- Modal de inatividade -->
-<div id="inatividade-modal" class="popup-modal">
-    <div class="popup-box">
-        <h2><i class="fa-solid fa-clock"></i> Sessão expirando</h2>
-        <p>Você será desconectado por inatividade em <strong><span id="inatividade-contador">60</span>s</strong>.</p>
+<?php if (str_contains($body_class ?? '', 'painel-page') || str_contains($body_class ?? '', 'login-page')): ?>
+    <!-- evita servir versão cacheada (bfcache) após navegação -->
+    <script>
+        window.addEventListener('pageshow', function (e) {
+            if (e.persisted) location.reload();
+        });
+    </script>
+
+    <!-- Modal de inatividade -->
+    <div id="inatividade-modal" class="popup-modal">
+        <div class="popup-box">
+            <h2><i class="fa-solid fa-clock"></i> Sessão expirando</h2>
+            <p>Você será desconectado por inatividade em <strong><span id="inatividade-contador">60</span>s</strong>.</p>
+        </div>
     </div>
-</div>
-<script>const BASE_URL = '<?= BASE_URL ?>';</script>
-<script src="<?= BASE_URL ?>assets/js/inatividade.js"></script>
+
+    <script>const BASE_URL = '<?= BASE_URL ?>';</script>
+    <script src="<?= BASE_URL ?>assets/js/inatividade.js"></script>
 <?php endif; ?>
+
 <script src="<?= BASE_URL ?>assets/js/painel.js"></script>
 <script src="<?= BASE_URL ?>assets/js/popup.js"></script>
 <script src="<?= BASE_URL ?>assets/js/clima.js"></script>

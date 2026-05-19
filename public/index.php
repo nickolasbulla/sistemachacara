@@ -2,6 +2,10 @@
 session_start();
 require_once __DIR__ . '/../config/init.php';
 
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 $titulo_pagina = "Login - Chácara Portal";
 $body_class = "login-page";
 include '../includes/layout/header.php';

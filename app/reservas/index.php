@@ -176,6 +176,24 @@ $hoje = date('Y-m-d');
 
             </div>
 
+            <?php if ($_SESSION['usuario_tipo'] === 'admin'): ?>
+            <div class="bloqueio-toolbar">
+                <button type="button" id="btnBloqueioMode" class="btn-bloquear-periodo">
+                    <i class="fa-solid fa-calendar-xmark"></i>
+                    Bloquear período
+                </button>
+                <span id="bloqueioInstrucao" class="bloqueio-instrucao"></span>
+                <button type="button" id="btnBloqueioConfirmar" class="btn-bloqueio-confirmar">
+                    <i class="fa-solid fa-check"></i>
+                    Confirmar
+                </button>
+                <button type="button" id="btnBloqueioCancelar" class="btn-bloqueio-cancelar">
+                    <i class="fa-solid fa-xmark"></i>
+                    Cancelar
+                </button>
+            </div>
+            <?php endif; ?>
+
             <div class="calendar-grid">
                 <div class="cal-weekday">Dom</div>
                 <div class="cal-weekday">Seg</div>
@@ -271,4 +289,28 @@ $hoje = date('Y-m-d');
     </div>
 </div>
 
+<!-- Modal: confirmar novo bloqueio pelo calendário -->
+<div id="novoBloqueioModal" class="popup-modal">
+    <div class="popup-box">
+        <h2><i class="fa-solid fa-calendar-xmark"></i> Novo Bloqueio</h2>
+        <p id="novoBloqueioRange" style="font-weight:600;font-size:15px;color:#d97706;margin-bottom:4px;"></p>
+        <div class="form-cadastro" style="margin-top:12px;">
+            <div class="form-grupo">
+                <label>Motivo *</label>
+                <textarea id="novoBloqueioMotivo" rows="3"
+                    placeholder="Ex: Manutenção, evento particular..."></textarea>
+            </div>
+        </div>
+        <p id="novoBloqueioErro" style="display:none;color:#d53625;font-size:13px;margin-top:8px;text-align:left;"></p>
+        <div class="form-botoes" style="justify-content:center;margin-top:20px;">
+            <button id="novoBloqueioSalvar" class="btn btn-salvar">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Salvar
+            </button>
+            <button id="novoBloqueioFechar" class="btn btn-fechar">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>const CSRF_TOKEN = '<?= csrf_token() ?>';</script>
 <?php include '../../includes/layout/footer.php'; ?>

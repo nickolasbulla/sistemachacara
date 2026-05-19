@@ -106,12 +106,12 @@ ob_start(); ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-            <tfoot>
+            <tbody class="tfoot">
                 <tr>
                     <td colspan="5">TOTAL (<?= $total ?> bloqueio<?= $total !== 1 ? 's' : '' ?>)</td>
                     <td><?= $total_ativos ?> ativo<?= $total_ativos !== 1 ? 's' : '' ?> / <?= $total_inativos ?> inativo<?= $total_inativos !== 1 ? 's' : '' ?></td>
                 </tr>
-            </tfoot>
+            </tbody>
         </table>
     <?php endif; ?>
 </div>

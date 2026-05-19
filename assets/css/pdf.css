@@ -1,14 +1,10 @@
-* {
+body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-body {
   font-family: DejaVu Sans, sans-serif;
   font-size: 14px;
   color: #222;
-  padding-bottom: 10mm;
 }
 
 .header {
@@ -83,11 +79,13 @@ body {
 
 .dados {
   margin: 0 24px;
+  margin-bottom: 0;
 }
 .dados table {
   width: 100%;
   border-collapse: collapse;
   font-size: 10.5px;
+  margin-bottom: 0;
 }
 .dados table thead tr {
   background-color: #667eea;
@@ -108,10 +106,10 @@ body {
   padding: 7px 10px;
   border-bottom: 1px solid #ebebeb;
 }
-.dados table tfoot tr {
+.dados table tbody.tfoot tr {
   background-color: #ede9ff;
 }
-.dados table tfoot td {
+.dados table tbody.tfoot td {
   padding: 8px 10px;
   font-weight: bold;
   border-top: 2px solid #764ba2;
@@ -147,25 +145,4 @@ body {
   padding: 40px;
   color: #999;
   font-size: 13px;
-}
-
-.resumo .valor.verde {
-  color: #27ae60;
-}
-
-.secao-header {
-  padding: 7px 10px;
-  font-size: 10.5px;
-  font-weight: bold;
-  letter-spacing: 0.3px;
-}
-
-.verde-header {
-  background-color: #e8f8ef;
-  color: #1e8449;
-}
-
-.roxo-header {
-  background-color: #f0edff;
-  color: #764ba2;
 }/*# sourceMappingURL=pdf.css.map */

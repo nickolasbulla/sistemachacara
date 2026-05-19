@@ -1,0 +1,85 @@
+BUGS CRÍTICOS
+1. Redirect após HTML já emitido — reservas/edit.php
+
+header.php e deletemodal.php são incluídos nas linhas 7-8, antes das verificações de redirect nas linhas 10-41. Em PHP sem output buffering, header("Location: ...") falha silenciosamente. Funciona no XAMPP porque output_buffering = On está ativo por padrão, mas quebraria em qualquer servidor de produção comum.
+
+
+include "../../includes/layout/header.php";   // ← emite HTML aqui
+include '../../includes/layout/deletemodal.php';
+if (!isset($_GET['id'])) {
+    header("Location: index.php");  // ← já tem HTML no buffer
+Fix: Mover toda lógica de POST e validação do ?id para antes do include header.php.
+
+2. $data nulo sem validação explícita — reservas/create.php:36 e edit.php:83
+
+parse_data() retorna null para datas inválidas. A comparação $data < date('Y-m-d') com null produz true em PHP (null vira ""), fazendo o usuário ver "Não é possível criar reservas no passado" quando a data simplesmente está inválida. Precisa checar:
+
+
+if (!$data) { $erro = "Data inválida."; }
+3. gerar.php não usa login_verify.php
+
+relatorios/gerar.php faz autenticação manual nas linhas 7-14 em vez de usar o login_verify.php padrão. A verificação está correta, mas é um padrão inconsistente — se a lógica central de auth mudar, esse arquivo ficará desatualizado.
+
+FALHAS DE REGRA DE NEGÓCIO
+4. Reservas passadas não podem ser editadas, mas o formulário aparece
+
+Em reservas/edit.php:83-85, qualquer edição de reserva passada falha com "Não é possível editar para uma data no passado". O problema é que o formulário cheio continua visível — o admin não consegue nem atualizar o valor pago ou observações. Se o caso de uso exige editar dados financeiros de reservas já realizadas, o bloqueio está errado. Se não exige, o formulário deveria ser exibido em modo somente leitura.
+
+5. Detecção de conflito de horário usa BETWEEN inclusivo nas bordas
+
+Em reservas/create.php:67-71 e edit.php:112-120:
+
+
+(? BETWEEN hora_inicio AND hora_fim)
+OR (? BETWEEN hora_inicio AND hora_fim)
+BETWEEN inclui os extremos. Então se a Reserva A termina às 14:00 e você tenta criar a Reserva B começando às 14:00, o sistema bloqueia como conflito. Normalmente um horário que termina às 14:00 e outro que começa às 14:00 não deveriam conflitar.
+
+6. Vistoria não aparece em reservas do mesmo dia
+
+Em reservas/edit.php:63: $is_passada = $reserva['data_reserva'] < date('Y-m-d') — usa < (estritamente menor). O bloco de vistoria só aparece para reservas de datas passadas, nunca para reservas do dia atual. Se o checkout é no mesmo dia, o funcionário não consegue registrar a vistoria.
+
+7. Unicidade de funcionário por nome completo
+
+Em funcionarios/create.php:19-22, o check de duplicidade é pelo nome_completo. Dois funcionários com o mesmo nome seriam rejeitados como duplicata. O check deveria ser removido ou complementado com outro campo (CPF, por exemplo).
+
+8. bloqueios/edit.php sem verificação de data no passado
+
+bloqueios/create.php:24 bloqueia datas passadas, mas bloqueios/edit.php não tem essa verificação. Um admin pode editar um bloqueio existente e jogar as datas para o passado.
+
+9. Race condition no check de conflito de reservas
+
+O padrão SELECT-then-INSERT não é atômico. Duas requisições simultâneas podem passar pelo check de conflito ao mesmo tempo e ambas inserirem. O correto seria usar uma UNIQUE constraint na tabela ou SELECT ... FOR UPDATE dentro de uma transação.
+
+SEGURANÇA
+10. Sem validação de tamanho mínimo de senha
+
+Em usuarios/create.php:15, a senha é apenas password_hash($_POST["senha"], ...). Não há validação de tamanho mínimo no servidor — um required HTML é facilmente bypassado. Uma senha de 1 caractere seria aceita.
+
+11. Inputs sem trim() em vários cadastros
+
+usuarios/create.php:13-19, funcionarios/create.php:13-16, ambientes/create.php:13-17, vistoria/create.php:15-16 — campos de texto não passam por trim(). Um nome com espaço no início seria salvo e tratado como diferente do mesmo nome sem espaço.
+
+12. Status de ocorrência não validado no servidor
+
+Em ocorrencias/edit.php:61-69, o valor de status vem de $_POST['status'][$id_oc] e é inserido diretamente no UPDATE (via prepared statement, então sem SQL injection). Mas nenhum check verifica se o valor é 'aberta' ou 'resolvida'. Qualquer string arbitrária seria salva.
+
+PROBLEMAS DE QUALIDADE / UX
+13. Variável $is_admin_editing_other declarada mas nunca usada
+
+usuarios/edit.php:26: $is_admin_editing_other = ($is_admin && !$is_self_edit) — calculada, nunca referenciada.
+
+14. Sem paginação nas listagens principais
+
+Logs têm paginação (50 por página). Usuários, funcionários, ambientes, reservas, bloqueios não têm — crescendo o banco, essas páginas podem ficar lentas ou quebrar o PHP por timeout.
+
+15. Sem filtro/busca nas listagens
+
+Nenhuma listagem (exceto logs) tem filtro. Reservas crescem bastante — sem busca por nome, período ou ambiente, a lista fica inutilizável.
+
+16. Sem campo de notas ao resolver ocorrência
+
+Em ocorrencias/edit.php, o admin só muda o status de aberta para resolvida. Não há campo para descrever como foi resolvido, quem resolveu, ou data de resolução.
+
+17. Aviso de depreciação PHP 8.1+ em valores nulos
+
+htmlspecialchars($reserva['observacoes']) em reservas/edit.php:372 e htmlspecialchars($usuario['telefone']) em usuarios/edit.php:215 — se esses campos são NULL no banco, PHP 8.1+ emite um Deprecated: Passing null. Deve ser $reserva['observacoes'] ?? ''.

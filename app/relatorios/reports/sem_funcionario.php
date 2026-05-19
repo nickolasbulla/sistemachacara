@@ -92,13 +92,13 @@ ob_start(); ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-            <tfoot>
+            <tbody class="tfoot">
                 <tr>
                     <td colspan="5">TOTAL (<?= $total ?> reserva<?= $total !== 1 ? 's' : '' ?>)</td>
                     <td><table class="moeda-cell"><tr><td class="rs">R$</td><td class="num"><?= number_format($total_cobrado, 2, ',', '.') ?></td></tr></table></td>
                     <td class="vermelho"><table class="moeda-cell"><tr><td class="rs">R$</td><td class="num"><?= number_format($total_em_aberto, 2, ',', '.') ?></td></tr></table></td>
                 </tr>
-            </tfoot>
+            </tbody>
         </table>
     <?php endif; ?>
 </div>

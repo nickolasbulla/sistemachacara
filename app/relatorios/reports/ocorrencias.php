@@ -105,12 +105,12 @@ ob_start(); ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
-            <tfoot>
+            <tbody class="tfoot">
                 <tr>
                     <td colspan="5">TOTAL (<?= $total ?> ocorrência<?= $total !== 1 ? 's' : '' ?>)</td>
                     <td><?= $total_abertas ?> aberta<?= $total_abertas !== 1 ? 's' : '' ?> / <?= $total_resolvidas ?> resolvida<?= $total_resolvidas !== 1 ? 's' : '' ?></td>
                 </tr>
-            </tfoot>
+            </tbody>
         </table>
     <?php endif; ?>
 </div>

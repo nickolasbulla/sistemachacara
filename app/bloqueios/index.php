@@ -79,11 +79,6 @@ $result = $conn->query($query);
         <?php endif; ?>
 
         <div class="area-crud">
-            <a href="./create.php" class="btn btn-novo">
-                <i class="fa-solid fa-plus"></i>
-                Novo Bloqueio
-            </a>
-
             <div class="tabela-wrapper">
                 <table class="tabela-crud">
                     <thead>

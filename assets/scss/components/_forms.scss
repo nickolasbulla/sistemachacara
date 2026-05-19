@@ -1,5 +1,9 @@
 @use "../abstracts/variables" as *;
 
+.asterisco {
+    color: $danger;
+}
+
 .form-group {
     margin-bottom: 20px;
 

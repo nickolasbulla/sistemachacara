@@ -1,6 +1,5 @@
 <?php
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use Mpdf\Mpdf;
 
 $logo_path = __DIR__ . '/../../assets/images/logo2.png';
 $logo_b64  = base64_encode(file_get_contents($logo_path));
@@ -18,22 +17,26 @@ function fmt(float|int|string $v): string {
 }
 
 function renderPdf(string $html, string $filename): void {
-    $options = new Options();
-    $options->set('defaultFont', 'DejaVu Sans');
-    $options->set('isHtml5ParserEnabled', false);
-    $options->set('isRemoteEnabled', false);
-    $options->set('isPhpEnabled', false);
-    $options->set('fontCache', __DIR__ . '/../../cache/fonts');
+    $mpdf = new Mpdf([
+        'mode'          => 'utf-8',
+        'format'        => 'A4',
+        'default_font'  => 'dejavusans',
+        'margin_left'   => 0,
+        'margin_right'  => 0,
+        'margin_top'    => 0,
+        'margin_bottom' => 10,
+        'margin_footer' => 3,
+    ]);
 
-    $dompdf = new Dompdf($options);
-    $dompdf->loadHtml($html, 'UTF-8');
-    $dompdf->setPaper('A4', 'portrait');
-    $dompdf->render();
+    $mpdf->SetHTMLFooter('
+        <table width="100%"><tr>
+            <td style="text-align:center;font-size:8pt;color:#888;">
+                Página {PAGENO} de {nb}
+            </td>
+        </tr></table>
+    ');
 
-    $canvas = $dompdf->getCanvas();
-    $font   = $dompdf->getFontMetrics()->getFont('DejaVu Sans', 'normal');
-    $canvas->page_text(252, 820, 'Página {PAGE_NUM} de {PAGE_COUNT}', $font, 8, [0.5, 0.5, 0.5]);
-
-    $dompdf->stream($filename, ['Attachment' => true]);
+    $mpdf->WriteHTML($html);
+    $mpdf->Output($filename, 'D');
     exit;
 }
