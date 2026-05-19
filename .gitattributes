@@ -1,2 +1,2 @@
-assets/css/*.css linguist-vendored
-assets/css/*.map linguist-vendored
+assets/css/**  linguist-detectable=false
+assets/scss/** linguist-detectable=false
