@@ -29,33 +29,39 @@ if (!$ambiente) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
-    $nome_ambiente = $_POST['nome_ambiente'];
-    $capacidade = $_POST['capacidade'];
-    $descricao = $_POST['descricao'];
-    $observacoes = $_POST['observacoes'];
+    $nome_ambiente = trim($_POST['nome_ambiente']);
+    $capacidade    = (int) $_POST['capacidade'];
+    $descricao     = trim($_POST['descricao']);
+    $observacoes   = trim($_POST['observacoes']);
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-    $check = $conn->prepare("SELECT id_ambiente FROM ambientes WHERE nome_ambiente = ? AND id_ambiente != ?");
-    $check->bind_param("si", $nome_ambiente, $id);
-    $check->execute();
-    $check_result = $check->get_result();
-
-    if ($check_result->num_rows > 0) {
-        $erro = "Já existe outro ambiente com este nome.";
+    $locked = $conn->query("SELECT GET_LOCK('ambientes_write', 5)")->fetch_row()[0];
+    if (!$locked) {
+        $erro = "Não foi possível processar agora. Tente novamente.";
     } else {
-        $stmt = $conn->prepare("UPDATE ambientes 
-            SET nome_ambiente=?, capacidade=?, descricao=?, observacoes=?, ativo=? 
-            WHERE id_ambiente=?");
+        $check = $conn->prepare("SELECT id_ambiente FROM ambientes WHERE nome_ambiente = ? AND id_ambiente != ?");
+        $check->bind_param("si", $nome_ambiente, $id);
+        $check->execute();
+        $check_result = $check->get_result();
 
-        $stmt->bind_param("sissii", $nome_ambiente, $capacidade, $descricao, $observacoes, $ativo, $id);
-
-        if ($stmt->execute()) {
-            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'ambiente', (int) $id, $nome_ambiente);
-            header("Location: index.php?editado=1");
-            exit;
+        if ($check_result->num_rows > 0) {
+            $erro = "Já existe outro ambiente com este nome.";
         } else {
-            $erro = "Erro ao atualizar o ambiente.";
+            $stmt = $conn->prepare("UPDATE ambientes
+                SET nome_ambiente=?, capacidade=?, descricao=?, observacoes=?, ativo=?
+                WHERE id_ambiente=?");
+            $stmt->bind_param("siisii", $nome_ambiente, $capacidade, $descricao, $observacoes, $ativo, $id);
+
+            if ($stmt->execute()) {
+                $conn->query("SELECT RELEASE_LOCK('ambientes_write')");
+                registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'ambiente', (int) $id, $nome_ambiente);
+                header("Location: index.php?editado=1");
+                exit;
+            } else {
+                $erro = "Erro ao atualizar o ambiente.";
+            }
         }
+        $conn->query("SELECT RELEASE_LOCK('ambientes_write')");
     }
 }
 ?>
@@ -87,30 +93,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome: *</label>
-                    <input type="text" name="nome_ambiente" value="<?= htmlspecialchars($ambiente['nome_ambiente']) ?>"
+                    <input type="text" name="nome_ambiente" value="<?= htmlspecialchars($_POST['nome_ambiente'] ?? $ambiente['nome_ambiente'] ?? '') ?>"
                         required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Capacidade: *</label>
-                    <input type="number" name="capacidade" value="<?= htmlspecialchars($ambiente['capacidade']) ?>"
+                    <input type="number" name="capacidade" value="<?= htmlspecialchars($_POST['capacidade'] ?? $ambiente['capacidade'] ?? '') ?>"
                         required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Descrição: *</label>
-                    <input type="text" name="descricao" value="<?= htmlspecialchars($ambiente['descricao']) ?>"
-                        required>
+                    <textarea name="descricao" rows="3" required><?= htmlspecialchars($_POST['descricao'] ?? $ambiente['descricao'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-grupo">
                     <label>Observações:</label>
-                    <textarea name="observacoes" rows="3"><?= htmlspecialchars($ambiente['observacoes']) ?></textarea>
+                    <textarea name="observacoes" rows="3"><?= htmlspecialchars($_POST['observacoes'] ?? $ambiente['observacoes'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-grupo checkbox">
                     <label>
-                        <input type="checkbox" name="ativo" <?= $ambiente['ativo'] ? 'checked' : '' ?>> Ambiente ativo
+                        <input type="checkbox" name="ativo" <?= (isset($_POST['ativo']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? true : (bool)$ambiente['ativo']) ? 'checked' : '' ?>> Ambiente ativo
                     </label>
                 </div>
 

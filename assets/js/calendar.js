@@ -45,6 +45,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!bloqueioModeActive || !bloqueioInicio || bloqueioFim !== null) return;
             previsualizarRange(dia.dataset.date);
         });
+
+        dia.addEventListener('mouseenter', () => {
+            if (!bloqueioModeActive) return;
+            if (dia.classList.contains('bloqueado')) {
+                dia.style.backgroundColor = '#ff5b4c';
+            } else if (dia.classList.contains('reservado')) {
+                dia.style.backgroundColor = 'rgba(102, 126, 234, 0.6)';
+            }
+        });
+
+        dia.addEventListener('mouseleave', () => {
+            if (!bloqueioModeActive) return;
+            dia.style.backgroundColor = '';
+        });
     });
 
     // ── Funções do modo bloqueio ────────────────────────────────────────────────
@@ -62,13 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btnToggle?.classList.remove('ativo');
         document.querySelector('.calendar-container')?.classList.remove('bloqueio-mode');
         btnCancelar?.classList.remove('visivel');
+        dias.forEach(d => d.style.removeProperty('background-color'));
         resetarSelecao();
     }
 
     function resetarSelecao() {
         bloqueioInicio = null;
         bloqueioFim    = null;
-        dias.forEach(d => d.classList.remove('bl-inicio', 'bl-fim', 'bl-range', 'bl-hover'));
+        dias.forEach(d => d.classList.remove('bl-inicio', 'bl-fim', 'bl-range', 'bl-hover', 'bl-hover-invalido'));
         btnConfirmar?.classList.remove('visivel');
         atualizarInstrucao();
     }

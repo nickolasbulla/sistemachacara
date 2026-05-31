@@ -18,6 +18,36 @@
     <script src="<?= BASE_URL ?>assets/js/inatividade.js"></script>
 <?php endif; ?>
 
+<!-- Lightbox -->
+<div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;" onclick="this.style.display='none'">
+    <img id="lightbox-img" src="" alt="" style="max-width:96vw;max-height:88vh;width:auto;height:auto;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.5);pointer-events:none;">
+    <button onclick="event.stopPropagation();baixarFoto()" style="position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;">
+        <i class="fa-solid fa-download"></i> Baixar foto
+    </button>
+</div>
+<script>
+    function abrirLightbox(src) {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox').style.display = 'flex';
+    }
+    function baixarFoto() {
+        var src = document.getElementById('lightbox-img').src;
+        fetch(src)
+            .then(r => r.blob())
+            .then(blob => {
+                var url = URL.createObjectURL(blob);
+                var a   = document.createElement('a');
+                a.href  = url;
+                a.download = 'foto_vistoria.jpg';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') document.getElementById('lightbox').style.display = 'none';
+    });
+</script>
+
 <script src="<?= BASE_URL ?>assets/js/painel.js"></script>
 <script src="<?= BASE_URL ?>assets/js/popup.js"></script>
 <script src="<?= BASE_URL ?>assets/js/clima.js"></script>

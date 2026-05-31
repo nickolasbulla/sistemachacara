@@ -1,5 +1,7 @@
 vendor/
 
+config/cloudinary.php
+
 .DS_Store
 Thumbs.db
 *.log

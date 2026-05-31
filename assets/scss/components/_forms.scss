@@ -39,8 +39,25 @@
     margin: 40px auto;
     margin-top: 25px;
 
-    @media (max-width: 480px) {
-        padding: 25px;
+
+}
+
+.ocorrencia-item {
+    background: #f9f9f9;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    .ocorrencia-item-header {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        strong { font-size: 15px; }
+        small   { color: #777; font-size: 12px; }
     }
 }
 

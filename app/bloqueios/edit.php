@@ -38,38 +38,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($data_inicio) || empty($data_fim) || empty($motivo)) {
         $erro = "Preencha todos os campos obrigatórios.";
+    } elseif ($data_inicio < date('Y-m-d')) {
+        $erro = "A data de início não pode ser no passado.";
     } elseif ($data_fim < $data_inicio) {
         $erro = "A data de fim não pode ser anterior à data de início.";
     } else {
 
-        $stmtChk = $conn->prepare("
-            SELECT id_reserva, nome_reserva, data_reserva 
-            FROM reservas 
-            WHERE data_reserva BETWEEN ? AND ?
-            LIMIT 1
-        ");
-        $stmtChk->bind_param("ss", $data_inicio, $data_fim);
-        $stmtChk->execute();
-        $resChk = $stmtChk->get_result();
-        $reservaConflito = $resChk->fetch_assoc();
-        $stmtChk->close();
-
-        if ($reservaConflito) {
-            $erro = "Não é possível bloquear este período pois já existe uma reserva em "
-                . date('d/m/Y', strtotime($reservaConflito['data_reserva']))
-                . " (" . htmlspecialchars($reservaConflito['nome_reserva']) . ").";
+        $locked = $conn->query("SELECT GET_LOCK('bloqueios_write', 5)")->fetch_row()[0];
+        if (!$locked) {
+            $erro = "Não foi possível processar agora. Tente novamente.";
         } else {
-            $stmt = $conn->prepare("UPDATE bloqueios SET data_inicio = ?, data_fim = ?, motivo = ?, ativo = ? WHERE id_bloqueio = ?");
-            $stmt->bind_param("sssii", $data_inicio, $data_fim, $motivo, $ativo, $id);
+            $stmtChk = $conn->prepare("
+                SELECT id_reserva, nome_reserva, data_reserva
+                FROM reservas
+                WHERE data_reserva BETWEEN ? AND ?
+                LIMIT 1
+            ");
+            $stmtChk->bind_param("ss", $data_inicio, $data_fim);
+            $stmtChk->execute();
+            $reservaConflito = $stmtChk->get_result()->fetch_assoc();
+            $stmtChk->close();
 
-            if ($stmt->execute()) {
-                registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'bloqueio', (int) $id, date('d/m/Y', strtotime($data_inicio)) . " até " . date('d/m/Y', strtotime($data_fim)) . " | $motivo");
-                header("Location: index.php?editado=1");
-                exit;
+            if ($reservaConflito) {
+                $erro = "Não é possível bloquear este período pois já existe uma reserva em "
+                    . date('d/m/Y', strtotime($reservaConflito['data_reserva']))
+                    . " (" . htmlspecialchars($reservaConflito['nome_reserva']) . ").";
             } else {
-                $erro = "Erro ao atualizar o bloqueio. Tente novamente.";
+                $stmt = $conn->prepare("UPDATE bloqueios SET data_inicio = ?, data_fim = ?, motivo = ?, ativo = ? WHERE id_bloqueio = ?");
+                $stmt->bind_param("sssii", $data_inicio, $data_fim, $motivo, $ativo, $id);
+
+                if ($stmt->execute()) {
+                    $conn->query("SELECT RELEASE_LOCK('bloqueios_write')");
+                    registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'bloqueio', (int) $id, date('d/m/Y', strtotime($data_inicio)) . " até " . date('d/m/Y', strtotime($data_fim)) . " | $motivo");
+                    header("Location: index.php?editado=1");
+                    exit;
+                } else {
+                    $erro = "Erro ao atualizar o bloqueio. Tente novamente.";
+                }
             }
-            $stmt->close();
+
+            $conn->query("SELECT RELEASE_LOCK('bloqueios_write')");
         }
     }
 }
@@ -122,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-grupo checkbox">
                     <label class="checkbox-container">
                         <input type="checkbox" name="ativo"
-                               <?= ($bloqueio['ativo'] ?? 1) ? 'checked' : '' ?>>
+                               <?= (isset($_POST['ativo']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? true : (bool)($bloqueio['ativo'] ?? 1)) ? 'checked' : '' ?>>
                         <span class="checkmark"></span>
                         Bloqueio ativo
                     </label>

@@ -40,10 +40,12 @@ $stmt2 = $conn->prepare("
         o.data_hora_registro,
         iv.nome_item,
         iv.descricao AS descricao_item,
-        u.nome_completo AS usuario_nome
+        u.nome_completo AS usuario_nome,
+        vf.foto_url
     FROM ocorrencias o
     INNER JOIN itens_vistoria iv ON iv.id_item_vistoria = o.id_item_vistoria
     INNER JOIN usuarios u ON u.id_usuario = o.id_usuario
+    LEFT JOIN vistoria_fotos vf ON vf.id_vistoria_resultado = o.id_vistoria_resultado
     WHERE o.id_reserva = ?
     ORDER BY iv.nome_item
 ");
@@ -60,12 +62,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
     $statuses = $_POST['status'] ?? [];
 
+    $status_validos = ['aberta', 'resolvida'];
+
     $upd = $conn->prepare("UPDATE ocorrencias SET status = ? WHERE id_ocorrencia = ? AND id_reserva = ?");
 
     $conn->begin_transaction();
     try {
         foreach ($statuses as $id_oc => $status) {
             $id_oc = (int) $id_oc;
+            if (!in_array($status, $status_validos, true)) continue;
             $upd->bind_param("sii", $status, $id_oc, $id_reserva);
             $upd->execute();
         }
@@ -127,22 +132,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Itens da ocorrência (editáveis) -->
-            <form method="POST" class="form-cadastro">
+            <form method="POST" class="form-cadastro" style="margin-top:24px;">
                 <?= csrf_field() ?>
                 <?php foreach ($itens as $item): ?>
                     <div class="ocorrencia-item">
                         <div class="ocorrencia-item-header">
                             <strong><?= htmlspecialchars($item['nome_item']) ?></strong>
-                            <small>Registrado por <?= htmlspecialchars($item['usuario_nome']) ?> em <?= date('d/m/Y H:i', strtotime($item['data_hora_registro'])) ?></small>
+                            <small>
+                                Registrado por <?= htmlspecialchars($item['usuario_nome']) ?>
+                                em <?= date('d/m/Y H:i', strtotime($item['data_hora_registro'])) ?>
+                            </small>
                         </div>
 
                         <div class="form-grupo">
-                            <label>Descrição:</label>
-                            <textarea rows="3" disabled><?= htmlspecialchars($item['descricao']) ?></textarea>
+                            <label>Descrição</label>
+                            <textarea rows="3" disabled><?= htmlspecialchars($item['descricao'] ?? '') ?></textarea>
                         </div>
 
+                        <?php if (!empty($item['foto_url'])): ?>
+                            <div class="form-grupo">
+                                <label>Foto</label>
+                                <img src="<?= htmlspecialchars($item['foto_url']) ?>" class="vistoria-foto-thumb" alt="Foto da ocorrência" onclick="abrirLightbox(this.src)">
+                            </div>
+                        <?php endif; ?>
+
                         <div class="form-grupo">
-                            <label>Status: *</label>
+                            <label>Status *</label>
                             <div class="select-wrapper">
                                 <select name="status[<?= $item['id_ocorrencia'] ?>]" required>
                                     <option value="aberta"    <?= $item['status'] === 'aberta'    ? 'selected' : '' ?>>Aberta</option>

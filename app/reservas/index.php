@@ -136,6 +136,15 @@ $hoje = date('Y-m-d');
             </button>
         </header>
 
+        <!-- barra de pesquisa -->
+        <div class="pesquisa-barra">
+            <div class="pesquisa-input-wrap">
+                <i class="fa-solid fa-magnifying-glass pesquisa-icone"></i>
+                <input type="text" id="pesquisaNome" placeholder="Pesquisar reserva por nome..." autocomplete="off">
+            </div>
+            <div id="pesquisaResultados" class="pesquisa-resultados"></div>
+        </div>
+
         <!-- calendario -->
         <div class="calendar-container">
 
@@ -313,4 +322,80 @@ $hoje = date('Y-m-d');
 </div>
 
 <script>const CSRF_TOKEN = '<?= csrf_token() ?>';</script>
+
+<script>
+(function () {
+    const input      = document.getElementById('pesquisaNome');
+    const resultados = document.getElementById('pesquisaResultados');
+
+    // --- busca com debounce ---
+    let timer = null;
+
+    input.addEventListener('input', () => {
+        clearTimeout(timer);
+        const q = input.value.trim();
+
+        if (q.length < 2) {
+            if (q.length === 0) {
+                resultados.innerHTML = '';
+                resultados.classList.remove('active');
+            } else {
+                resultados.innerHTML = '<p class="pesquisa-vazio">Digite ao menos 2 caracteres.</p>';
+                resultados.classList.add('active');
+            }
+            return;
+        }
+
+        resultados.innerHTML = '<p class="pesquisa-vazio">Buscando...</p>';
+        resultados.classList.add('active');
+
+        timer = setTimeout(async () => {
+            try {
+                const res  = await fetch('buscar_ajax.php?q=' + encodeURIComponent(q));
+                const data = await res.json();
+                renderResultados(data, q);
+            } catch {
+                resultados.innerHTML = '<p class="pesquisa-vazio">Erro ao buscar. Tente novamente.</p>';
+                resultados.classList.add('active');
+            }
+        }, 300);
+    });
+
+    function fmtData(iso) {
+        const [y, m, d] = iso.split('-');
+        return `${d}/${m}/${y}`;
+    }
+
+    function highlight(text, q) {
+        const palavras = q.trim().split(/\s+/).filter(Boolean);
+        const pattern  = palavras.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+        const regex    = new RegExp('(' + pattern + ')', 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    function renderResultados(data, q) {
+        if (data.length === 0) {
+            resultados.innerHTML = '<p class="pesquisa-vazio">Nenhuma reserva encontrada.</p>';
+            resultados.classList.add('active');
+            return;
+        }
+
+        const html = data.map(r => `
+            <a href="edit.php?id=${r.id_reserva}" class="pesquisa-item">
+                <span class="pesquisa-nome">${highlight(r.nome_reserva, q)}</span>
+                <span class="pesquisa-meta">
+                    <i class="fa-solid fa-calendar-day"></i> ${fmtData(r.data_reserva)}
+                    &nbsp;·&nbsp;
+                    <i class="fa-solid fa-clock"></i> ${r.hora_inicio.slice(0,5)}–${r.hora_fim.slice(0,5)}
+                    ${r.nome_ambiente ? `&nbsp;·&nbsp;<i class="fa-solid fa-location-dot"></i> ${r.nome_ambiente}` : ''}
+                </span>
+            </a>
+        `).join('');
+
+        resultados.innerHTML = `<p class="pesquisa-count">${data.length} resultado${data.length !== 1 ? 's' : ''}</p>` + html;
+        resultados.classList.add('active');
+    }
+}());
+</script>
+
 <?php include '../../includes/layout/footer.php'; ?>

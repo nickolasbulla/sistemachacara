@@ -77,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                             <th>Nome Completo</th>
                             <th>Telefone</th>
                             <th>Observações</th>
+                            <th>Ativo</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -86,6 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                                 <td data-label="Nome"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Telefone"><?= htmlspecialchars($row['telefone'] ?? '') ?></td>
                                 <td data-label="Observacoes"><?= htmlspecialchars($row['observacoes'] ?? '') ?></td>
+                                <td data-label="Ativo">
+                                    <?= $row['ativo'] ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>' ?>
+                                </td>
                                 <td data-label="Ações">
                                     <a href="./edit.php?id=<?= $row['id_funcionario'] ?>" class="btn-editar">
                                         <i class="fa-solid fa-hand-pointer"></i>

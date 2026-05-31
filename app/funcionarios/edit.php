@@ -29,43 +29,41 @@ if (!$funcionario) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
-    $nome_completo = $_POST['nome_completo'];
+    $nome_completo   = trim($_POST['nome_completo']);
     $data_nascimento = parse_data($_POST['data_nascimento']);
-    $telefone = $_POST['telefone'];
-    $observacoes = $_POST['observacoes'];
+    $telefone        = trim($_POST['telefone']);
+    $observacoes     = trim($_POST['observacoes']);
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-    $check = $conn->prepare("SELECT id_funcionario FROM funcionarios WHERE nome_completo = ? AND id_funcionario != ?");
-    $check->bind_param("si", $nome_completo, $id);
-    $check->execute();
-    $check_result = $check->get_result();
-
-    if ($check_result->num_rows > 0) {
-        $erro = "Já existe outro funcionário com este nome.";
+    $locked = $conn->query("SELECT GET_LOCK('funcionarios_write', 5)")->fetch_row()[0];
+    if (!$locked) {
+        $erro = "Não foi possível processar agora. Tente novamente.";
     } else {
-        $update = $conn->prepare("
-            UPDATE funcionarios 
-            SET nome_completo=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
-            WHERE id_funcionario=?
-        ");
+        $check = $conn->prepare("SELECT id_funcionario FROM funcionarios WHERE nome_completo = ? AND id_funcionario != ?");
+        $check->bind_param("si", $nome_completo, $id);
+        $check->execute();
+        $check_result = $check->get_result();
 
-        $update->bind_param(
-            "ssssii",
-            $nome_completo,
-            $data_nascimento,
-            $telefone,
-            $observacoes,
-            $ativo,
-            $id
-        );
-
-        if ($update->execute()) {
-            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'funcionario', (int) $id, $nome_completo);
-            header("Location: index.php?editado=1");
-            exit;
+        if ($check_result->num_rows > 0) {
+            $erro = "Já existe outro funcionário com este nome.";
         } else {
-            $erro = "Erro ao atualizar o funcionário.";
+            $update = $conn->prepare("
+                UPDATE funcionarios
+                SET nome_completo=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
+                WHERE id_funcionario=?
+            ");
+            $update->bind_param("ssssii", $nome_completo, $data_nascimento, $telefone, $observacoes, $ativo, $id);
+
+            if ($update->execute()) {
+                $conn->query("SELECT RELEASE_LOCK('funcionarios_write')");
+                registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'funcionario', (int) $id, $nome_completo);
+                header("Location: index.php?editado=1");
+                exit;
+            } else {
+                $erro = "Erro ao atualizar o funcionário.";
+            }
         }
+        $conn->query("SELECT RELEASE_LOCK('funcionarios_write')");
     }
 }
 ?>
@@ -98,30 +96,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-grupo">
                     <label>Nome completo: *</label>
                     <input type="text" name="nome_completo"
-                        value="<?= htmlspecialchars($funcionario['nome_completo']) ?>" required>
+                        value="<?= htmlspecialchars($_POST['nome_completo'] ?? $funcionario['nome_completo'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
                     <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" required
-                        value="<?= htmlspecialchars(fmt_data($funcionario['data_nascimento'])) ?>">
+                        value="<?= htmlspecialchars($_POST['data_nascimento'] ?? fmt_data($funcionario['data_nascimento'])) ?>">
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone: *</label>
                     <input type="text" name="telefone" data-mask='(00) 00000 - 0000'
-                        value="<?= htmlspecialchars($funcionario['telefone']) ?>" required>
+                        value="<?= htmlspecialchars($_POST['telefone'] ?? $funcionario['telefone'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Observações:</label>
                     <textarea name="observacoes"
-                        rows="3"><?= htmlspecialchars($funcionario['observacoes']) ?></textarea>
+                        rows="3"><?= htmlspecialchars($_POST['observacoes'] ?? $funcionario['observacoes'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-grupo checkbox">
                     <label>
-                        <input type="checkbox" name="ativo" <?= $funcionario['ativo'] ? 'checked' : '' ?>> Funcionário
+                        <input type="checkbox" name="ativo" <?= (isset($_POST['ativo']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? true : (bool)$funcionario['ativo']) ? 'checked' : '' ?>> Funcionário
                         ativo
                     </label>
                 </div>

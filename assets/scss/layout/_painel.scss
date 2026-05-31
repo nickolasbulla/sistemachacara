@@ -144,6 +144,7 @@ body.painel-page {
 /* HEADER */
 .painel-header {
     position: relative;
+    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center; // centraliza o h1
@@ -178,35 +179,9 @@ body.painel-page {
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 900;
-}
 
-/* RESPONSIVIDADE */
-@media (max-width: 1140px) {
-
-    .calendar-container {
-        margin-top: 10px;
-    }
-
-    .conteudo {
-        padding: 10px;
-    }
-
-    .sidebar {
-        position: fixed;
-        transform: translateX(-100%);
-        width: 240px;
-        height: 100vh;
-    }
-
-    .sidebar.active {
-        transform: translateX(0);
-    }
-
-    .sidebar-overlay.active {
-        display: block;
-    }
-
-    .painel-header .menu-toggle {
+    &.active {
         display: block;
     }
 }
+

@@ -1,85 +1,313 @@
-BUGS CRÍTICOS
-1. Redirect após HTML já emitido — reservas/edit.php
+Auditoria Completa — Sistema Chácara
+Resumo Executivo
 
-header.php e deletemodal.php são incluídos nas linhas 7-8, antes das verificações de redirect nas linhas 10-41. Em PHP sem output buffering, header("Location: ...") falha silenciosamente. Funciona no XAMPP porque output_buffering = On está ativo por padrão, mas quebraria em qualquer servidor de produção comum.
+Problemas Críticos
+1. SQL Injection via GET_LOCK com data não sanitizada
+Gravidade: Crítica
+Arquivos: app/reservas/create.php, app/reservas/edit.php
 
-
-include "../../includes/layout/header.php";   // ← emite HTML aqui
-include '../../includes/layout/deletemodal.php';
-if (!isset($_GET['id'])) {
-    header("Location: index.php");  // ← já tem HTML no buffer
-Fix: Mover toda lógica de POST e validação do ?id para antes do include header.php.
-
-2. $data nulo sem validação explícita — reservas/create.php:36 e edit.php:83
-
-parse_data() retorna null para datas inválidas. A comparação $data < date('Y-m-d') com null produz true em PHP (null vira ""), fazendo o usuário ver "Não é possível criar reservas no passado" quando a data simplesmente está inválida. Precisa checar:
+Problema:
 
 
-if (!$data) { $erro = "Data inválida."; }
-3. gerar.php não usa login_verify.php
+$lock_name = 'reserva_' . (int)$ambiente . '_' . $data;
+$locked = $conn->query("SELECT GET_LOCK('{$lock_name}', 5)")->fetch_row()[0];
+$data vem de parse_data() sem sanitização antes da interpolação direta na query SQL.
 
-relatorios/gerar.php faz autenticação manual nas linhas 7-14 em vez de usar o login_verify.php padrão. A verificação está correta, mas é um padrão inconsistente — se a lógica central de auth mudar, esse arquivo ficará desatualizado.
+Impacto: Atacante pode injetar SQL via campo de data.
 
-FALHAS DE REGRA DE NEGÓCIO
-4. Reservas passadas não podem ser editadas, mas o formulário aparece
+Como reproduzir: Enviar data_reserva com caracteres SQL: 10/01/2024', 5); DROP TABLE reservas; --
 
-Em reservas/edit.php:83-85, qualquer edição de reserva passada falha com "Não é possível editar para uma data no passado". O problema é que o formulário cheio continua visível — o admin não consegue nem atualizar o valor pago ou observações. Se o caso de uso exige editar dados financeiros de reservas já realizadas, o bloqueio está errado. Se não exige, o formulário deveria ser exibido em modo somente leitura.
-
-5. Detecção de conflito de horário usa BETWEEN inclusivo nas bordas
-
-Em reservas/create.php:67-71 e edit.php:112-120:
+Correção:
 
 
-(? BETWEEN hora_inicio AND hora_fim)
-OR (? BETWEEN hora_inicio AND hora_fim)
-BETWEEN inclui os extremos. Então se a Reserva A termina às 14:00 e você tenta criar a Reserva B começando às 14:00, o sistema bloqueia como conflito. Normalmente um horário que termina às 14:00 e outro que começa às 14:00 não deveriam conflitar.
+$stmtLock = $conn->prepare("SELECT GET_LOCK(?, 5)");
+$stmtLock->bind_param("s", $lock_name);
+$stmtLock->execute();
+2. Sem rate limiting no login — força bruta irrestrita
+Gravidade: Crítica
+Arquivo: Endpoint de autenticação
 
-6. Vistoria não aparece em reservas do mesmo dia
+Problema: Nenhum limite de tentativas de login. Um atacante pode fazer brute force infinito.
 
-Em reservas/edit.php:63: $is_passada = $reserva['data_reserva'] < date('Y-m-d') — usa < (estritamente menor). O bloco de vistoria só aparece para reservas de datas passadas, nunca para reservas do dia atual. Se o checkout é no mesmo dia, o funcionário não consegue registrar a vistoria.
+Impacto: Comprometimento de qualquer conta com senha fraca.
 
-7. Unicidade de funcionário por nome completo
+Como reproduzir: Enviar 10.000 requisições POST com senhas diferentes — nenhuma bloqueada.
 
-Em funcionarios/create.php:19-22, o check de duplicidade é pelo nome_completo. Dois funcionários com o mesmo nome seriam rejeitados como duplicata. O check deveria ser removido ou complementado com outro campo (CPF, por exemplo).
+Correção: Implementar bloqueio por IP após 5 tentativas falhas (APCu, Redis ou tabela de tentativas no banco).
 
-8. bloqueios/edit.php sem verificação de data no passado
+3. Permissões não revalidadas contra o banco de dados
+Gravidade: Crítica
+Arquivo: app/bloqueios/criar_ajax.php
 
-bloqueios/create.php:24 bloqueia datas passadas, mas bloqueios/edit.php não tem essa verificação. Um admin pode editar um bloqueio existente e jogar as datas para o passado.
+Problema:
 
-9. Race condition no check de conflito de reservas
 
-O padrão SELECT-then-INSERT não é atômico. Duas requisições simultâneas podem passar pelo check de conflito ao mesmo tempo e ambas inserirem. O correto seria usar uma UNIQUE constraint na tabela ou SELECT ... FOR UPDATE dentro de uma transação.
+if ($_SESSION['usuario_tipo'] !== 'admin') {
+    http_response_code(403);
+    exit;
+}
+Confia cegamente no valor da sessão. Se a sessão for sequestrada ou manipulada, o atacante passa pela verificação.
 
-SEGURANÇA
-10. Sem validação de tamanho mínimo de senha
+Impacto: Escalação de privilégios via session hijacking.
 
-Em usuarios/create.php:15, a senha é apenas password_hash($_POST["senha"], ...). Não há validação de tamanho mínimo no servidor — um required HTML é facilmente bypassado. Uma senha de 1 caractere seria aceita.
+Correção: Revalidar o papel do usuário contra o banco a cada operação sensível.
 
-11. Inputs sem trim() em vários cadastros
+4. Path Traversal / LFI em relatórios
+Gravidade: Crítica
+Arquivo: app/relatorios/gerar.php
 
-usuarios/create.php:13-19, funcionarios/create.php:13-16, ambientes/create.php:13-17, vistoria/create.php:15-16 — campos de texto não passam por trim(). Um nome com espaço no início seria salvo e tratado como diferente do mesmo nome sem espaço.
+Problema:
 
-12. Status de ocorrência não validado no servidor
 
-Em ocorrencias/edit.php:61-69, o valor de status vem de $_POST['status'][$id_oc] e é inserido diretamente no UPDATE (via prepared statement, então sem SQL injection). Mas nenhum check verifica se o valor é 'aberta' ou 'resolvida'. Qualquer string arbitrária seria salva.
+include __DIR__ . "/reports/{$tipo}.php";
+Mesmo com in_array() strict, $tipo vem do GET sem sanitização adicional. Uma falha no whitelist expõe LFI completo.
 
-PROBLEMAS DE QUALIDADE / UX
-13. Variável $is_admin_editing_other declarada mas nunca usada
+Impacto: Leitura de arquivos arbitrários do servidor.
 
-usuarios/edit.php:26: $is_admin_editing_other = ($is_admin && !$is_self_edit) — calculada, nunca referenciada.
+Como reproduzir: gerar.php?tipo=../../../config/db
 
-14. Sem paginação nas listagens principais
+Correção:
 
-Logs têm paginação (50 por página). Usuários, funcionários, ambientes, reservas, bloqueios não têm — crescendo o banco, essas páginas podem ficar lentas ou quebrar o PHP por timeout.
 
-15. Sem filtro/busca nas listagens
+$tipo = preg_replace('/[^a-z_]/', '', $_GET['tipo'] ?? '');
+if (!in_array($tipo, $relatorios_validos, true)) {
+    die('Relatório inválido.');
+}
+5. XSS via nome de ambiente em resultado de busca
+Gravidade: Crítica
+Arquivo: app/reservas/index.php
 
-Nenhuma listagem (exceto logs) tem filtro. Reservas crescem bastante — sem busca por nome, período ou ambiente, a lista fica inutilizável.
+Problema:
 
-16. Sem campo de notas ao resolver ocorrência
 
-Em ocorrencias/edit.php, o admin só muda o status de aberta para resolvida. Não há campo para descrever como foi resolvido, quem resolveu, ou data de resolução.
+const html = data.map(r => `
+    ...${r.nome_ambiente}...
+`).join('');
+r.nome_ambiente é interpolado diretamente no HTML sem escaping.
 
-17. Aviso de depreciação PHP 8.1+ em valores nulos
+Impacto: Admin cria ambiente com nome <script>alert('xss')</script>, qualquer usuário que pesquisar executa o script.
 
-htmlspecialchars($reserva['observacoes']) em reservas/edit.php:372 e htmlspecialchars($usuario['telefone']) em usuarios/edit.php:215 — se esses campos são NULL no banco, PHP 8.1+ emite um Deprecated: Passing null. Deve ser $reserva['observacoes'] ?? ''.
+Como reproduzir: Criar ambiente com nome contendo HTML/JS malicioso e pesquisar reservas.
+
+Correção: Usar element.textContent em vez de template literals com HTML.
+
+Problemas Altos (23 identificados — seleção dos mais relevantes)
+6. Race condition com datas invertidas silenciosamente
+Gravidade: Alta
+Arquivo: app/bloqueios/criar_ajax.php
+
+Problema:
+
+
+if ($data_fim < $data_inicio) {
+    [$data_inicio, $data_fim] = [$data_fim, $data_inicio]; // silencioso!
+}
+Em vez de retornar erro, inverte as datas sem avisar o usuário.
+
+Impacto: Admin pensa que bloqueou Jan→Dez, sistema cria Dez→Jan (invertido).
+
+Correção: Retornar erro claro: "A data de fim não pode ser anterior à data de início."
+
+7. Locks MySQL sem try/finally — resource leak garantido
+Gravidade: Alta
+Arquivos: app/ambientes/create.php, app/reservas/create.php, app/bloqueios/criar_ajax.php
+
+Problema:
+
+
+$locked = $conn->query("SELECT GET_LOCK('ambientes_write', 5)")->fetch_row()[0];
+// ... código que pode lançar exceção ...
+$conn->query("SELECT RELEASE_LOCK('ambientes_write')"); // nunca executado se ocorrer erro
+Impacto: Lock prende por 5s. Em produção com erros frequentes, o sistema trava.
+
+Correção: Envolver em try/finally para garantir liberação do lock.
+
+8. Checkbox "ativo" com lógica quebrada nas edições
+Gravidade: Alta
+Arquivos: app/ambientes/edit.php, app/funcionarios/edit.php, app/bloqueios/edit.php
+
+Problema:
+
+
+<?= (isset($_POST['ativo']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? true : (bool)$ambiente['ativo']) ? 'checked' : '' ?>
+isset($_POST['ativo']) && POST ? true : ... — se o POST chegou com ativo ausente (checkbox desmarcado), a condição POST === true retorna true por outro caminho.
+
+Impacto: Impossível desativar um ambiente/funcionário pela interface.
+
+Como reproduzir: Abrir edição de ambiente ativo → desmarcar checkbox → salvar → continua ativo.
+
+Correção:
+
+
+<?= ($_SERVER['REQUEST_METHOD'] === 'POST' ? isset($_POST['ativo']) : (bool)$ambiente['ativo']) ? 'checked' : '' ?>
+9. Senha mínima de 4 caracteres
+Gravidade: Alta
+Arquivos: app/usuarios/create.php, app/usuarios/edit.php
+
+Problema:
+
+
+if (strlen($senha_raw) < 4) {
+    $erro = "A senha deve ter no mínimo 4 caracteres.";
+}
+Impacto: Senha "aaaa" é válida. Brute force trivial.
+
+Correção: Mínimo 12 caracteres com complexidade, ou pelo menos 8 com aviso.
+
+10. Upload de fotos sem validação de tipo MIME server-side
+Gravidade: Alta
+Arquivo: app/reservas/edit.php
+
+Problema: O upload vai direto ao Cloudinary usando o arquivo temporário sem verificar o tipo real do arquivo (apenas o accept do HTML, que é facilmente burlado).
+
+Impacto: Upload de arquivo PHP disfarçado de .jpg.
+
+Correção:
+
+
+$finfo = new finfo(FILEINFO_MIME_TYPE);
+$mime = $finfo->file($fotos['tmp_name'][$id_item]);
+if (!in_array($mime, ['image/jpeg', 'image/png', 'image/webp'])) {
+    $erro = "Tipo de arquivo inválido.";
+    continue;
+}
+11. Transação de vistoria com upload Cloudinary dentro do rollback
+Gravidade: Alta
+Arquivo: app/reservas/edit.php
+
+Problema: O upload para o Cloudinary ocorre dentro da transação do banco. Se o Cloudinary falhar, o rollback desfaz os dados do banco, mas a foto já pode ter sido enviada. Se o banco falhar depois do upload, a foto fica no Cloudinary sem registro.
+
+Impacto: Estado inconsistente — fotos sem vistoria ou vistorias sem foto.
+
+Correção: Fazer todos os uploads antes de abrir a transação.
+
+12. Exposição de erro de conexão ao banco
+Gravidade: Alta
+Arquivo: config/init.php
+
+Problema:
+
+
+die("Falha na conexão: " . $conn->connect_error);
+Impacto: Mensagem de erro técnica exposta ao usuário (host, usuário, detalhes do MySQL).
+
+Correção:
+
+
+error_log("DB Connection Error: " . $conn->connect_error);
+die("Erro ao conectar ao sistema. Contate o administrador.");
+13. CSP com unsafe-inline — proteção XSS nula
+Gravidade: Alta
+Arquivo: config/init.php
+
+Problema:
+
+
+header("Content-Security-Policy: ... script-src 'self' 'unsafe-inline' ...");
+unsafe-inline permite qualquer <script> inline, anulando completamente a CSP como defesa XSS.
+
+Correção: Usar nonce para scripts inline específicos e remover unsafe-inline.
+
+14. Dados pessoais (telefone) registrados em logs de auditoria
+Gravidade: Alta
+Arquivo: app/funcionarios/index.php
+
+Problema:
+
+
+$detalhes = "nome: {$row['nome_completo']} | telefone: {$row['telefone']}";
+registrar_log($conn, ..., $detalhes);
+Impacto: Violação de LGPD/privacidade — dados pessoais desnecessários em logs.
+
+Correção: Registrar apenas identificadores, não dados pessoais.
+
+Problemas Médios (seleção)
+15. Validação de formato de hora ausente
+Gravidade: Média
+Arquivo: app/reservas/create.php
+
+Problema: hora_inicio e hora_fim aceitam qualquer string. 25:70 passa pela validação.
+
+Correção:
+
+
+if (!preg_match('/^\d{2}:\d{2}$/', $hora) || (int)explode(':', $hora)[0] >= 24) {
+    $erro = "Hora inválida.";
+}
+16. Valores monetários negativos aceitos
+Gravidade: Média
+Arquivo: app/reservas/create.php
+
+Problema: floatval($_POST['valor_cobrado']) aceita -1000.
+
+Impacto: Reservas com valor negativo no sistema financeiro.
+
+17. Query complexa sem índices evidentes
+Gravidade: Média
+Arquivo: app/ocorrencias/index.php
+
+Problema: JOIN de 4 tabelas com GROUP BY sem certeza de índices em ocorrencias.id_reserva, ocorrencias.id_item_vistoria.
+
+Impacto: Degradação severa de performance com crescimento dos dados.
+
+Correção:
+
+
+CREATE INDEX idx_ocorrencias_reserva ON ocorrencias(id_reserva);
+CREATE INDEX idx_ocorrencias_item ON ocorrencias(id_item_vistoria);
+18. Charset utf8 em vez de utf8mb4
+Gravidade: Média
+Arquivo: config/db.php (ou equivalente)
+
+Problema:
+
+
+$conn->set_charset('utf8');
+utf8 no MySQL suporta apenas 3 bytes — emojis e alguns caracteres especiais causam erro silencioso ou truncamento.
+
+Correção: $conn->set_charset('utf8mb4');
+
+19. Erros em endpoints AJAX retornam HTML em vez de JSON
+Gravidade: Média
+Arquivo: config/init.php
+
+Problema: die("Falha na conexão: ...") retorna HTML quando a rota é AJAX.
+
+Impacto: Frontend quebra tentando parsear JSON e recebe HTML.
+
+20. Ausência de X-Frame-Options e X-Content-Type-Options
+Gravidade: Média
+Arquivo: config/init.php
+
+Problema: Nenhum desses headers de segurança está presente.
+
+Impacto: Vulnerabilidade a clickjacking e MIME sniffing.
+
+Correção:
+
+
+header("X-Frame-Options: DENY");
+header("X-Content-Type-Options: nosniff");
+21. Código duplicado em todas as páginas de criação
+Gravidade: Média
+Arquivos: Todos os create.php do projeto
+
+Problema: O padrão csrf_verify → GET_LOCK → validar → inserir → RELEASE_LOCK está copiado em pelo menos 6 arquivos. Um bug corrigido em um não é corrigido nos outros.
+
+Impacto: Bugs se propagam assimetricamente. Manutenção multiplicada.
+
+22. Log de auditoria não registra o que mudou
+Gravidade: Média
+Arquivo: includes/helpers/log.php
+
+Problema: registrar_log() registra que algo foi editado, mas não registra os valores antes/depois.
+
+Impacto: Auditoria ineficaz — impossível saber o que foi alterado.
+
+Problemas Baixos
+#	Título	Arquivo
+23	@filemtime() suprime erros silenciosamente	includes/layout/header.php
+24	Timezone hardcoded (America/Sao_Paulo) em vez de env var	config/init.php
+25	Cache não implementado para lista de ambientes ativos	app/reservas/create.php
+26	sessionStorage pode ser manipulado via XSS	assets/js/calendar.js
+27	Exceções de vistoria sem error_log()	app/reservas/edit.php

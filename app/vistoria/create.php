@@ -12,28 +12,35 @@ $erro = '';
  
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     csrf_verify();
-    $nome_item    = $_POST["nome_item"];
-    $descricao    = $_POST["descricao"];
+    $nome_item = trim($_POST["nome_item"]);
+    $descricao = trim($_POST["descricao"]);
     $ativo        = isset($_POST["ativo"]) ? 1 : 0;
  
-    $check = $conn->prepare("SELECT id_item_vistoria FROM itens_vistoria WHERE nome_item = ?");
-    $check->bind_param("s", $nome_item);
-    $check->execute();
-    $check->store_result();
- 
-    if ($check->num_rows > 0) {
-        $erro = "Já existe um item com esse nome!";
+    $locked = $conn->query("SELECT GET_LOCK('vistoria_write', 5)")->fetch_row()[0];
+    if (!$locked) {
+        $erro = "Não foi possível processar agora. Tente novamente.";
     } else {
-        $stmt = $conn->prepare("INSERT INTO itens_vistoria (nome_item, descricao, ativo) VALUES (?, ?, ?)");
-        $stmt->bind_param("ssi", $nome_item, $descricao, $ativo);
- 
-        if ($stmt->execute()) {
-            registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'item_vistoria', $conn->insert_id, $nome_item);
-            header("Location: index.php?sucesso=1");
-            exit;
+        $check = $conn->prepare("SELECT id_item_vistoria FROM itens_vistoria WHERE nome_item = ?");
+        $check->bind_param("s", $nome_item);
+        $check->execute();
+        $check->store_result();
+
+        if ($check->num_rows > 0) {
+            $erro = "Já existe um item com esse nome!";
         } else {
-            $erro = "Erro ao cadastrar o item. Tente novamente.";
+            $stmt = $conn->prepare("INSERT INTO itens_vistoria (nome_item, descricao, ativo) VALUES (?, ?, ?)");
+            $stmt->bind_param("ssi", $nome_item, $descricao, $ativo);
+
+            if ($stmt->execute()) {
+                $conn->query("SELECT RELEASE_LOCK('vistoria_write')");
+                registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'item_vistoria', $conn->insert_id, $nome_item);
+                header("Location: index.php?sucesso=1");
+                exit;
+            } else {
+                $erro = "Erro ao cadastrar o item. Tente novamente.";
+            }
         }
+        $conn->query("SELECT RELEASE_LOCK('vistoria_write')");
     }
 }
 ?>
@@ -66,12 +73,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome do item: *</label>
-                    <input type="text" name="nome_item" required>
+                    <input type="text" name="nome_item" value="<?= htmlspecialchars($_POST['nome_item'] ?? '') ?>" required>
                 </div>
  
                 <div class="form-grupo">
                     <label>Descrição:</label>
-                    <textarea name="descricao" rows="3"></textarea>
+                    <textarea name="descricao" rows="3"><?= htmlspecialchars($_POST['descricao'] ?? '') ?></textarea>
                 </div>
  
                 <div class="form-grupo checkbox">

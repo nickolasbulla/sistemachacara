@@ -45,6 +45,17 @@ if ($data_fim < $data_inicio) {
     [$data_inicio, $data_fim] = [$data_fim, $data_inicio];
 }
 
+if ($data_inicio < date('Y-m-d')) {
+    echo json_encode(['erro' => 'A data de início não pode ser no passado.']);
+    exit;
+}
+
+$locked = $conn->query("SELECT GET_LOCK('bloqueios_write', 5)")->fetch_row()[0];
+if (!$locked) {
+    echo json_encode(['erro' => 'Não foi possível processar agora. Tente novamente.']);
+    exit;
+}
+
 $stmtChk = $conn->prepare("
     SELECT id_reserva, nome_reserva, data_reserva
     FROM reservas
@@ -57,6 +68,7 @@ $conflito = $stmtChk->get_result()->fetch_assoc();
 $stmtChk->close();
 
 if ($conflito) {
+    $conn->query("SELECT RELEASE_LOCK('bloqueios_write')");
     $dataFmt = date('d/m/Y', strtotime($conflito['data_reserva']));
     $nome    = htmlspecialchars($conflito['nome_reserva']);
     echo json_encode(['erro' => "Conflito: já existe uma reserva em {$dataFmt} ({$nome})."]);
@@ -70,8 +82,10 @@ if ($stmt->execute()) {
     $id  = $conn->insert_id;
     $ini = date('d/m/Y', strtotime($data_inicio));
     $fim = date('d/m/Y', strtotime($data_fim));
+    $conn->query("SELECT RELEASE_LOCK('bloqueios_write')");
     registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'bloqueio', $id, "{$ini} até {$fim} | {$motivo}");
     echo json_encode(['ok' => true]);
 } else {
+    $conn->query("SELECT RELEASE_LOCK('bloqueios_write')");
     echo json_encode(['erro' => 'Erro ao salvar. Tente novamente.']);
 }

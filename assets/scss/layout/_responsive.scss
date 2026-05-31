@@ -1,0 +1,230 @@
+@use "../abstracts/variables" as *;
+
+// ── 1000px — menu hamburguer ──────────────────────────────────────────────────
+@media (max-width: 1000px) {
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        z-index: 1000;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .painel-header .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 12px;
+        left: 16px;
+        z-index: 1001;
+        transform: none;
+    }
+}
+
+// ── 800px — tabelas viram cards ───────────────────────────────────────────────
+@media (max-width: 800px) {
+
+    .tabela-crud {
+
+        thead {
+            display: none;
+        }
+
+        tbody tr {
+            display: block;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 16px;
+            padding: 4px 8px;
+            border: 1px solid #e5e7eb;
+            border-left: 6px solid #667eea;
+
+            &:nth-child(even) {
+                background: white;
+            }
+
+            &:hover {
+                background: white;
+            }
+        }
+
+        td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            max-width: none !important;
+            font-size: 14px;
+
+            &:last-child {
+                border-bottom: none;
+                justify-content: flex-end;
+
+                &::before {
+                    display: none;
+                }
+            }
+
+            &::before {
+                content: attr(data-label);
+                font-weight: 700;
+                font-size: 12px;
+                text-transform: uppercase;
+                color: #888;
+                flex-shrink: 0;
+            }
+        }
+    }
+}
+
+// ── 700px — calendário / reservas ────────────────────────────────────────────
+@media (max-width: 700px) {
+
+    .conteudo {
+        padding: 10px 12px;
+    }
+
+    .pesquisa-resultados {
+        left: 0;
+        right: 0;
+    }
+
+    .calendar-container {
+        padding: 8px 10px;
+    }
+
+    .cal-selector .select-wrapper select {
+        font-size: 15px;
+        min-width: unset;
+        padding: 6px 28px 6px 10px;
+    }
+
+    .cal-nav {
+        width: 34px;
+        height: 34px;
+
+        i { font-size: 14px; }
+    }
+
+    .bloqueio-toolbar {
+        gap: 6px;
+        padding: 4px 0 6px;
+    }
+
+    .pesquisa-barra {
+        padding: 0 40px;
+    }
+
+}
+
+// ── 600px — relatórios ────────────────────────────────────────────────────────
+@media (max-width: 600px) {
+
+    .relatorios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .relatorio-modal-campos {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ── 500px — formulários ───────────────────────────────────────────────────────
+@media (max-width: 500px) {
+
+    .cadastro-area {
+        padding: 14px 14px;
+    }
+}
+
+// ── 450px — calendário header ────────────────────────────────────────────────
+@media (max-width: 450px) {
+
+    .calendar-container .calendar-header {
+        gap: 4px;
+
+        .cal-nav {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+
+            i { font-size: 12px; }
+        }
+
+        .cal-selector {
+            gap: 4px;
+
+            .select-wrapper select {
+                font-size: 12px !important;
+                padding: 5px 32px 5px 6px !important;
+                min-width: 0 !important;
+            }
+        }
+    }
+
+    .calendar-container .calendar-grid {
+        grid-template-rows: auto repeat(6, auto);
+        height: auto;
+        align-content: start;
+        overflow: visible;
+        gap: 3px;
+    }
+
+    .calendar-container .calendar-grid .cal-dia {
+        aspect-ratio: 3 / 4;
+        height: auto;
+        padding: 4px 0 0 4px;
+        gap: 2px;
+        border-radius: 6px;
+
+        .cal-dia-num {
+            font-size: 13px;
+        }
+
+        .cal-feriado-nome {
+            font-size: 8px;
+        }
+
+        .cal-dia-info {
+            font-size: 11px;
+            bottom: 3px;
+        }
+
+        &.bloqueado .bloqueado-icone {
+            font-size: 12px;
+            margin-top: 1px;
+        }
+    }
+
+    body.page-calendario .calendar-container {
+        overflow-y: auto;
+    }
+}
+
+// ── 380px — paginação ────────────────────────────────────────────────────────
+@media (max-width: 380px) {
+
+    .paginacao {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .paginacao-links {
+        flex-wrap: wrap;
+    }
+/*
+    .pag-btn {
+        min-width: 28px !important;
+        height: 28px !important;
+        font-size: 12px !important;
+        padding: 0 6px !important;
+    }*/
+}

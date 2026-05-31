@@ -2,16 +2,7 @@
 session_start();
 
 require_once '../../vendor/autoload.php';
-include '../../config/init.php';
-
-if (empty($_SESSION['usuario_id'])) {
-    header('Location: ' . BASE_URL . 'public/index.php');
-    exit;
-}
-if ($_SESSION['usuario_tipo'] !== 'admin') {
-    header('Location: ' . BASE_URL . 'public/logout.php');
-    exit;
-}
+include '../../includes/auth/login_verify.php';
 
 include '_base.php';
 include '_layout.php';

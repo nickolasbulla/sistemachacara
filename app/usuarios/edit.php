@@ -37,95 +37,81 @@ if (!$usuario) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
-    $nome_completo = $_POST['nome_completo'];
-    $login = $_POST['login'];
+    $nome_completo  = trim($_POST['nome_completo']);
+    $login          = trim($_POST['login']);
 
-    // campos de senah
-    $senhaAtual = $_POST['senha_atual'] ?? '';
-    $novaSenha = $_POST['nova_senha'] ?? '';
+    // campos de senha
+    $senhaAtual     = $_POST['senha_atual'] ?? '';
+    $novaSenha      = $_POST['nova_senha'] ?? '';
     $confirmarSenha = $_POST['confirmar_senha'] ?? '';
 
-    $tipo_permissao = $_POST['tipo_permissao'];
+    $tipo_permissao  = $_POST['tipo_permissao'];
     $data_nascimento = parse_data($_POST['data_nascimento']);
-    $telefone = $_POST['telefone'];
-    $observacoes = $_POST['observacoes'];
+    $telefone        = trim($_POST['telefone']);
+    $observacoes     = trim($_POST['observacoes']);
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-    $check = $conn->prepare("SELECT id_usuario FROM usuarios WHERE login = ? AND id_usuario != ?");
-    $check->bind_param("si", $login, $id);
-    $check->execute();
-    $check_result = $check->get_result();
+    $locked = $conn->query("SELECT GET_LOCK('usuarios_write', 5)")->fetch_row()[0];
+    if (!$locked) {
+        $erro = "Não foi possível processar agora. Tente novamente.";
+    } else {
+        $check = $conn->prepare("SELECT id_usuario FROM usuarios WHERE login = ? AND id_usuario != ?");
+        $check->bind_param("si", $login, $id);
+        $check->execute();
+        $check_result = $check->get_result();
 
-    if ($check_result->num_rows > 0) {
-        $erro = "Já existe outro usuário com este login.";
-    }
+        if ($check_result->num_rows > 0) {
+            $erro = "Já existe outro usuário com este login.";
+        }
 
-    // verificar se vai alterar a senha
-    $alterarSenha = !empty($senhaAtual) || !empty($novaSenha) || !empty($confirmarSenha);
+        // verificar se vai alterar a senha
+        $alterarSenha = !empty($senhaAtual) || !empty($novaSenha) || !empty($confirmarSenha);
 
-    if (empty($erro) && $alterarSenha) {
-        if (empty($novaSenha) || empty($confirmarSenha)) {
-            $erro = "Para alterar a senha, preencha a Nova Senha e a Confirmação.";
-        } elseif ($novaSenha !== $confirmarSenha) {
-            $erro = "A nova senha e a confirmação não coincidem.";
-        } elseif ($is_self_edit) {
-            if (empty($senhaAtual)) {
-                $erro = "Para alterar sua própria senha, você deve informar a Senha Atual.";
-            } elseif (!password_verify($senhaAtual, $usuario['senha'])) {
-                $erro = "A Senha Atual está incorreta.";
+        if (empty($erro) && $alterarSenha) {
+            if (empty($novaSenha) || empty($confirmarSenha)) {
+                $erro = "Para alterar a senha, preencha a Nova Senha e a Confirmação.";
+            } elseif (strlen($novaSenha) < 4) {
+                $erro = "A senha deve ter no mínimo 4 caracteres.";
+            } elseif ($novaSenha !== $confirmarSenha) {
+                $erro = "A nova senha e a confirmação não coincidem.";
+            } elseif ($is_self_edit) {
+                if (empty($senhaAtual)) {
+                    $erro = "Para alterar sua própria senha, você deve informar a Senha Atual.";
+                } elseif (!password_verify($senhaAtual, $usuario['senha'])) {
+                    $erro = "A Senha Atual está incorreta.";
+                }
             }
         }
-    }
 
-    if (empty($erro)) {
+        if (empty($erro)) {
+            if ($alterarSenha) {
+                $senha_hash = password_hash($novaSenha, PASSWORD_DEFAULT);
+                $stmt = $conn->prepare(
+                    "UPDATE usuarios
+                     SET nome_completo=?, login=?, senha=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
+                     WHERE id_usuario=?"
+                );
+                $stmt->bind_param("sssssssii", $nome_completo, $login, $senha_hash, $tipo_permissao, $data_nascimento, $telefone, $observacoes, $ativo, $id);
+            } else {
+                $stmt = $conn->prepare(
+                    "UPDATE usuarios
+                     SET nome_completo=?, login=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
+                     WHERE id_usuario=?"
+                );
+                $stmt->bind_param("ssssssii", $nome_completo, $login, $tipo_permissao, $data_nascimento, $telefone, $observacoes, $ativo, $id);
+            }
 
-        if ($alterarSenha) {
-            $senha_hash = password_hash($novaSenha, PASSWORD_DEFAULT);
-
-            $stmt = $conn->prepare(
-                "UPDATE usuarios
-                 SET nome_completo=?, login=?, senha=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
-                 WHERE id_usuario=?"
-            );
-            $stmt->bind_param(
-                "sssssssii",
-                $nome_completo,
-                $login,
-                $senha_hash,
-                $tipo_permissao,
-                $data_nascimento,
-                $telefone,
-                $observacoes,
-                $ativo,
-                $id
-            );
-
-        } else {
-            $stmt = $conn->prepare(
-                "UPDATE usuarios
-                 SET nome_completo=?, login=?, tipo_permissao=?, data_nascimento=?, telefone=?, observacoes=?, ativo=?
-                 WHERE id_usuario=?"
-            );
-            $stmt->bind_param(
-                "ssssssii",
-                $nome_completo,
-                $login,
-                $tipo_permissao,
-                $data_nascimento,
-                $telefone,
-                $observacoes,
-                $ativo,
-                $id
-            );
+            if ($stmt->execute()) {
+                $conn->query("SELECT RELEASE_LOCK('usuarios_write')");
+                registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'usuario', (int) $id, $nome_completo);
+                header("Location: index.php?editado=1");
+                exit;
+            } else {
+                $erro = "Erro ao atualizar o usuário.";
+            }
         }
 
-        if ($stmt->execute()) {
-            registrar_log($conn, $_SESSION['usuario_id'], 'editar', 'usuario', (int) $id, $nome_completo);
-            header("Location: index.php?editado=1");
-            exit;
-        } else {
-            $erro = "Erro ao atualizar o usuário.";
-        }
+        $conn->query("SELECT RELEASE_LOCK('usuarios_write')");
     }
 }
 ?>
@@ -157,36 +143,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome completo: *</label>
-                    <input type="text" name="nome_completo" value="<?= htmlspecialchars($usuario['nome_completo']) ?>"
+                    <input type="text" name="nome_completo" value="<?= htmlspecialchars($_POST['nome_completo'] ?? $usuario['nome_completo'] ?? '') ?>"
                         required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Login: *</label>
-                    <input type="text" name="login" value="<?= htmlspecialchars($usuario['login']) ?>" required>
+                    <input type="text" name="login" value="<?= htmlspecialchars($_POST['login'] ?? $usuario['login'] ?? '') ?>" required>
                 </div>
 
                 <?php if ($is_self_edit): ?>
                     <div class="form-grupo">
                         <label>Senha atual:</label>
-                        <input type="password" name="senha_atual" placeholder="Digite sua senha atual">
+                        <div class="password-wrapper">
+                            <input type="password" name="senha_atual" placeholder="Digite sua senha atual">
+                            <i class="fa-regular fa-eye toggle-password"></i>
+                        </div>
                     </div>
                     <div class="form-grupo">
                         <label>Nova senha:</label>
-                        <input type="password" name="nova_senha" placeholder="Deixe em branco para não alterar">
+                        <div class="password-wrapper">
+                            <input type="password" name="nova_senha" placeholder="Deixe em branco para não alterar">
+                            <i class="fa-regular fa-eye toggle-password"></i>
+                        </div>
                     </div>
                     <div class="form-grupo">
                         <label>Confirmar nova senha:</label>
-                        <input type="password" name="confirmar_senha" placeholder="Repita a nova senha">
+                        <div class="password-wrapper">
+                            <input type="password" name="confirmar_senha" placeholder="Repita a nova senha">
+                            <i class="fa-regular fa-eye toggle-password"></i>
+                        </div>
                     </div>
                 <?php else: ?>
                     <div class="form-grupo">
                         <label>Redefinir senha:</label>
-                        <input type="password" name="nova_senha" placeholder="Deixe em branco para não alterar">
+                        <div class="password-wrapper">
+                            <input type="password" name="nova_senha" placeholder="Deixe em branco para não alterar">
+                            <i class="fa-regular fa-eye toggle-password"></i>
+                        </div>
                     </div>
                     <div class="form-grupo">
                         <label>Confirmar nova senha:</label>
-                        <input type="password" name="confirmar_senha" placeholder="Repita a nova senha">
+                        <div class="password-wrapper">
+                            <input type="password" name="confirmar_senha" placeholder="Repita a nova senha">
+                            <i class="fa-regular fa-eye toggle-password"></i>
+                        </div>
                     </div>
                 <?php endif; ?>
 
@@ -194,10 +195,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label>Tipo de permissão: *</label>
                     <div class="select-wrapper">
                         <select name="tipo_permissao" required>
-                            <option value="admin" <?= $usuario['tipo_permissao'] === 'admin' ? 'selected' : '' ?>>
+                            <option value="admin" <?= ($_POST['tipo_permissao'] ?? $usuario['tipo_permissao']) === 'admin' ? 'selected' : '' ?>>
                                 Administrador
                             </option>
-                            <option value="reserveiro" <?= $usuario['tipo_permissao'] === 'reserveiro' ? 'selected' : '' ?>>
+                            <option value="reserveiro" <?= ($_POST['tipo_permissao'] ?? $usuario['tipo_permissao']) === 'reserveiro' ? 'selected' : '' ?>>
                                 Reserveiro</option>
                         </select>
                     </div>
@@ -206,23 +207,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
                     <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" tabindex="-1"
-                        value="<?= htmlspecialchars(fmt_data($usuario['data_nascimento'])) ?>">
+                        value="<?= htmlspecialchars($_POST['data_nascimento'] ?? fmt_data($usuario['data_nascimento'])) ?>">
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone:</label>
                     <input type="text" name="telefone" data-mask='(00) 00000 - 0000'
-                        value="<?= htmlspecialchars($usuario['telefone']) ?>">
+                        value="<?= htmlspecialchars($_POST['telefone'] ?? $usuario['telefone'] ?? '') ?>">
                 </div>
 
                 <div class="form-grupo">
                     <label>Observações:</label>
-                    <textarea name="observacoes" rows="3"><?= htmlspecialchars($usuario['observacoes']) ?></textarea>
+                    <textarea name="observacoes" rows="3"><?= htmlspecialchars($_POST['observacoes'] ?? $usuario['observacoes'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-grupo checkbox">
                     <label>
-                        <input type="checkbox" name="ativo" <?= $usuario['ativo'] ? 'checked' : '' ?>> Usuário ativo
+                        <input type="checkbox" name="ativo" <?= (isset($_POST['ativo']) && $_SERVER['REQUEST_METHOD'] === 'POST' ? true : (bool)$usuario['ativo']) ? 'checked' : '' ?>> Usuário ativo
                     </label>
                 </div>
 

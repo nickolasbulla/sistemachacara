@@ -101,7 +101,7 @@ $icones = [
             <button class="menu-toggle">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <h1>Logs do Sistema</h1>
+            <h1>Logs</h1>
         </header>
 
         <!-- Filtros -->
@@ -222,8 +222,7 @@ $icones = [
                                 <?= htmlspecialchars($row['nome_completo']) ?>
                             </td>
                             <td data-label="Ação">
-                                <?= $icones[$row['acao']] ?? '' ?>
-                                <?= htmlspecialchars($row['acao']) ?>
+                                <span><?= $icones[$row['acao']] ?? '' ?> <?= htmlspecialchars($row['acao']) ?></span>
                             </td>
                             <td data-label="Entidade">
                                 <?= htmlspecialchars($row['entidade']) ?>

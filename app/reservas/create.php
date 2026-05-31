@@ -29,7 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $valor_pago = floatval($_POST['valor_pago']);
     $obs = trim($_POST['observacoes']);
 
-    if ($fim <= $inicio) {
+    if (!$data) {
+        $erro = "Data inválida.";
+    }
+
+    if (!$erro && $fim <= $inicio) {
         $erro = "A hora de término deve ser maior que a hora de início.";
     }
 
@@ -58,57 +62,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = "O valor pago não pode ser maior que o valor cobrado.";
     }
 
-    // verifica conflito de horários
+    // verifica conflito de horários e insere com lock para evitar race condition
     if (!$erro) {
-        $sql = "
-            SELECT * FROM reservas 
-            WHERE id_ambiente = ? 
-            AND data_reserva = ?
-            AND (
-                (? BETWEEN hora_inicio AND hora_fim)
-                OR (? BETWEEN hora_inicio AND hora_fim)
-                OR (hora_inicio BETWEEN ? AND ?)
-            )
-        ";
+        $lock_name = 'reserva_' . (int)$ambiente . '_' . $data;
+        $locked = $conn->query("SELECT GET_LOCK('{$lock_name}', 5)")->fetch_row()[0];
 
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("isssss", $ambiente, $data, $inicio, $fim, $inicio, $fim);
-        $stmt->execute();
-        $conf = $stmt->get_result();
-
-        if ($conf->num_rows > 0) {
-            $erro = "Este ambiente já está reservado nesse período!";
-        }
-    }
-
-    if (!$erro) {
-        $stmt = $conn->prepare("
-            INSERT INTO reservas 
-            (id_usuario, nome_reserva, telefone_reserva, data_reserva, hora_inicio, hora_fim, id_ambiente, id_funcionario, valor_cobrado, valor_pago, observacoes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-
-        $stmt->bind_param(
-            "isssssisdds",
-            $id_usuario,
-            $nome,
-            $tel,
-            $data,
-            $inicio,
-            $fim,
-            $ambiente,
-            $func,
-            $valor_cobrado,
-            $valor_pago,
-            $obs
-        );
-
-        if ($stmt->execute()) {
-            registrar_log($conn, $id_usuario, 'criar', 'reserva', $conn->insert_id, "$nome | " . date('d/m/Y', strtotime($data)) . " | $inicio-$fim");
-            header("Location: index.php?sucesso=1");
-            exit;
+        if (!$locked) {
+            $erro = "Não foi possível processar a reserva agora. Tente novamente.";
         } else {
-            $erro = "Erro ao cadastrar a reserva. Tente novamente.";
+            $sql = "
+                SELECT id_reserva FROM reservas
+                WHERE id_ambiente = ?
+                AND data_reserva = ?
+                AND (
+                    (? BETWEEN hora_inicio AND hora_fim)
+                    OR (? BETWEEN hora_inicio AND hora_fim)
+                    OR (hora_inicio BETWEEN ? AND ?)
+                )
+            ";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("isssss", $ambiente, $data, $inicio, $fim, $inicio, $fim);
+            $stmt->execute();
+
+            if ($stmt->get_result()->num_rows > 0) {
+                $erro = "Este ambiente já está reservado nesse período!";
+            } else {
+                $stmt = $conn->prepare("
+                    INSERT INTO reservas
+                    (id_usuario, nome_reserva, telefone_reserva, data_reserva, hora_inicio, hora_fim, id_ambiente, id_funcionario, valor_cobrado, valor_pago, observacoes)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+                $stmt->bind_param(
+                    "isssssisdds",
+                    $id_usuario, $nome, $tel, $data, $inicio, $fim,
+                    $ambiente, $func, $valor_cobrado, $valor_pago, $obs
+                );
+
+                if ($stmt->execute()) {
+                    $conn->query("SELECT RELEASE_LOCK('{$lock_name}')");
+                    registrar_log($conn, $id_usuario, 'criar', 'reserva', $conn->insert_id, "$nome | " . date('d/m/Y', strtotime($data)) . " | $inicio-$fim");
+                    header("Location: index.php?sucesso=1");
+                    exit;
+                } else {
+                    $erro = "Erro ao cadastrar a reserva. Tente novamente.";
+                }
+            }
+
+            $conn->query("SELECT RELEASE_LOCK('{$lock_name}')");
         }
     }
 }
@@ -144,12 +144,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Nome *</label>
-                    <input type="text" name="nome_reserva" required>
+                    <input type="text" name="nome_reserva" value="<?= htmlspecialchars($_POST['nome_reserva'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone *</label>
-                    <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000' required>
+                    <input type="text" name="telefone_reserva" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($_POST['telefone_reserva'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
@@ -160,12 +160,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Hora de início *</label>
-                    <input type="text" name="hora_inicio" class="input-hora" placeholder="HH:MM" maxlength="5" required>
+                    <input type="text" name="hora_inicio" class="input-hora" placeholder="HH:MM" maxlength="5" value="<?= htmlspecialchars($_POST['hora_inicio'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Hora de término *</label>
-                    <input type="text" name="hora_fim" class="input-hora" placeholder="HH:MM" maxlength="5" required>
+                    <input type="text" name="hora_fim" class="input-hora" placeholder="HH:MM" maxlength="5" value="<?= htmlspecialchars($_POST['hora_fim'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select name="id_ambiente" required>
                             <option value="">Selecione</option>
                             <?php while ($a = $ambientes->fetch_assoc()): ?>
-                                <option value="<?= $a['id_ambiente'] ?>">
+                                <option value="<?= $a['id_ambiente'] ?>" <?= ($_POST['id_ambiente'] ?? '') == $a['id_ambiente'] ? 'selected' : '' ?>>
                                     <?= $a['nome_ambiente'] ?>
                                 </option>
                             <?php endwhile; ?>
@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select name="id_funcionario">
                             <option value="">Não definido</option>
                             <?php while ($f = $funcionarios->fetch_assoc()): ?>
-                                <option value="<?= $f['id_funcionario'] ?>">
+                                <option value="<?= $f['id_funcionario'] ?>" <?= ($_POST['id_funcionario'] ?? '') == $f['id_funcionario'] ? 'selected' : '' ?>>
                                     <?= $f['nome_completo'] ?>
                                 </option>
                             <?php endwhile; ?>
@@ -199,13 +199,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-grupo">
                     <label>Valor cobrado (R$) *</label>
                     <input type="number" step="0.01" name="valor_cobrado" min="0" id="valor_cobrado" required
-                        oninput="calcularFalta()">
+                        value="<?= htmlspecialchars($_POST['valor_cobrado'] ?? '') ?>" oninput="calcularFalta()">
                 </div>
 
                 <div class="form-grupo">
                     <label>Valor pago (R$)</label>
                     <input type="number" step="0.01" name="valor_pago" min="0" id="valor_pago"
-                        oninput="calcularFalta()">
+                        value="<?= htmlspecialchars($_POST['valor_pago'] ?? '') ?>" oninput="calcularFalta()">
                 </div>
 
                 <div class="form-grupo">
@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Observações</label>
-                    <textarea name="observacoes"></textarea>
+                    <textarea name="observacoes"><?= htmlspecialchars($_POST['observacoes'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-botoes">

@@ -10,30 +10,37 @@ include "../../includes/layout/header.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     csrf_verify();
-    $nome_completo = $_POST["nome_completo"];
+    $nome_completo   = trim($_POST["nome_completo"]);
     $data_nascimento = parse_data($_POST["data_nascimento"]);
-    $telefone = $_POST["telefone"];
-    $observacoes = $_POST["observacoes"];
+    $telefone        = trim($_POST["telefone"]);
+    $observacoes     = trim($_POST["observacoes"]);
     $ativo = isset($_POST["ativo"]) ? 1 : 0;
 
-    $check = $conn->prepare("SELECT id_funcionario FROM funcionarios WHERE nome_completo = ?");
-    $check->bind_param("s", $nome_completo);
-    $check->execute();
-    $check->store_result();
-
-    if ($check->num_rows > 0) {
-        $erro = "Já existe um funcionário com esse nome!";
+    $locked = $conn->query("SELECT GET_LOCK('funcionarios_write', 5)")->fetch_row()[0];
+    if (!$locked) {
+        $erro = "Não foi possível processar agora. Tente novamente.";
     } else {
-        $stmt = $conn->prepare("INSERT INTO funcionarios (nome_completo,  data_nascimento, telefone, observacoes, ativo) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssi", $nome_completo, $data_nascimento, $telefone, $observacoes, $ativo);
+        $check = $conn->prepare("SELECT id_funcionario FROM funcionarios WHERE nome_completo = ?");
+        $check->bind_param("s", $nome_completo);
+        $check->execute();
+        $check->store_result();
 
-        if ($stmt->execute()) {
-            registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'funcionario', $conn->insert_id, $nome_completo);
-            header("Location: index.php?sucesso=1");
-            exit;
+        if ($check->num_rows > 0) {
+            $erro = "Já existe um funcionário com esse nome!";
         } else {
-            $erro = "Erro ao cadastrar o funcionário. Tente novamente.";
+            $stmt = $conn->prepare("INSERT INTO funcionarios (nome_completo,  data_nascimento, telefone, observacoes, ativo) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssi", $nome_completo, $data_nascimento, $telefone, $observacoes, $ativo);
+
+            if ($stmt->execute()) {
+                $conn->query("SELECT RELEASE_LOCK('funcionarios_write')");
+                registrar_log($conn, $_SESSION['usuario_id'], 'criar', 'funcionario', $conn->insert_id, $nome_completo);
+                header("Location: index.php?sucesso=1");
+                exit;
+            } else {
+                $erro = "Erro ao cadastrar o funcionário. Tente novamente.";
+            }
         }
+        $conn->query("SELECT RELEASE_LOCK('funcionarios_write')");
     }
 }
 
@@ -67,22 +74,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <?= csrf_field() ?>
                 <div class="form-grupo">
                     <label>Nome completo: *</label>
-                    <input type="text" name="nome_completo" required>
+                    <input type="text" name="nome_completo" value="<?= htmlspecialchars($_POST['nome_completo'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" required>
+                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" value="<?= htmlspecialchars($_POST['data_nascimento'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Telefone: *</label>
-                    <input type="text" name="telefone" data-mask='(00) 00000 - 0000' required>
+                    <input type="text" name="telefone" data-mask='(00) 00000 - 0000' value="<?= htmlspecialchars($_POST['telefone'] ?? '') ?>" required>
                 </div>
 
                 <div class="form-grupo">
                     <label>Observações:</label>
-                    <textarea name="observacoes" rows="3"></textarea>
+                    <textarea name="observacoes" rows="3"><?= htmlspecialchars($_POST['observacoes'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-grupo checkbox">
