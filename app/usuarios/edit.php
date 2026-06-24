@@ -6,6 +6,7 @@ include '../../config/init.php';
 
 $titulo_pagina = "Usuários - Chácara Portal";
 $body_class = "painel-page";
+$usar_datepicker = true;
 include "../../includes/layout/header.php";
 
 $id = $_GET['id'] ?? null;
@@ -50,6 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $telefone        = trim($_POST['telefone']);
     $observacoes     = trim($_POST['observacoes']);
     $ativo = isset($_POST['ativo']) ? 1 : 0;
+
+    if ($data_nascimento) {
+        $dezoito_anos = (new DateTime())->modify('-18 years')->format('Y-m-d');
+        if ($data_nascimento > $dezoito_anos) {
+            $erro = "O usuário deve ter pelo menos 18 anos.";
+        }
+    } else {
+        $erro = "Data de nascimento inválida.";
+    }
 
     $locked = $conn->query("SELECT GET_LOCK('usuarios_write', 5)")->fetch_row()[0];
     if (!$locked) {
@@ -206,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" tabindex="-1"
+                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" data-datepicker
                         value="<?= htmlspecialchars($_POST['data_nascimento'] ?? fmt_data($usuario['data_nascimento'])) ?>">
                 </div>
 

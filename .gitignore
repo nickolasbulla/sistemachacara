@@ -1,6 +1,6 @@
 vendor/
 
-config/cloudinary.php
+.env
 
 .DS_Store
 Thumbs.db

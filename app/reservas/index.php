@@ -302,16 +302,16 @@ $hoje = date('Y-m-d');
 <div id="novoBloqueioModal" class="popup-modal">
     <div class="popup-box">
         <h2><i class="fa-solid fa-calendar-xmark"></i> Novo Bloqueio</h2>
-        <p id="novoBloqueioRange" style="font-weight:600;font-size:15px;color:#d97706;margin-bottom:4px;"></p>
-        <div class="form-cadastro" style="margin-top:12px;">
+        <p id="novoBloqueioRange"></p>
+        <div id="novoBloqueioErro" class="alerta erro"></div>
+        <div class="form-cadastro">
             <div class="form-grupo">
                 <label>Motivo *</label>
                 <textarea id="novoBloqueioMotivo" rows="3"
                     placeholder="Ex: Manutenção, evento particular..."></textarea>
             </div>
         </div>
-        <p id="novoBloqueioErro" style="display:none;color:#d53625;font-size:13px;margin-top:8px;text-align:left;"></p>
-        <div class="form-botoes" style="justify-content:center;margin-top:20px;">
+        <div class="form-botoes">
             <button id="novoBloqueioSalvar" class="btn btn-salvar">
                 <i class="fa-solid fa-floppy-disk"></i>
                 Salvar

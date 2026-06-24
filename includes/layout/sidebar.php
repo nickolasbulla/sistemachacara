@@ -71,6 +71,10 @@
     </div>
 
     <div class="menu-bottom">
+        <div class="sidebar-usuario">
+            <i class="fa-solid fa-circle-user"></i>
+            <span><?= htmlspecialchars($_SESSION['usuario_nome']) ?></span>
+        </div>
         <ul>
             <?php if ($_SESSION['usuario_tipo'] === 'admin'): ?>
             <li>

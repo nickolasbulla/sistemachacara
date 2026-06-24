@@ -90,7 +90,7 @@ include "../../includes/layout/header.php";
         <form id="formPorAmbiente" action="gerar.php" method="GET">
             <input type="hidden" name="tipo" value="por_ambiente">
 
-            <div class="form-grupo" style="margin-bottom: 14px;">
+            <div class="form-grupo form-grupo--select">
                 <label for="pa_id_ambiente">Ambiente</label>
                 <div class="select-wrapper">
                     <select id="pa_id_ambiente" name="id_ambiente">
@@ -115,7 +115,7 @@ include "../../includes/layout/header.php";
                 </div>
             </div>
 
-            <div class="popup-buttons" style="margin-top: 24px;">
+            <div class="popup-buttons">
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
@@ -147,7 +147,7 @@ include "../../includes/layout/header.php";
                 </div>
             </div>
 
-            <div class="popup-buttons" style="margin-top: 24px;">
+            <div class="popup-buttons">
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
@@ -166,7 +166,7 @@ include "../../includes/layout/header.php";
         <form id="formPorUsuario" action="gerar.php" method="GET">
             <input type="hidden" name="tipo" value="por_usuario">
 
-            <div class="form-grupo" style="margin-bottom: 14px;">
+            <div class="form-grupo form-grupo--select">
                 <label for="id_usuario">Usuário</label>
                 <div class="select-wrapper">
                     <select id="id_usuario" name="id_usuario" required>
@@ -191,7 +191,7 @@ include "../../includes/layout/header.php";
                 </div>
             </div>
 
-            <div class="popup-buttons" style="margin-top: 24px;">
+            <div class="popup-buttons">
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
@@ -210,7 +210,7 @@ include "../../includes/layout/header.php";
         <form id="formOcorrencias" action="gerar.php" method="GET">
             <input type="hidden" name="tipo" value="ocorrencias">
 
-            <div class="form-grupo" style="margin-bottom: 14px;">
+            <div class="form-grupo form-grupo--select">
                 <label for="oc_status">Status</label>
                 <div class="select-wrapper">
                     <select id="oc_status" name="status">
@@ -234,7 +234,7 @@ include "../../includes/layout/header.php";
                 </div>
             </div>
 
-            <div class="popup-buttons" style="margin-top: 24px;">
+            <div class="popup-buttons">
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
@@ -247,7 +247,7 @@ include "../../includes/layout/header.php";
 <!-- Modal: Sem funcionário -->
 <div id="modalSemFuncionario" class="popup-modal">
     <div class="popup-box relatorio-modal-box">
-        <h2>Sem funcionário</h2>
+        <h2>Reservas sem funcionário</h2>
         <p>Selecione o período para o relatório</p>
 
         <form id="formSemFuncionario" action="gerar.php" method="GET">
@@ -266,7 +266,7 @@ include "../../includes/layout/header.php";
                 </div>
             </div>
 
-            <div class="popup-buttons" style="margin-top: 24px;">
+            <div class="popup-buttons">
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
@@ -285,7 +285,7 @@ include "../../includes/layout/header.php";
         <form id="formBloqueios" action="gerar.php" method="GET">
             <input type="hidden" name="tipo" value="bloqueios">
 
-            <div class="form-grupo" style="margin-bottom: 14px;">
+            <div class="form-grupo form-grupo--select">
                 <label for="bl_status">Status</label>
                 <div class="select-wrapper">
                     <select id="bl_status" name="status">
@@ -309,7 +309,7 @@ include "../../includes/layout/header.php";
                 </div>
             </div>
 
-            <div class="popup-buttons" style="margin-top: 24px;">
+            <div class="popup-buttons">
                 <button type="submit" class="btn-confirmar">
                     <i class="fa-solid fa-download"></i> Gerar PDF
                 </button>
@@ -351,7 +351,9 @@ include "../../includes/layout/header.php";
                 if (!erroDiv) {
                     erroDiv = document.createElement('div');
                     erroDiv.className = 'alerta erro modal-erro-data';
-                    form.querySelector('.popup-buttons').before(erroDiv);
+                    erroDiv.style.marginBottom = '12px';
+                    const anchor = form.querySelector('.relatorio-modal-campos') || form.querySelector('.form-grupo');
+                    anchor.before(erroDiv);
                 }
                 erroDiv.textContent = 'A data fim não pode ser anterior à data início.';
                 return;

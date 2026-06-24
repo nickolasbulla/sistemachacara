@@ -29,7 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $valor_pago = floatval($_POST['valor_pago']);
     $obs = trim($_POST['observacoes']);
 
-    if (!$data) {
+    if (strlen(preg_replace('/\D/', '', $tel)) < 11) {
+        $erro = "Telefone inválido.";
+    }
+
+    if (!$erro && !$data) {
         $erro = "Data inválida.";
     }
 
@@ -74,14 +78,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 SELECT id_reserva FROM reservas
                 WHERE id_ambiente = ?
                 AND data_reserva = ?
-                AND (
-                    (? BETWEEN hora_inicio AND hora_fim)
-                    OR (? BETWEEN hora_inicio AND hora_fim)
-                    OR (hora_inicio BETWEEN ? AND ?)
-                )
+                AND hora_inicio < ?
+                AND hora_fim > ?
             ";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("isssss", $ambiente, $data, $inicio, $fim, $inicio, $fim);
+            $stmt->bind_param("isss", $ambiente, $data, $fim, $inicio);
             $stmt->execute();
 
             if ($stmt->get_result()->num_rows > 0) {

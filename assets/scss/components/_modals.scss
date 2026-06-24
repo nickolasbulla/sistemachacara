@@ -36,3 +36,41 @@
         }
     }
 }
+
+// ── Lightbox ─────────────────────────────────────────────────────────────────
+#lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+
+    #lightbox-img {
+        max-width: 96vw;
+        max-height: 88vh;
+        width: auto;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+    }
+
+    .lightbox-baixar {
+        position: absolute;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+}

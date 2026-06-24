@@ -35,6 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $observacoes   = trim($_POST['observacoes']);
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
+    if ($capacidade < 1) {
+        $erro = "A capacidade mínima é 1.";
+    }
+
+    if (empty($erro)) {
     $locked = $conn->query("SELECT GET_LOCK('ambientes_write', 5)")->fetch_row()[0];
     if (!$locked) {
         $erro = "Não foi possível processar agora. Tente novamente.";
@@ -63,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $conn->query("SELECT RELEASE_LOCK('ambientes_write')");
     }
+    } // if (empty($erro))
 }
 ?>
 
@@ -100,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-grupo">
                     <label>Capacidade: *</label>
                     <input type="number" name="capacidade" value="<?= htmlspecialchars($_POST['capacidade'] ?? $ambiente['capacidade'] ?? '') ?>"
-                        required>
+                        required min="1">
                 </div>
 
                 <div class="form-grupo">

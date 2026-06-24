@@ -113,8 +113,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!data) return;
         if (diaInvalido(dia)) return;
 
-        if (dia.classList.contains('bl-inicio') || dia.classList.contains('bl-fim') || dia.classList.contains('bl-range')) {
+        if (dia.classList.contains('bl-fim') || dia.classList.contains('bl-range')) {
             resetarSelecao();
+            return;
+        }
+
+        if (dia.classList.contains('bl-inicio')) {
+            if (bloqueioInicio && bloqueioFim === null) {
+                // segundo clique no mesmo dia: bloqueio de dia único
+                bloqueioFim = bloqueioInicio;
+                btnConfirmar?.classList.add('visivel');
+                atualizarInstrucao();
+            } else {
+                resetarSelecao();
+            }
             return;
         }
 

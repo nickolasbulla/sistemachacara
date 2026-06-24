@@ -13,35 +13,41 @@ if (!isset($_GET['id'])) {
 }
 
 // ─── DELETE ───────────────────────────────────────────────────────────────────
+$erro_delete = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     csrf_verify();
-    $id = (int) $_POST['delete_id'];
+    $del_id = (int) $_POST['delete_id'];
 
-    if ($id > 0) {
-        $info = $conn->prepare("SELECT nome_reserva, data_reserva, hora_inicio, hora_fim FROM reservas WHERE id_reserva = ?");
-        $info->bind_param("i", $id);
-        $info->execute();
-        $row = $info->get_result()->fetch_assoc();
-        $detalhes = $row ? "nome: {$row['nome_reserva']} | data: {$row['data_reserva']} | horário: {$row['hora_inicio']}-{$row['hora_fim']}" : null;
+    if ($del_id > 0) {
+        $chk = $conn->prepare("SELECT id_vistoria_resultado FROM vistoria_resultados WHERE id_reserva = ? LIMIT 1");
+        $chk->bind_param("i", $del_id);
+        $chk->execute();
+        $chk->store_result();
+        $tem_vistoria = $chk->num_rows > 0;
+        $chk->close();
 
-        try {
+        if ($tem_vistoria) {
+            $erro_delete = "Não é possível excluir: esta reserva possui uma vistoria registrada.";
+        } else {
+            $info = $conn->prepare("SELECT nome_reserva, data_reserva, hora_inicio, hora_fim FROM reservas WHERE id_reserva = ?");
+            $info->bind_param("i", $del_id);
+            $info->execute();
+            $row = $info->get_result()->fetch_assoc();
+            $detalhes = $row ? "nome: {$row['nome_reserva']} | data: {$row['data_reserva']} | horário: {$row['hora_inicio']}-{$row['hora_fim']}" : null;
+
             $stmt = $conn->prepare("DELETE FROM reservas WHERE id_reserva = ?");
-            $stmt->bind_param("i", $id);
+            $stmt->bind_param("i", $del_id);
             $stmt->execute();
             $stmt->close();
-            registrar_log($conn, $_SESSION['usuario_id'], 'excluir', 'reserva', $id, $detalhes);
-        } catch (mysqli_sql_exception $e) {
-            header("Location: index.php?erro_relacionado=1");
+            registrar_log($conn, $_SESSION['usuario_id'], 'excluir', 'reserva', $del_id, $detalhes);
+            header("Location: index.php?deletado=1");
             exit;
         }
     }
-
-    header("Location: index.php?deletado=1");
-    exit;
 }
 
 $id = intval($_GET['id']);
-$erro = '';
+$erro = $erro_delete;
 $erro_vistoria = '';
 $sucesso_vistoria = '';
 
@@ -77,7 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
     $valor_pago    = floatval($_POST['valor_pago']);
     $obs           = trim($_POST['observacoes']);
 
-    if (!$data) {
+    if (strlen(preg_replace('/\D/', '', $tel)) < 11) {
+        $erro = "Telefone inválido.";
+    }
+
+    if (!$erro && !$data) {
         $erro = "Data inválida.";
     }
 
@@ -125,14 +135,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_reserva'])) {
                 WHERE id_ambiente = ?
                 AND data_reserva = ?
                 AND id_reserva != ?
-                AND (
-                    (? BETWEEN hora_inicio AND hora_fim)
-                    OR (? BETWEEN hora_inicio AND hora_fim)
-                    OR (hora_inicio BETWEEN ? AND ?)
-                )
+                AND hora_inicio < ?
+                AND hora_fim > ?
             ";
             $stmt_conf = $conn->prepare($sql_conf);
-            $stmt_conf->bind_param("isisiss", $ambiente, $data, $id, $inicio, $fim, $inicio, $fim);
+            $stmt_conf->bind_param("isiss", $ambiente, $data, $id, $fim, $inicio);
             $stmt_conf->execute();
 
             if ($stmt_conf->get_result()->num_rows > 0) {
@@ -386,13 +393,13 @@ if ($is_passada) {
 
             <?php if ($is_passada): ?>
 
-                <div class="alerta" style="background:#fff8e1;border:1px solid #f0c040;color:#92400e;">
-                    <i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;margin-right:6px;"></i>
+                <div class="alerta aviso">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
                     Reserva já realizada, apenas os dados financeiros podem ser editados.
                 </div>
 
                 <!-- Informações somente-leitura -->
-                <div class="form-cadastro" style="margin-bottom:28px;">
+                <div class="form-cadastro reserva-dados-leitura">
                     <div class="form-grupo">
                         <label>Nome</label>
                         <input type="text" value="<?= htmlspecialchars($reserva['nome_reserva']) ?>" readonly tabindex="-1">
@@ -635,7 +642,7 @@ if ($is_passada) {
                                     id="foto-<?= $item['id_item_vistoria'] ?>"
                                     name="foto[<?= $item['id_item_vistoria'] ?>]"
                                     accept="image/jpeg,image/png,image/webp"
-                                    style="display:none"
+                                    class="vi-foto-input"
                                     onchange="atualizarNomeFoto(this, <?= $item['id_item_vistoria'] ?>)"
                                 >
                             </div>

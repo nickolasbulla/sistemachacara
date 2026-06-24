@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Itens da ocorrência (editáveis) -->
-            <form method="POST" class="form-cadastro" style="margin-top:24px;">
+            <form method="POST" class="form-cadastro ocorrencia-form-edit">
                 <?= csrf_field() ?>
                 <?php foreach ($itens as $item): ?>
                     <div class="ocorrencia-item">

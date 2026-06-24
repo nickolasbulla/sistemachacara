@@ -101,7 +101,7 @@ $result = $conn->query($query);
                                 <td data-label="Motivo"><?= htmlspecialchars($row['motivo']) ?></td>
                                 <td data-label="Cadastrado por"><?= htmlspecialchars($row['nome_completo']) ?></td>
                                 <td data-label="Ativo">
-                                    <form method="POST" style="display:inline">
+                                    <form method="POST" class="form-inline">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="toggle_id" value="<?= $row['id_bloqueio'] ?>">
                                         <button type="submit" class="btn-toggle-ativo <?= $row['ativo'] ? 'ativo' : 'inativo' ?>" title="<?= $row['ativo'] ? 'Clique para desativar' : 'Clique para ativar' ?>">

@@ -27,3 +27,31 @@
     font-size: 15px;
     line-height: 1.5;
 }
+
+.form-inline {
+    display: inline;
+}
+
+// ── Modal: novo bloqueio pelo calendário ──────────────────────────────────────
+#novoBloqueioModal {
+    #novoBloqueioRange {
+        font-weight: 600;
+        font-size: 15px;
+        color: #d97706;
+        margin-bottom: 4px;
+    }
+
+    #novoBloqueioErro {
+        display: none;
+        margin-bottom: 12px;
+    }
+
+    .form-cadastro {
+        margin-top: 0;
+    }
+
+    .form-botoes {
+        justify-content: center;
+        margin-top: 20px;
+    }
+}

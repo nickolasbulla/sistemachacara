@@ -6,6 +6,7 @@ include '../../config/init.php';
 
 $titulo_pagina = "Funcionários - Chácara Portal";
 $body_class = "painel-page";
+$usar_datepicker = true;
 include "../../includes/layout/header.php";
 
 $id = $_GET['id'] ?? null;
@@ -35,6 +36,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $observacoes     = trim($_POST['observacoes']);
     $ativo = isset($_POST['ativo']) ? 1 : 0;
 
+    if ($data_nascimento) {
+        $dezoito_anos = (new DateTime())->modify('-18 years')->format('Y-m-d');
+        if ($data_nascimento > $dezoito_anos) {
+            $erro = "O funcionário deve ter pelo menos 18 anos.";
+        }
+    } else {
+        $erro = "Data de nascimento inválida.";
+    }
+
+    if (empty($erro)) {
     $locked = $conn->query("SELECT GET_LOCK('funcionarios_write', 5)")->fetch_row()[0];
     if (!$locked) {
         $erro = "Não foi possível processar agora. Tente novamente.";
@@ -65,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $conn->query("SELECT RELEASE_LOCK('funcionarios_write')");
     }
+    } // if (empty($erro))
 }
 ?>
 
@@ -101,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-grupo">
                     <label>Data de nascimento: *</label>
-                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" required
+                    <input type="text" class="input-data" name="data_nascimento" placeholder="DD/MM/AAAA" required data-datepicker
                         value="<?= htmlspecialchars($_POST['data_nascimento'] ?? fmt_data($funcionario['data_nascimento'])) ?>">
                 </div>
 

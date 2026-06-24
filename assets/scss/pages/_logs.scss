@@ -17,6 +17,12 @@
     }
 }
 
+.logs-td-detalhes {
+    max-width: 260px;
+    word-break: break-word;
+    white-space: normal;
+}
+
 .log-icone-criar    { color: #4caf50; }
 .log-icone-editar   { color: #2196f3; }
 .log-icone-excluir  { color: #f44336; }

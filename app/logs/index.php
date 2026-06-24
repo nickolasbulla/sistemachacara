@@ -227,7 +227,7 @@ $icones = [
                             <td data-label="Entidade">
                                 <?= htmlspecialchars($row['entidade']) ?>
                             </td>
-                            <td data-label="Detalhes">
+                            <td data-label="Detalhes" class="logs-td-detalhes">
                                 <?= $row['detalhes'] ? htmlspecialchars($row['detalhes']) : '—' ?>
                             </td>
                         </tr>

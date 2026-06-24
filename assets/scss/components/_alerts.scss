@@ -17,4 +17,15 @@
         color: $success;
         border: 1px solid #c3e6cb;
     }
+
+    &.aviso {
+        background: #fff8e1;
+        color: #92400e;
+        border: 1px solid #f0c040;
+
+        i {
+            color: #f59e0b;
+            margin-right: 6px;
+        }
+    }
 }

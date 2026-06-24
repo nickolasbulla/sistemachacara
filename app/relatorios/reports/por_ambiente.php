@@ -37,7 +37,7 @@ if ($id_ambiente) {
     $total_pago     = array_sum(array_column($dados, 'valor_pago'));
     $total_em_aberto = array_sum(array_column($dados, 'em_aberto'));
 
-    $titulo = 'Reservas — ' . htmlspecialchars($ambiente['nome_ambiente']);
+    $titulo = 'Reservas do ambiente: "' . htmlspecialchars($ambiente['nome_ambiente']) . '"';
 
     ob_start(); ?>
 
@@ -75,7 +75,7 @@ if ($id_ambiente) {
                         <th>#</th>
                         <th>Cliente</th>
                         <th>Data</th>
-                        <th>Início</th>
+                        <th>Horário</th>
                         <th class="direita">Faturado</th>
                         <th class="direita">Recebido</th>
                         <th class="direita">Em aberto</th>
