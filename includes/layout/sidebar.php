@@ -1,6 +1,9 @@
 <aside class="sidebar">
     <div class="menu-topo">
-        <h2>Painel</h2>
+        <div class="sidebar-usuario">
+            <i class="fa-solid fa-circle-user"></i>
+            <span><?= htmlspecialchars($_SESSION['usuario_nome']) ?></span>
+        </div>
         <ul>
 
             <li>
@@ -71,10 +74,6 @@
     </div>
 
     <div class="menu-bottom">
-        <div class="sidebar-usuario">
-            <i class="fa-solid fa-circle-user"></i>
-            <span><?= htmlspecialchars($_SESSION['usuario_nome']) ?></span>
-        </div>
         <ul>
             <?php if ($_SESSION['usuario_tipo'] === 'admin'): ?>
             <li>
